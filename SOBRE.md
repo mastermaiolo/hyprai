@@ -1,94 +1,210 @@
-# 🧠 Hypr.AI · Guia Completo do Projeto
+# 🧠 Hypr.AI · Guia do Projecto
 
-Este documento detalha **o que é**, **para que serve** e **como foi construído** o **Hypr.AI**, criado especificamente para o seu ambiente Hyprland no CachyOS.
-
----
-
-## 📌 1. O que é?
-
-O **Hypr.AI** é um launcher nativo para Wayland/Hyprland, acionado via [Rofi](https://github.com/davatorium/rofi), projetado para atuar como uma central unificada e instantânea de atalhos para ferramentas de Inteligência Artificial.
-
-Ele organiza todo o seu ecossistema de IA em uma interface visual fluida, teclado-cêntrica e dividida em três pilares principais:
-1. **Agentes de Linha de Comando (CLI)** rodando no terminal Kitty com Fish Shell.
-2. **Aplicativos Desktop Nativos/GUI** (IDEs e clientes de IA).
-3. **Portais e Plataformas Web de IA** abrindo diretamente no seu navegador padrão (Zen Browser).
+Este documento explica **o que é**, **para que serve** e sobretudo **porque foi
+construído assim**. O [README](README.pt.md) cobre a utilização; aqui ficam as
+decisões de engenharia e o raciocínio por trás delas — incluindo as que só se
+percebem depois de bater com a cabeça na parede.
 
 ---
 
-## 🎯 2. Para que serve?
+## 📌 1. O que é
 
-No dia a dia de desenvolvimento e pesquisa com IA, é comum alternar constantemente entre:
-- Sessões interativas no terminal com **AGY CLI** (Google Antigravity) e **Claude Code CLI** (Anthropic);
-- Ambientes visuais pesados como a IDE **Antigravity 2.0** e o **Claude Desktop**;
-- Diferentes portais na web com modelos variados (Gemini, ChatGPT, DeepSeek, Kimi, Qwen, Perplexity, v0, etc.).
+O **Hypr.AI** é um launcher nativo para Wayland/Hyprland, accionado via
+[Rofi](https://github.com/davatorium/rofi), que reúne todo o ecossistema de IA
+numa interface teclado-cêntrica, dividida em três pilares:
 
-O **Hypr.AI** resolve essa fragmentação:
-- **Acesso em 1 segundo**: Basta pressionar `Super + I` de qualquer lugar do sistema para abrir o menu.
-- **Zero fricção de terminal**: Dispara os agentes de terminal automaticamente dentro de instâncias dedicadas do Kitty configuradas com seu Fish shell nativo.
-- **Submenu web inteligente**: Navegação sem poluir o menu principal, com agrupamento por categorias e curadoria aberta em texto puro (`sites.conf`).
-- **Totalmente desacoplado e customizável**: Permite adicionar, remover ou editar qualquer atalho sem alterar linhas de código complexas.
+1. **Agentes de linha de comando (CLI)**, abertos no Kitty com a fish shell;
+2. **Aplicações desktop** (IDEs, clientes locais de modelos);
+3. **Portais web de IA**, abertos no browser predefinido.
 
 ---
 
-## 🛠️ 3. Como foi construído?
+## 🎯 2. Para que serve
 
-A construção do **Hypr.AI** tomou como referência direta a arquitetura, a ergonomia e o código do seu projeto [HyprVision](https://github.com/mastermaiolo/hyprvision), adaptando-os para gerenciamento de aplicações e links.
+No dia-a-dia com IA, alterna-se constantemente entre agentes de terminal, IDEs
+pesadas e uma dúzia de separadores no browser. O Hypr.AI resolve essa
+fragmentação:
 
-### 🏛️ Arquitetura e Engenharia de Software
+- **Acesso imediato**: `Super + I` a partir de qualquer lado;
+- **Zero fricção de terminal**: os agentes arrancam dentro de instâncias
+  dedicadas do Kitty, com a tua fish e o teu ambiente intactos;
+- **Nada fixo no código**: ferramentas e sites vivem em ficheiros de texto
+  declarativos, editáveis a partir do próprio menu;
+- **Só mostra o que existe**: uma ferramenta aparece quando a instalas e
+  desaparece quando a removes, sem configuração nenhuma.
+
+---
+
+## 🛠️ 3. Como foi construído
+
+Tomou como referência a arquitectura, a ergonomia e as convenções do
+[HyprVision](https://github.com/mastermaiolo/hyprvision), adaptadas para gerir
+aplicações e ligações em vez de perfis de cor.
+
+### 🏛️ Estrutura
 
 ```
 hyprai/
 ├── config/
-│   └── sites.conf      # Banco de dados declarativo em texto puro
+│   ├── sites.conf         # Portais web curados
+│   └── tools.conf         # Agentes CLI/apps desktop — candidatos a detectar
 ├── rofi/
-│   └── hyprai.rasi     # Tema Rofi com design system do HyprVision
+│   └── hyprai.rasi        # Tema — grelha, raios e paleta
+├── svg/                   # Ícones por entrada (protocolo do Rofi)
+├── theme/
+│   └── noctalia.rasi.tmpl # Template que o Noctalia rende na ponte tonal
 ├── ui/
-│   └── launcher.sh     # Engine do menu em Bash com controle de estados
-├── install.sh          # Automação de setup, links e injeção em binds.lua
-├── uninstall.sh        # Script de remoção limpa
-├── README.md           # Visão geral do repositório
-└── SOBRE.md            # Este guia conceitual e técnico
+│   └── launcher.sh        # O launcher
+├── assets/                # Captura usada nos READMEs
+├── install.sh             # Instalação, atalho e registo no Noctalia
+├── uninstall.sh           # Remoção simétrica
+├── DESIGN.md              # Tokens e o porquê de cada número
+└── README*.md             # Documentação (pt, en, es, zh)
 ```
 
-### 🎨 3.1. Design System e Interface Rofi (`rofi/hyprai.rasi`)
-- **Sistema coerente, não herança visual solta**: o tema segue um grid fechado de múltiplos de 4px, raios concêntricos (janela `24px` → padding `16px` → filhos `8px`) e uma paleta OKLCH gerada e verificada por script (contraste ≥4.5:1 em todo texto). Ver `DESIGN.md` para os tokens exatos e o porquê de cada número.
-- **Camada "glass"**: a janela é a camada funcional/flutuante, translúcida (`~95%` de opacidade), renderizada sobre o blur global já ativo no compositor Hyprland — não precisa de nenhuma regra extra.
-- **Cor tonal dinâmica — Noctalia (principal)**: `install.sh` registra `theme/noctalia.rasi.tmpl` como *user template* em `~/.config/noctalia/config.toml`. O próprio Noctalia regenera `~/.local/state/hyprai/noctalia-colors.rasi` sempre que o wallpaper/scheme muda — o launcher só lê esse arquivo e injeta via `-theme-str`, sem polling nem script de conversão.
-- **Caelestia (compatibilidade)**: se não houver Noctalia mas existir `~/.local/state/caelestia/scheme.json`, o launcher extrai as cores dali e monta o mesmo bloco de tokens na hora.
-- **Paleta Estática Fallback**: sem nenhum dos dois, usa uma paleta **Dark Violet / Neon Indigo** verificada (`#A18DEE` sobre `#0D0D10`), com o mesmo mapeamento de tokens — trocar a fonte de cor nunca muda a estrutura do tema.
+### 🔍 3.1. Detecção em runtime — a decisão central
 
-### 🧠 3.2. Lógica e Mecânica do Launcher (`ui/launcher.sh`)
-- **Strict Mode**: Construído com `set -euo pipefail` garantindo estabilidade contra variáveis não definidas ou falhas silenciosas.
-- **Resolução de Links Simbólicos**: Utiliza `readlink -f "${BASH_SOURCE[0]}"` para que o script descubra seu diretório real mesmo quando invocado através do symlink em `~/.local/bin/hyprai`.
-- **Navegação Aninhada e Submenus**:
-  - Utiliza o padrão `dim_row`, `sep` e `pick_id` do HyprVision para embutir tags ocultas `[id]` nas linhas renderizadas pelo Rofi e extraí-las no clique.
-  - O submenu `AI WEB` exibe o botão `↩ Voltar` (`__back__`), que ao ser selecionado invoca `exec "$0"`, retornando instantaneamente para a raiz do menu sem fechar ou engasgar o processo.
-  - Clicks acidentais em separadores de categoria (`── CATEGORIA ──`) são interceptados e ignorados, reabrindo o menu suavemente.
+As ferramentas **não estão escritas no código**. O `tools.conf` declara
+*candidatos*, e o launcher testa cada um sempre que abre:
 
-### ⚡ 3.3. Integração com Hyprland, Wayland & UWSM
-- **Isolamento de Escopos com UWSM**:
-  O Hyprland no CachyOS utiliza o `uwsm app --` para gerenciar ciclos de vida das janelas via unidades transientes do systemd.
-- **Resolução de $PATH no Systemd**:
-  Como o `systemd --user` não herda o `~/.local/bin` por omissão, o Hypr.AI foi projetado para:
-  1. Utilizar caminhos absolutos (`os.getenv("HOME") .. "/.local/bin/hyprai"`) no `binds.lua`;
-  2. Adicionar `export PATH="$HOME/.local/bin:$HOME/.cargo/bin:$PATH"` no `~/.config/uwsm/env`;
-  3. Disparar o Kitty chamando diretamente o shell interativo (`kitty --title "$title" fish -i -c "$cmd"`), garantindo que funções, aliases e toolchains do Fish estejam 100% disponíveis.
+```conf
+id | ícone | Nome | Subtexto | categoria | candidatos | svg | args
+```
 
-### 📝 3.4. Curadoria Declarativa de Sites (`config/sites.conf`)
-- O arquivo segue a sintaxe limpa:
-  ```conf
-  id | ícone | Nome da Ferramenta | categoria | url
-  ```
-- O script lê o arquivo linha a linha, agrupa automaticamente os sites pelas categorias (`chat`, `search`, `dev`, `code`, `media`) e insere os divisores visuais formatados.
-- Pelo próprio menu, a opção *"📝 Editar lista de sites"* detecta automaticamente o editor disponível (`zeditor`, `nvim`, `nano`, `micro`, `kate`, etc.) e o abre instantaneamente no arquivo correto.
+O campo `candidatos` aceita vários binários/caminhos separados por `;`; o
+primeiro que existir ganha e passa a ser o comando de arranque. Falhar é
+silencioso de propósito: um nome errado deixa a entrada invisível, nunca uma
+entrada morta que rebenta ao clicar.
+
+**A parte não óbvia:** a sondagem corre dentro do `fish`, não em bash puro. O
+Hyprland entrega aos processos um `PATH` mínimo (`~/.local/bin`, `~/.cargo/bin`
+— ver `~/.config/uwsm/env`), que não inclui o que o `config.fish` acrescenta
+(linuxbrew, nvm, pyenv). Como o lançamento real já acontece dentro de
+`fish -i`, sondar noutra shell criava uma assimetria absurda: a ferramenta
+funcionava perfeitamente se fosse clicada, mas nunca chegava a aparecer para
+ser clicada. Foi exactamente o que aconteceu com o Claude Code instalado via
+`brew` em `/home/linuxbrew/.linuxbrew/bin`.
+
+O campo `args` existe para o caso de um mesmo binário servir o CLI e a GUI —
+`hermes chat` e `hermes desktop` são o mesmo candidato com argumentos
+diferentes.
+
+### 🎨 3.2. Design system e interface (`rofi/hyprai.rasi`)
+
+Sistema coerente, não herança visual solta: grelha fechada de múltiplos de 4px,
+raios concêntricos (janela `24px` → padding `16px` → filhos `8px`) e paleta
+OKLCH gerada e verificada por script (contraste ≥4,5:1 em todo o texto). Ver
+[DESIGN.md](DESIGN.md) para os tokens exactos.
+
+Os rótulos de categoria são de **uma palavra** por decisão, não por acaso:
+servem tanto aos chips como aos cabeçalhos de secção, e um rótulo longo parte a
+fileira de chips em duas linhas desalinhadas.
+
+### 🪟 3.3. O vidro — a parte contra-intuitiva
+
+Três coisas têm de estar certas ao mesmo tempo, e falhar qualquer uma delas dá
+o mesmo sintoma (painel opaco), sem erro nenhum:
+
+1. **A regra de camada.** Superfícies layer-shell não recebem blur no Hyprland
+   sem uma `layer_rule` que aponte ao namespace. O `install.sh` pergunta antes
+   de a adicionar, e nunca toca no blur global.
+2. **`xray = false` nessa regra.** O `xray` manda o blur saltar as camadas
+   intermédias e ir buscar o fundo — mas em desktops onde o wallpaper *é* uma
+   camada (o do Noctalia ocupa o ecrã inteiro), salta justamente aquilo que
+   devia desfocar. O wallpaper atravessa nítido e o vidro desaparece, de forma
+   intermitente conforme os widgets que estejam por trás.
+3. **Opacidade a 70%, não a 95%.** Acima de ~85% o blur não tem luz suficiente
+   para contribuir: o que está atrás vira uma mancha uniforme (é o que o blur
+   faz) e o painel lê-se como tinta chapada. **Quanto melhor o blur funciona,
+   mais opaco parece** se não houver transparência que chegue.
+
+E um aviso que poupa horas: **uma screenshot não serve para validar isto.** O
+`grim` captura antes do passo de blur do compositor, por isso os mesmos poucos
+% de transparência mostram um wallpaper *nítido* (que se lê como vidro),
+enquanto o ecrã real mostra um *desfocado*. Quando está calibrado, as duas
+imagens coincidem — essa coincidência é o sinal de que está certo.
+
+### 🌈 3.4. Cor tonal dinâmica
+
+- **Noctalia (principal)**: o `install.sh` regista `theme/noctalia.rasi.tmpl`
+  como *user template* em `~/.config/noctalia/config.toml`. O próprio Noctalia
+  regenera `~/.local/state/hyprai/noctalia-colors.rasi` a cada mudança de
+  wallpaper/esquema; o launcher lê esse ficheiro e injecta-o via `-theme-str`,
+  sem polling nem script de conversão.
+- **Caelestia (compatibilidade)**: sem Noctalia mas com
+  `~/.local/state/caelestia/scheme.json`, o launcher remonta o mesmo bloco de
+  tokens a partir dos papéis M3 que o scheme expõe.
+- **Fallback estático**: sem nenhum dos dois, uma paleta *Dark Violet / Neon
+  Indigo* verificada (`#A18DEE` sobre `#0D0D10`), com o mesmo mapeamento de
+  tokens — trocar a fonte de cor nunca muda a estrutura do tema.
+
+Passam **todos** os neutros, não só o accent. Com só o accent dinâmico, o
+launcher lia como um chrome alheio assim que o Noctalia pintava o resto do
+desktop noutro esquema.
+
+### 🖼️ 3.5. Ícones reais
+
+Usa o protocolo nativo de ícones do Rofi (`-show-icons`), com o ícone indicado
+por entrada e um chip de emoji como alternativa quando não há ficheiro.
+
+O protocolo exige um **byte NUL** entre o texto e `icon\x1f<caminho>` — e uma
+variável bash não guarda NUL (trunca a string nesse ponto). O byte só pode
+nascer no `printf` que escreve directamente no pipe, nunca numa variável
+intermediária. Por isso as linhas vivem em arrays paralelos (texto, id, ícone)
+e só são combinadas no momento da escrita.
+
+### 🔑 3.6. Identificadores e navegação
+
+As linhas **não mostram** `[id]`. O Rofi devolve o índice (`-format i`) e o
+`launcher.sh` mapeia índice → id em arrays paralelos, por isso o id nunca
+precisa de aparecer no ecrã. Um índice sem id é um cabeçalho de secção e
+reabre o menu em vez de fazer nada.
+
+### ⚡ 3.7. Integração com Hyprland, Wayland e UWSM
+
+- **Isolamento de escopos com UWSM**: o Hyprland no CachyOS usa `uwsm app --`
+  para gerir ciclos de vida via unidades transientes do systemd.
+- **Resolução de `$PATH`**: como o `systemd --user` não herda `~/.local/bin`
+  por omissão, o projecto usa caminhos absolutos no `binds.lua`, conta com
+  `export PATH=...` no `~/.config/uwsm/env`, e dispara o Kitty com a shell
+  interactiva (`kitty --title "$title" fish -i -c "$cmd"`) para que funções,
+  aliases e toolchains estejam disponíveis.
+- **Atalho sem conflitos**: antes de injectar `Super + I` no `binds.lua`, o
+  instalador consulta `hyprctl -j binds`. Se a combinação já estiver ocupada,
+  avisa e deixa escolher outra tecla — caso contrário criava duas acções na
+  mesma tecla sem aviso nenhum.
+
+### 📝 3.8. Curadoria declarativa (`config/sites.conf`)
+
+```conf
+id | ícone | Nome | categoria | url | svg
+```
+
+O script lê linha a linha, agrupa pelas categorias (`chat`, `search`, `write`,
+`dev`, `code`, `media`) e insere os cabeçalhos. Pela opção *"Configurações"* no
+menu, detecta o editor disponível (`zeditor`, `nvim`, `nano`, `micro`, `kate`…)
+e abre o ficheiro certo.
+
+O `install.sh` **não sobrescreve** `sites.conf` nem `tools.conf` ao reinstalar:
+a curadoria sobrevive às actualizações. Em contrapartida, ao alterá-los no
+repositório é preciso copiá-los à mão para a instalação.
+
+### 🌍 3.9. Cinco idiomas
+
+Interface em pt-PT, pt-BR, es-ES, en-GB e 中文, escolhidos pelo locale. A
+tabela está organizada por idioma (não por chave) porque, com cinco línguas,
+uma linha por chave com todas lado a lado torna-se ilegível — e é aí que se
+erra ao acrescentar a sexta. Uma chave em falta cai para o inglês, nunca para o
+identificador cru: `cat_media` na interface é pior que o termo em inglês.
 
 ---
 
-## 🚀 Resumo de Uso
+## 🚀 Resumo de uso
 
-| Ação | Como fazer |
+| Acção | Como fazer |
 |---|---|
-| **Abrir menu globalmente** | Pressionar `Super + I` |
-| **Abrir menu via terminal** | Digitar `hyprai` no Fish shell |
-| **Adicionar novo site de IA** | Editar `~/.config/hypr/hyprai/config/sites.conf` |
-| **Reinstalar ou atualizar links** | Rodar `~/Projectos/hyprai/install.sh` |
+| **Abrir o menu** | `Super + I` |
+| **Abrir via terminal** | `hyprai` |
+| **Adicionar um site** | Editar `~/.config/hypr/hyprai/config/sites.conf` |
+| **Adicionar uma ferramenta** | Uma linha em `~/.config/hypr/hyprai/config/tools.conf` |
+| **Reinstalar/actualizar** | Correr `./install.sh` |
