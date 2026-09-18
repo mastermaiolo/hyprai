@@ -1,0 +1,95 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" fill="none" viewBox="0 0 256 256">
+  <defs>
+    <!-- Chevron Mask -->
+    <mask id="chevron_mask" maskUnits="userSpaceOnUse" x="0" y="0" width="256" height="256">
+      <path d="m76.93 62.08 102.2 49.64v38.76l-102.4 49.43v-28.46l82.28-40.62-82.06-39.3v-29.45z" fill="white"/>
+    </mask>
+
+    <!-- Squircle Border Mask -->
+    <mask id="border_mask" maskUnits="userSpaceOnUse" x="0" y="0" width="256" height="256">
+      <path d="m45.8 0.09h164.1c25.35 0 45.83 20.72 45.83 46.3v163.1c0 25.58-21 46.33-46.48 46.33h-163.2c-25.48 0-45.99-21.16-45.99-46.3v-162.9c0-25.77 20.75-46.52 45.76-46.52z" fill="white"/>
+      <path d="m46.82 14.06h161.9c18.49 0 32.5 15.43 32.5 33.06v161.8c0 18.33-14.53 32.49-32.56 32.49h-161.7c-18.03 0-32.86-13.85-32.86-32.27v-162.4c0-17.66 14.43-32.61 32.76-32.61z" fill="black"/>
+    </mask>
+
+    <!-- Base gradients for smooth color radiance and zero muddy transitions -->
+    <linearGradient id="chevron_base" x1="76" y1="62" x2="180" y2="131" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#00B95C"/>
+      <stop offset="45%" stop-color="#FBBC04"/>
+      <stop offset="75%" stop-color="#FF7538"/>
+      <stop offset="100%" stop-color="#FC413D"/>
+    </linearGradient>
+
+    <linearGradient id="chevron_lower_base" x1="180" y1="131" x2="76" y2="200" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#FC413D"/>
+      <stop offset="35%" stop-color="#5E8AFF"/>
+      <stop offset="100%" stop-color="#3186FF"/>
+    </linearGradient>
+
+    <!-- Gaussian Blur Filters for Antigravity-style Mesh Glow -->
+    <filter id="c_blur_md" x="-60%" y="-60%" width="220%" height="220%" color-interpolation-filters="sRGB">
+      <feGaussianBlur stdDeviation="18"/>
+    </filter>
+    <filter id="c_blur_sm" x="-60%" y="-60%" width="220%" height="220%" color-interpolation-filters="sRGB">
+      <feGaussianBlur stdDeviation="12"/>
+    </filter>
+
+    <filter id="b_blur_lg" x="-60%" y="-60%" width="220%" height="220%" color-interpolation-filters="sRGB">
+      <feGaussianBlur stdDeviation="34"/>
+    </filter>
+    <filter id="b_blur_md" x="-60%" y="-60%" width="220%" height="220%" color-interpolation-filters="sRGB">
+      <feGaussianBlur stdDeviation="24"/>
+    </filter>
+  </defs>
+
+  <!-- Dark Container Background -->
+  <path d="m46.82 14.06h161.9c18.49 0 32.5 15.43 32.5 33.06v161.8c0 18.33-14.53 32.49-32.56 32.49h-161.7c-18.03 0-32.86-13.85-32.86-32.27v-162.4c0-17.66 14.43-32.61 32.76-32.61z" fill="#1F1D2E"/>
+
+  <!-- Outer Squircle Border with Google Antigravity Mesh Glow -->
+  <g mask="url(#border_mask)">
+    <rect width="256" height="256" fill="#1F1D2E"/>
+
+    <!-- Left: Green (#00B95C) -->
+    <ellipse cx="20" cy="115" rx="75" ry="100" fill="#00B95C" filter="url(#b_blur_lg)"/>
+    <ellipse cx="30" cy="80" rx="55" ry="60" fill="#00B95C" filter="url(#b_blur_md)"/>
+
+    <!-- Top: Yellow (#FBBC04 / #FFE432) -->
+    <ellipse cx="128" cy="10" rx="90" ry="60" fill="#FBBC04" filter="url(#b_blur_lg)"/>
+    <ellipse cx="115" cy="15" rx="60" ry="40" fill="#FFE432" filter="url(#b_blur_md)"/>
+
+    <!-- Right: Red (#FC413D) -->
+    <ellipse cx="236" cy="110" rx="75" ry="90" fill="#FC413D" filter="url(#b_blur_lg)"/>
+    <ellipse cx="225" cy="70" rx="55" ry="60" fill="#FC413D" filter="url(#b_blur_md)"/>
+
+    <!-- Bottom: Blue (#3186FF / #749BFF) -->
+    <ellipse cx="128" cy="245" rx="110" ry="70" fill="#3186FF" filter="url(#b_blur_lg)"/>
+    <ellipse cx="215" cy="225" rx="70" ry="60" fill="#3186FF" filter="url(#b_blur_md)"/>
+    <ellipse cx="45" cy="225" rx="70" ry="60" fill="#3186FF" filter="url(#b_blur_md)"/>
+    <circle cx="165" cy="235" r="45" fill="#749BFF" filter="url(#b_blur_md)"/>
+  </g>
+
+  <!-- Central Chevron with Google Antigravity Mesh Glow -->
+  <g mask="url(#chevron_mask)">
+    <!-- Base gradient layers aligned with chevron geometry -->
+    <rect width="256" height="135" fill="url(#chevron_base)"/>
+    <rect y="130" width="256" height="126" fill="url(#chevron_lower_base)"/>
+
+    <!-- Luminous Soft Mesh Lighting Blobs (matching google-antigravity.svg) -->
+    <!-- Top-left emerald green -->
+    <ellipse cx="75" cy="65" rx="50" ry="40" fill="#00B95C" filter="url(#c_blur_md)"/>
+    <circle cx="85" cy="75" r="30" fill="#00B95C" filter="url(#c_blur_sm)"/>
+
+    <!-- Glowing golden/sun yellow -->
+    <ellipse cx="128" cy="92" rx="45" ry="32" fill="#FBBC04" filter="url(#c_blur_md)"/>
+    <ellipse cx="120" cy="88" rx="32" ry="22" fill="#FFE432" filter="url(#c_blur_sm)"/>
+    <circle cx="115" cy="84" r="18" fill="#FFEE48" filter="url(#c_blur_sm)"/>
+
+    <!-- Coral/vermillion red on apex -->
+    <ellipse cx="180" cy="128" rx="45" ry="45" fill="#FC413D" filter="url(#c_blur_md)"/>
+    <circle cx="172" cy="130" r="28" fill="#FC413D" filter="url(#c_blur_sm)"/>
+
+    <!-- Light blue and Google blue on lower arm -->
+    <circle cx="150" cy="155" r="32" fill="#749BFF" filter="url(#c_blur_sm)"/>
+    <ellipse cx="120" cy="172" rx="50" ry="40" fill="#3186FF" filter="url(#c_blur_md)"/>
+    <ellipse cx="76" cy="198" rx="50" ry="40" fill="#3186FF" filter="url(#c_blur_md)"/>
+  </g>
+</svg>

@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256" fill="none">
+  <defs>
+    <!-- Official Google AI Studio Gradients -->
+    <!-- Top Pill: Google Green (#00B95C) to Google Blue (#3186FF) -->
+    <linearGradient id="ai_top_grad" x1="0%" y1="50%" x2="100%" y2="50%">
+      <stop offset="10%" stop-color="#00B95C"/>
+      <stop offset="35%" stop-color="#00C853"/>
+      <stop offset="65%" stop-color="#2979FF"/>
+      <stop offset="90%" stop-color="#3186FF"/>
+    </linearGradient>
+
+    <!-- Bottom Pill: Google Blue (#3186FF) to Amber (#FBBC04) to Red (#FC413D) -->
+    <linearGradient id="ai_bot_grad" x1="0%" y1="50%" x2="100%" y2="50%">
+      <stop offset="10%" stop-color="#3186FF"/>
+      <stop offset="38%" stop-color="#448AFF"/>
+      <stop offset="68%" stop-color="#FBBC04"/>
+      <stop offset="85%" stop-color="#FF5722"/>
+      <stop offset="95%" stop-color="#FC413D"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Google AI Studio Official Product Glyph -->
+  <g transform="translate(20.00, 20.00) scale(1.12500)">
+    <!-- Top pill -->
+    <path d="M161.23 55.76 79.92 98.11C53.06 112.1 21.01 92.5 21.01 62.08c0-22.42 18.08-40.59 40.37-40.58l91.57.04c18.88 0 25.04 25.5 8.28 34.22" fill="url(#ai_top_grad)"/>
+    <!-- Bottom pill -->
+    <path d="m30.77 136.24 81.31-42.35c26.86-13.99 58.91 5.61 58.91 36.03 0 22.42-18.08 40.59-40.37 40.58l-91.57-.04c-18.88 0-25.04-25.5-8.28-34.22" fill="url(#ai_bot_grad)"/>
+  </g>
+</svg>

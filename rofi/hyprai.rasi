@@ -1,0 +1,199 @@
+/* ══════════════════════════════════════════════════════════════════════
+   Hypr.AI · Tema Rofi
+   Construído sobre o coherent-design: grid de 4, raios concêntricos,
+   paleta OKLCH com contraste verificado (scripts/palette.py --hue 285
+   --accent 292 → dark violet / neon indigo, o fallback estático).
+
+   Duas camadas, como manda o HIG: a janela É o vidro (translúcida sobre
+   o blur global do Hyprland); inputbar, fileira de categorias e a linha
+   selecionada são a camada de conteúdo — materiais sólidos/semi-sólidos
+   MAIS CLAROS que o vidro por trás, porque é a diferença de tom (não
+   sombra) que faz a profundidade ler-se num vidro líquido. Por isso
+   `bg1`/`bg2` existem: são a elevação, não decoração.
+
+   Cor tonal: TODOS os neutros seguem o Noctalia/Caelestia quando
+   presentes (ver theme/noctalia.rasi.tmpl) — não só o accent. O fallback
+   estático abaixo só entra em jogo sem os dois.
+   ══════════════════════════════════════════════════════════════════════ */
+
+* {
+    /* Paleta verificada (scripts/palette.py --hue 285 --accent 292), 4.5:1+.
+       Sobrescrita em runtime, token a token, pela ponte tonal — ver
+       theme/noctalia.rasi.tmpl para o mapeamento completo de papéis M3. */
+    /* 70%, não 95%. Acima de ~85% o blur do compositor deixa de aparecer:
+       o que está atrás vira uma mancha uniforme (é o que o blur faz), e
+       sobra pouca luz pra essa mancha contribuir — o painel lê como tinta
+       chapada. O screenshot engana porque o grim captura sem o blur, então
+       ali os poucos % de transparência ainda mostram wallpaper nítido, com
+       textura, e parece vidro. Só a tela real diz a verdade aqui. */
+    bg0:        #0D0D10B3;   /* fundo da janela — o vidro em si, 70% */
+    bg1:        #1C1C21E6;   /* elevação — inputbar, badge, chip de ícone, 90% */
+    bg2:        #18181C99;   /* fileira de categorias — conteúdo, ~60% */
+    bg3:        #A18DEEF2;   /* accent — única cor de destaque */
+    fg0:        #F5F5F8;     /* texto primário — 17.8:1 */
+    fg2:        #9E9EA3;     /* texto secundário / placeholder — 7.3:1 */
+    fg3:        #6E6E74;     /* terciário — só decorativo (separadores) */
+    accent-fg:  #262626;     /* texto sobre o accent */
+    error:      #E97871F2;   /* estado de erro — 6.8:1 */
+
+    /* Seleção e chips: o accent tingido a baixa opacidade, não sólido —
+       um preenchimento cheio à largura toda é o que torna a lista pesada.
+       chip-bg/chip-fg são o "container" tonal (papel M3 primary-container)
+       usado nas categorias e nos ícones de cada linha. */
+    sel:        #A18DEE1F;
+    sep:        @fg3;
+    chip-bg:    #A18DEE24;
+    chip-fg:    @fg2;
+
+    /* Realce superior do vidro — só o topo, como manda o HIG (glass-border
+       "top edge only"). Sem isto, translucidez lê-se como cinza sujo em
+       vez de vidro. */
+    rim-top:    #F5F5F838;
+
+    font:   "SF Pro Text 11";
+
+    background-color:   transparent;
+    text-color:         @fg0;
+
+    margin:     0px;
+    padding:    0px;
+    spacing:    0px;
+}
+
+window {
+    /* location:center + y-offset negativo devia ser o jeito "correto" de
+       dizer "centralizado, mas deslocado" — mas nesta build do rofi
+       (2.0.0-dirty) o y-offset simplesmente não move nada com center como
+       âncora (testado: mesma posição com e sem offset). Voltando pra
+       north + deslocamento positivo a partir do topo, que já se provou
+       funcionar. 112px vem do monitor (1080px / 190mm ≈ 5,68px/mm) menos
+       os ~2cm (112px) que o usuário pediu pra subir a partir do centro
+       "visto" (~561px, puxado pra baixo pelos 41px que a barra do
+       Noctalia reserva no topo) — 561 − 112 − metade da altura da janela. */
+    location:       north;
+    /* Medido a partir do fim da barra reservada do Noctalia (41px), não do
+       y=0 da tela — testado: y-offset 112px deu topo real em 153px = 41+112.
+       Centro "natural" (janela sem offset, olhando só a área útil) fica em
+       ~561px; quero 112px (2cm) acima disso = 449px de centro, o que dá
+       este y-offset pra uma janela de 674px de altura. */
+    y-offset:       71px;
+    width:          640px;
+    /* Só a borda de cima renderiza — largura 0 nos outros três lados.
+       É o que faz o painel ler-se como vidro em vez de caixa com moldura. */
+    border:         1.5px 0px 0px 0px;
+    border-color:   @rim-top;
+    border-radius:  24px;   /* r-xl — sheet flutuante */
+    background-color: @bg0;
+}
+
+mainbox {
+    padding: 16px;   /* space-4 — gutter padrão, igual nos 4 lados */
+}
+
+/* Raio concêntrico: 24 (janela) − 16 (padding) = 8 em todo filho direto. */
+inputbar {
+    background-color:   @bg1;
+    border:             0.5px 0px 0px 0px;
+    border-color:       @rim-top;
+    border-radius:      8px;
+    padding:            10px 14px;
+    spacing:            10px;
+    children:           [ prompt, entry ];
+}
+
+/* Emblema à esquerda da busca — no papel do ícone de lupa do Spotlight,
+   aqui é o nome do menu atual como pílula compacta. */
+prompt {
+    background-color:  @chip-bg;
+    text-color:         @bg3;
+    font:               "SF Pro Text Semibold 12";
+    border-radius:      999px;
+    padding:            6px 14px;
+}
+
+entry {
+    placeholder:        "pesquisar ferramenta ou site de IA...";
+    placeholder-color:  @fg2;
+    text-color:         @fg0;
+    font:               "SF Pro Text 13";
+    padding:            6px 4px;
+}
+
+/* Fileira de categorias — pílulas horizontais logo abaixo da busca, igual
+   à barra "Calendar · Applications · Actions …" da referência. Construída
+   pelo launcher.sh como pango markup e passada via `-mesg`; cada categoria
+   é um <span background=@chip-bg> dentro da caixa @bg2 — a mesma elevação
+   de conteúdo do inputbar, não um vidro extra por cima do vidro. */
+message {
+    margin:           12px 0 0;   /* space-3 */
+    border-radius:    8px;
+    background-color: @bg2;
+}
+
+textbox {
+    padding:    10px 14px;
+    text-color: @fg2;
+    font:       "SF Pro Text 10";
+}
+
+listview {
+    background-color: transparent;
+    margin:           12px 0 0;   /* space-3 */
+    lines:            10;
+    columns:          1;
+    fixed-height:     false;
+    spacing:          2px;   /* space-0 — linhas coladas, o grupo é que respira */
+}
+
+element {
+    padding:        12px 12px;   /* space-3 — linha mais alta, ícone mais fácil de ver */
+    spacing:        10px;
+    border-radius:  8px;       /* concêntrico com a janela */
+}
+
+element.normal.normal,
+element.alternate.normal {
+    background-color: transparent;
+}
+
+/* Seleção — tingida com o accent a baixa opacidade, texto mantém o
+   label-1. O accent fica reservado ao prompt, aos chips e ao scrollbar —
+   áreas pequenas; uma barra cheia à largura toda é o que pesa a lista. */
+element.selected.normal,
+element.selected.active {
+    background-color: @sel;
+    text-color:       @fg0;
+}
+
+element.normal.active,
+element.alternate.active {
+    text-color: @bg3;
+}
+
+element-icon {
+    size:           1.5em;
+    vertical-align: 0.5;
+}
+
+element-text {
+    text-color:     inherit;
+    highlight:      bold;
+    vertical-align: 0.5;
+}
+
+/* Scrollbar — controle compacto, forma capsule */
+scrollbar {
+    background-color: @bg2;
+    handle-color:     @bg3;
+    border-radius:    999px;
+    width:            4px;
+}
+
+/* Mensagens de erro */
+error-message {
+    background-color: @bg0;
+    border:           2px solid;
+    border-color:     @error;
+    border-radius:    16px;   /* r-lg — funciona como painel próprio */
+    padding:          20px;   /* space-5 */
+}

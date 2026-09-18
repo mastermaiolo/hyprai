@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256" fill="none">
+  <defs>
+    <!-- Universal SVG Mask with fill="white" -->
+    <mask id="nb_mask" maskUnits="userSpaceOnUse" x="0" y="0" width="256" height="256">
+      <g transform="translate(10.18, 10.18) scale(1.22727)">
+        <path d="M96,32c-48.6,0-88,39.03-88,87.19v40.81h16.22v-3.22c0-19.53,15.98-35.36,35.69-35.36s35.69,15.83,35.69,35.36v3.22h16.22v-3.22c0-28.4-23.24-51.43-51.91-51.43-11.16,0-21.5,3.49-29.97,9.43,8.86-17.45,27.1-29.42,48.17-29.42,29.76,0,53.89,23.9,53.89,53.39v21.25h16.22v-21.25c0-38.36-31.39-69.46-70.11-69.46-17.41,0-33.34,6.29-45.6,16.7,12.04-22.55,35.95-37.91,63.49-37.91,39.64,0,71.78,31.84,71.78,71.12v40.81h16.22v-40.81c0-48.15-39.4-87.19-88-87.19Z" fill="white"/>
+      </g>
+    </mask>
+
+    <!-- Gaussian blur filters for rich mesh blending -->
+    <filter id="f_nb_wide" x="-50%" y="-50%" width="200%" height="200%" color-interpolation-filters="sRGB">
+      <feGaussianBlur stdDeviation="28"/>
+    </filter>
+    <filter id="f_nb_med" x="-50%" y="-50%" width="200%" height="200%" color-interpolation-filters="sRGB">
+      <feGaussianBlur stdDeviation="18"/>
+    </filter>
+  </defs>
+
+  <!-- Google 4-Color Mesh Radiant Gradient inside concentric arches -->
+  <g mask="url(#nb_mask)">
+    <rect width="256" height="256" fill="#3186FF"/>
+    <!-- Top arch: Google Red (#FC413D) -->
+    <ellipse cx="128" cy="35" rx="80" ry="40" fill="#FC413D" filter="url(#f_nb_med)"/>
+    <!-- Left arch: Google Green (#00B95C) -->
+    <ellipse cx="35" cy="150" rx="60" ry="70" fill="#00B95C" filter="url(#f_nb_med)"/>
+    <!-- Right arch: Google Yellow / Amber (#FBBC04) -->
+    <ellipse cx="220" cy="150" rx="60" ry="70" fill="#FBBC04" filter="url(#f_nb_med)"/>
+    <!-- Center arch resonance: Soft Electric Blue highlight (#749BFF) -->
+    <ellipse cx="128" cy="160" rx="50" ry="40" fill="#749BFF" filter="url(#f_nb_med)"/>
+  </g>
+</svg>

@@ -1,0 +1,13 @@
+# Capturas soltas na raiz (as do README vivem em assets/)
+/*.png
+/*.jpg
+/*.webp
+!assets/*
+
+# Notas de sessão / rascunhos de desenvolvimento
+RESUMO.md
+
+# Lixo do sistema
+.DS_Store
+*~
+*.swp
