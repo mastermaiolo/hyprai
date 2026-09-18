@@ -22,9 +22,14 @@ declare -A T=(
     [pt:installing]="Instalando arquivos em %s..."                  [en:installing]="Installing files to %s..."
     [pt:installed_ok]="✓ Arquivos instalados em %s"                 [en:installed_ok]="✓ Files installed to %s"
     [pt:bin_ok]="✓ Link simbólico criado em %s"                     [en:bin_ok]="✓ Symlink created at %s"
-    [pt:bind_found]="✓ Atalho SUPER + I já configurado em binds.lua" [en:bind_found]="✓ Keybind SUPER + I already configured in binds.lua"
-    [pt:bind_add]="Adicionando atalho SUPER + I ao binds.lua..."    [en:bind_add]="Adding SUPER + I keybind to binds.lua..."
-    [pt:bind_ok]="✓ Atalho SUPER + I adicionado com sucesso"        [en:bind_ok]="✓ SUPER + I keybind added successfully"
+    [pt:bind_found]="✓ Atalho já configurado em binds.lua"          [en:bind_found]="✓ Keybind already configured in binds.lua"
+    [pt:bind_add]="Adicionando o atalho %s ao binds.lua..."         [en:bind_add]="Adding the %s keybind to binds.lua..."
+    [pt:bind_ok]="✓ Atalho %s adicionado com sucesso"               [en:bind_ok]="✓ %s keybind added successfully"
+    [pt:bind_conflict]="⚠ %s já está atribuído a outra coisa."      [en:bind_conflict]="⚠ %s is already bound to something else."
+    [pt:bind_prompt]="  Outra tecla a usar (uma letra, Enter mantém %s): " \
+    [en:bind_prompt]="  Another key to use instead (one letter, Enter keeps %s): "
+    [pt:bind_manual]="→ Não encontrei onde inserir o atalho. Adiciona %s manualmente ao teu binds.lua." \
+    [en:bind_manual]="→ Couldn't find where to insert the keybind. Add %s to your binds.lua by hand."
     [pt:reloaded]="✓ Hyprland recarregado com sucesso"              [en:reloaded]="✓ Hyprland reloaded successfully"
     [pt:noctalia_ok]="✓ Ponte de cor tonal registrada no Noctalia"  [en:noctalia_ok]="✓ Tonal color bridge registered with Noctalia"
     [pt:noctalia_found]="✓ Ponte de cor tonal já registrada no Noctalia" [en:noctalia_found]="✓ Tonal color bridge already registered with Noctalia"
@@ -98,15 +103,46 @@ chmod +x "$BIN_TARGET"
 echo "$(t bin_ok "$BIN_TARGET")"
 
 # 6. Configuração de atalho no binds.lua
+#
+# Antes de injectar, confirma se a combinação já está ocupada — caso contrário
+# criava-se um conflito silencioso, com duas acções na mesma tecla e nenhum
+# aviso. modmask 64 = SUPER.
+bind_taken() {   # $1=modmask  $2=tecla → 0 se já existir um bind nessa combinação
+    command -v hyprctl &>/dev/null || return 1
+    hyprctl -j binds 2>/dev/null | awk -v want_mod="$1" -v want_key="$2" '
+        /"modmask":/ { m = $0; gsub(/[^0-9]/, "", m); mod = m }
+        /"key":/ {
+            k = $0; sub(/.*"key": *"/, "", k); sub(/".*/, "", k)
+            if (mod == want_mod && tolower(k) == tolower(want_key)) found = 1
+        }
+        END { exit !found }
+    '
+}
+
+MENU_KEY="I"
 if [[ -f "$BINDS_FILE" ]]; then
     if grep -q "hyprai" "$BINDS_FILE" 2>/dev/null; then
         echo "$(t bind_found)"
     else
-        echo "$(t bind_add)"
-        # Insere antes da seção HARDWARE CONTROLS ou no final da seção LAUNCHER
+        # Conflito só é verificável dentro de uma sessão Hyprland a correr.
+        if [[ -n "${HYPRLAND_INSTANCE_SIGNATURE:-}" ]] && bind_taken 64 "$MENU_KEY"; then
+            echo "$(t bind_conflict "SUPER + $MENU_KEY")"
+            if [[ -t 0 ]]; then
+                printf '%s' "$(t bind_prompt "$MENU_KEY")"
+                read -r NEW_KEY || true
+                if [[ -n "${NEW_KEY:-}" ]]; then
+                    MENU_KEY="${NEW_KEY:0:1}"
+                    MENU_KEY="${MENU_KEY^^}"
+                fi
+            fi
+        fi
+        echo "$(t bind_add "SUPER + $MENU_KEY")"
+        # Insere antes da secção HARDWARE CONTROLS ou no fim da secção LAUNCHER
         if grep -F -q "LAUNCHER" "$BINDS_FILE"; then
-            sed -i '/HARDWARE CONTROLS/i hl.bind(mainMod .. " + I",          hl.dsp.exec_cmd(launchPrefix .. os.getenv("HOME") .. "/.local/bin/hyprai"))' "$BINDS_FILE"
-            echo "$(t bind_ok)"
+            sed -i "/HARDWARE CONTROLS/i hl.bind(mainMod .. \" + $MENU_KEY\",          hl.dsp.exec_cmd(launchPrefix .. os.getenv(\"HOME\") .. \"/.local/bin/hyprai\"))" "$BINDS_FILE"
+            echo "$(t bind_ok "SUPER + $MENU_KEY")"
+        else
+            echo "$(t bind_manual "SUPER + $MENU_KEY")"
         fi
     fi
 fi

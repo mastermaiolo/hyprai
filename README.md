@@ -49,7 +49,7 @@ git clone https://github.com/mastermaiolo/hyprai && cd hyprai
 ./install.sh
 ```
 
-The installer copies everything to `~/.config/hypr/hyprai/`, creates the `hyprai` executable in `~/.local/bin/`, registers the tonal bridge with Noctalia, adds the `Super + I` keybind, and **asks** before adding a glass layer rule to your `windowrules.lua`. It never touches your global blur settings.
+The installer copies everything to `~/.config/hypr/hyprai/`, creates the `hyprai` executable in `~/.local/bin/`, registers the tonal bridge with Noctalia, adds the `Super + I` keybind (asking for another key if that combination is already taken), and **asks** before adding a glass layer rule to your `windowrules.lua`. It never touches your global blur settings.
 
 > After installing, change wallpaper or accent in Noctalia once so it generates the colour bridge for the first time.
 

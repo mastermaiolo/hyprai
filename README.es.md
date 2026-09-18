@@ -49,7 +49,7 @@ git clone https://github.com/mastermaiolo/hyprai && cd hyprai
 ./install.sh
 ```
 
-El instalador copia todo a `~/.config/hypr/hyprai/`, crea el ejecutable `hyprai` en `~/.local/bin/`, registra el puente tonal en Noctalia, añade el atajo `Super + I` y **pregunta** antes de añadir una regla de capa de cristal a tu `windowrules.lua`. Nunca toca tu desenfoque global.
+El instalador copia todo a `~/.config/hypr/hyprai/`, crea el ejecutable `hyprai` en `~/.local/bin/`, registra el puente tonal en Noctalia, añade el atajo `Super + I` (preguntando por otra tecla si esa combinación ya está ocupada) y **pregunta** antes de añadir una regla de capa de cristal a tu `windowrules.lua`. Nunca toca tu desenfoque global.
 
 > Después de instalar, cambia de fondo de pantalla o de color de acento en Noctalia una vez, para que genere el puente de color por primera vez.
 
