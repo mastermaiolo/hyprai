@@ -19,7 +19,7 @@
 - **真正的玻璃质感**，不是一块扁平的半透明方块：只在上缘的一道高光、在模糊背景之上按色调提亮的内容层，以及一个恰好让合成器模糊真正显现的不透明度（见 [DESIGN.md](DESIGN.md)）。
 - **真实图标**：使用 Rofi 原生图标协议，逐条目指定 SVG/PNG；没有图标文件时回退为 emoji 小标签。
 - **五种语言** —— pt-PT、pt-BR、es-ES、en-GB 与中文 —— 依系统区域设置自动选择。
-- **封闭的设计系统**：4px 网格、同心圆角、单词标签，以及经 WCAG 对比度验证的 OKLCH 调色板。每一个数值都记录在 [DESIGN.md](DESIGN.md)。
+- **封闭的设计系统**：基础网格与统一间距、同心圆角、单词标签，以及经 WCAG 对比度验证的 OKLCH 调色板。每一个数值都记录在 [DESIGN.md](DESIGN.md)。
 - **Hyprland 集成**：全局快捷键 `Super + I`，在 `uwsm` 或纯 Hyprland 下均可用；安装脚本会询问是否添加那条让玻璃质感得以生效的 layer 规则。
 
 ## 可检测的工具
@@ -49,7 +49,7 @@ git clone https://github.com/mastermaiolo/hyprai && cd hyprai
 ./install.sh
 ```
 
-安装脚本会把文件复制到 `~/.config/hypr/hyprai/`，在 `~/.local/bin/` 创建 `hyprai` 可执行文件，向 Noctalia 注册色调桥接，添加 `Super + I` 快捷键（若该组合已被占用，会询问改用哪个键），并在向你的 `windowrules.lua` 添加玻璃 layer 规则前**先询问**。它从不改动你的全局模糊设置。
+安装脚本会把文件复制到 `~/.config/hypr/hyprai/`，在 `~/.local/bin/` 创建 `hyprai` 可执行文件，向 Noctalia 注册色调桥接（若已安装），向 `binds.lua` 添加 `Super + I` 快捷键（若文件存在，且若该组合已被占用会询问改用哪个键），并在向你的 `windowrules.lua` 添加玻璃 layer 规则前**先询问**。它从不改动你的全局模糊设置。
 
 > 安装完成后，在 Noctalia 里切换一次壁纸或强调色，让它首次生成色彩桥接文件。
 

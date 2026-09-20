@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256" fill="none">
+  <defs>
+    <linearGradient id="web_grad" x1="32" y1="32" x2="224" y2="224" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#A18DEE"/>
+      <stop offset="0.5" stop-color="#7C3AED"/>
+      <stop offset="1" stop-color="#38BDF8"/>
+    </linearGradient>
+    <linearGradient id="sparkle_grad" x1="160" y1="40" x2="230" y2="110" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FDE047"/>
+      <stop offset="1" stop-color="#F59E0B"/>
+    </linearGradient>
+  </defs>
+  <!-- Globe / Web grid -->
+  <circle cx="120" cy="136" r="88" stroke="url(#web_grad)" stroke-width="14" stroke-linecap="round"/>
+  <ellipse cx="120" cy="136" rx="42" ry="88" stroke="url(#web_grad)" stroke-width="12" stroke-linecap="round"/>
+  <line x1="35" y1="110" x2="205" y2="110" stroke="url(#web_grad)" stroke-width="12" stroke-linecap="round"/>
+  <line x1="35" y1="162" x2="205" y2="162" stroke="url(#web_grad)" stroke-width="12" stroke-linecap="round"/>
+  <line x1="120" y1="48" x2="120" y2="224" stroke="url(#web_grad)" stroke-width="12" stroke-linecap="round"/>
+  <!-- AI Sparkles -->
+  <path d="M195 32 C197 54 206 63 228 65 C206 67 197 76 195 98 C193 76 184 67 162 65 C184 63 193 54 195 32 Z" fill="url(#sparkle_grad)"/>
+  <path d="M160 92 C161 103 166 108 177 109 C166 110 161 115 160 126 C159 115 154 110 143 109 C154 108 159 103 160 92 Z" fill="url(#sparkle_grad)"/>
+</svg>

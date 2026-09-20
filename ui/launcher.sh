@@ -83,6 +83,8 @@ T+=(
     [pt_PT:desc_ai_web]="%s sites"
     [pt_PT:edit_sites]="Definições"
     [pt_PT:desc_edit_sites]="sites.conf"
+    [pt_PT:edit_tools]="Ferramentas"
+    [pt_PT:desc_edit_tools]="tools.conf"
     [pt_PT:back]="Voltar"
     [pt_PT:web_hub_title]="Portais de IA na Web"
     [pt_PT:cat_chat]="Chat"
@@ -94,6 +96,8 @@ T+=(
     [pt_PT:opening]="A abrir"
     [pt_PT:err_tool_missing]="Já não foi encontrado"
     [pt_PT:err_tool_missing_body]="Pode ter sido desinstalado"
+    [pt_PT:err_no_kitty]="Kitty não encontrado"
+    [pt_PT:err_no_kitty_body]="Instala o terminal kitty para executar agentes CLI"
 )
 
 # ── Português (Brasil) ──
@@ -108,6 +112,8 @@ T+=(
     [pt_BR:desc_ai_web]="%s sites"
     [pt_BR:edit_sites]="Configurações"
     [pt_BR:desc_edit_sites]="sites.conf"
+    [pt_BR:edit_tools]="Ferramentas"
+    [pt_BR:desc_edit_tools]="tools.conf"
     [pt_BR:back]="Voltar"
     [pt_BR:web_hub_title]="Portais de IA na Web"
     [pt_BR:cat_chat]="Chat"
@@ -119,6 +125,8 @@ T+=(
     [pt_BR:opening]="Abrindo"
     [pt_BR:err_tool_missing]="Não encontrado"
     [pt_BR:err_tool_missing_body]="Pode ter sido desinstalado"
+    [pt_BR:err_no_kitty]="Kitty não encontrado"
+    [pt_BR:err_no_kitty_body]="Instale o terminal kitty para executar agentes CLI"
 )
 
 # ── Español (España) ──
@@ -133,6 +141,8 @@ T+=(
     [es:desc_ai_web]="%s sitios"
     [es:edit_sites]="Ajustes"
     [es:desc_edit_sites]="sites.conf"
+    [es:edit_tools]="Herramientas"
+    [es:desc_edit_tools]="tools.conf"
     [es:back]="Volver"
     [es:web_hub_title]="Portales de IA en la web"
     [es:cat_chat]="Chat"
@@ -144,6 +154,8 @@ T+=(
     [es:opening]="Abriendo"
     [es:err_tool_missing]="Ya no se encuentra"
     [es:err_tool_missing_body]="Puede que se haya desinstalado"
+    [es:err_no_kitty]="Kitty no encontrado"
+    [es:err_no_kitty_body]="Instala la terminal kitty para ejecutar agentes CLI"
 )
 
 # ── English (UK) ──
@@ -158,6 +170,8 @@ T+=(
     [en:desc_ai_web]="%s sites"
     [en:edit_sites]="Settings"
     [en:desc_edit_sites]="sites.conf"
+    [en:edit_tools]="Tools"
+    [en:desc_edit_tools]="tools.conf"
     [en:back]="Back"
     [en:web_hub_title]="AI web portals"
     [en:cat_chat]="Chat"
@@ -169,6 +183,8 @@ T+=(
     [en:opening]="Opening"
     [en:err_tool_missing]="No longer found"
     [en:err_tool_missing_body]="It may have been uninstalled"
+    [en:err_no_kitty]="Kitty not found"
+    [en:err_no_kitty_body]="Install the kitty terminal to run CLI agents"
 )
 
 # ── 中文 ──
@@ -183,6 +199,8 @@ T+=(
     [zh:desc_ai_web]="%s 个网站"
     [zh:edit_sites]="设置"
     [zh:desc_edit_sites]="sites.conf"
+    [zh:edit_tools]="工具"
+    [zh:desc_edit_tools]="tools.conf"
     [zh:back]="返回"
     [zh:web_hub_title]="AI 网页门户"
     [zh:cat_chat]="对话"
@@ -194,6 +212,8 @@ T+=(
     [zh:opening]="正在打开"
     [zh:err_tool_missing]="已找不到"
     [zh:err_tool_missing_body]="可能已被卸载"
+    [zh:err_no_kitty]="未找到 Kitty"
+    [zh:err_no_kitty_body]="请安装 kitty 终端以运行命令行智能体"
 )
 
 # Chave em falta cai para o inglês, não para a chave crua — um rótulo
@@ -297,8 +317,13 @@ row()  { ROW_TEXT+=("$1"); ROW_ID+=("${2:-}"); ROW_ICON+=("${3:-}"); }
 # Cabeçalho de secção: pequeno, discreto, sem preenchimento nem moldura.
 sep()  { row "$(printf '<span size="small" weight="600" alpha="45%%" letter_spacing="900">%s</span>' "$(esc "$1")")"; }
 
-# Pango markup: '&' e '<' num nome vindo do sites.conf partem a linha inteira.
-esc() { printf '%s' "${1//&/&amp;}" | sed 's/</\&lt;/g'; }
+# Pango markup: '&', '<' e '>' num nome vindo das configurações partem a linha inteira.
+esc() {
+    local s="${1//&/\&amp;}"
+    s="${s//</\&lt;}"
+    s="${s//>/\&gt;}"
+    printf '%s' "$s"
+}
 
 # Resolve o tema dinâmico uma única vez por execução — run_menu() e os chips
 # em pango partilham o mesmo resultado, para o badge do prompt (renderizado
@@ -352,7 +377,7 @@ item() {
     if [[ -n "$icon_path" ]]; then
         lead=""
     else
-        lead="$(printf '<span background="%s"> %s </span>  ' "$CHIP_BG" "$icon")"
+        lead="$(printf '<span background="%s"> %s </span>  ' "$CHIP_BG" "$(esc "$icon")")"
     fi
 
     if [[ -n "$desc" ]]; then
@@ -363,7 +388,11 @@ item() {
     fi
 }
 
-back_row() { row "$(printf '↩  <span alpha="70%%">%s</span>' "$(t back)")" "__back__"; }
+back_row() {
+    local b_icon=""
+    [[ -f "$ICON_DIR/back.svg" ]] && b_icon="$ICON_DIR/back.svg"
+    row "$(printf '<span alpha="70%%">%s</span>' "$(t back)")" "__back__" "$b_icon"
+}
 
 # Corre o menu com as linhas já construídas. $2 = linha selecionada de início
 # (1 = o primeiro item real, para o cursor não abrir em cima de um cabeçalho).
@@ -399,6 +428,12 @@ launch_cmd() {
 launch_term() {
     local title="$1"
     local cmd="$2"
+    if ! command -v kitty &>/dev/null; then
+        if command -v notify-send &>/dev/null; then
+            notify-send -a "Hypr.AI" "$(t err_no_kitty)" "$(t err_no_kitty_body)" || true
+        fi
+        return 1
+    fi
     if command -v uwsm &>/dev/null && uwsm check is-active &>/dev/null; then
         uwsm app -- kitty --title "$title" fish -i -c "$cmd" &
     else
@@ -416,6 +451,23 @@ launch_web() {
         uwsm app -- xdg-open "$url" &
     else
         xdg-open "$url" &>/dev/null &
+    fi
+}
+
+launch_tool() {
+    local id="$1"
+    local -a _args=()
+    read -ra _args <<< "${TOOL_ARGS[$id]:-}"
+    if [[ "${TOOL_CAT[$id]}" == "cli" ]]; then
+        # launch_term entrega a string ao "fish -i -c": cada palavra tem de ir
+        # escapada, senão um argumento do .conf executa como código.
+        local _cmd _a
+        _cmd="$(printf '%q' "${TOOL_CMD[$id]}")"
+        for _a in "${_args[@]}"; do _cmd+=" $(printf '%q' "$_a")"; done
+        launch_term "${TOOL_NAME[$id]}" "$_cmd"
+    else
+        # launch_cmd faz "$@" sem shell — basta passar como palavras separadas.
+        launch_cmd "${TOOL_CMD[$id]}" "${_args[@]}"
     fi
 }
 
@@ -451,31 +503,36 @@ declare -A TOOL_CAT=()
 declare -A TOOL_NAME=()
 declare -A TOOL_ARGS=()
 
-# Primeiro candidato existente de uma lista "a;b;c" — nome solto procura no
-# PATH, caminho absoluto ou começando por "~" é testado com -x. Retorna
-# vazio (e falha) se nenhum bater, pra a chamadora pular a ferramenta.
-#
-# Um binário solto é checado dentro do fish (não do bash puro): o launcher é
-# disparado pelo Hyprland/systemd com um PATH mínimo (~/.local/bin,
-# ~/.cargo/bin — ver ~/.config/uwsm/env), que não inclui o que o config.fish
-# do usuário adiciona (ex.: linuxbrew, nvm, pyenv). launch_term já roda tudo
-# dentro de "fish -i" — se a detecção não olhar o mesmo PATH, uma ferramenta
-# instalada por um version/package manager que só o fish conhece nunca
-# aparece no menu mesmo estando 100% executável.
+# PATH do fish, obtido uma só vez. O Hyprland entrega aos processos um PATH
+# mínimo; o config.fish é que acrescenta linuxbrew/nvm/pyenv. Sondar com este
+# PATH em bash puro evita ~30 spawns de fish por abertura e, sobretudo, evita
+# interpolar o campo do .conf dentro de uma string de shell.
+_FISH_PATH=""
+_fish_path() {
+    if [[ -z "$_FISH_PATH" ]]; then
+        if command -v fish &>/dev/null; then
+            _FISH_PATH="$(fish -c 'string join : $PATH' 2>/dev/null || true)"
+        fi
+        _FISH_PATH="${_FISH_PATH:+$_FISH_PATH:}$PATH"
+    fi
+    printf '%s' "$_FISH_PATH"
+}
+
 resolve_candidate() {
-    local cand expanded
+    local cand expanded hit
     IFS=';' read -ra _cands <<< "$1"
     for cand in "${_cands[@]}"; do
+        cand="${cand#"${cand%%[![:space:]]*}"}"   # trim à esquerda
+        cand="${cand%"${cand##*[![:space:]]}"}"   # trim à direita
         [[ -z "$cand" ]] && continue
         expanded="${cand/#\~/$HOME}"
         if [[ "$expanded" == /* ]]; then
-            [[ -x "$expanded" ]] && { printf '%s' "$expanded"; return 0; }
-        elif command -v fish &>/dev/null; then
-            local hit
-            hit="$(fish -c "command -v -- '$expanded'" 2>/dev/null)"
+            # -f além de -x: sem ele, uma DIRECTORIA passa na sondagem e a
+            # ferramenta aparece no menu sem nunca abrir.
+            [[ -f "$expanded" && -x "$expanded" ]] && { printf '%s' "$expanded"; return 0; }
+        else
+            hit="$(PATH="$(_fish_path)" command -v -- "$expanded" 2>/dev/null)" || true
             [[ -n "$hit" ]] && { printf '%s' "$hit"; return 0; }
-        elif command -v "$expanded" &>/dev/null; then
-            command -v "$expanded"; return 0
         fi
     done
     return 1
@@ -487,10 +544,25 @@ build_main() {
     TOOL_CMD=(); TOOL_CAT=(); TOOL_NAME=(); TOOL_ARGS=()
     HAS_CLI=0; HAS_DESKTOP=0
 
-    local last_cat="" tid ticon tname tdesc tcat tcands tsvg targs found
+    # Resolve o PATH do fish uma única vez no processo pai para que todas as
+    # subshells herdadas não precisem de invocar o fish repetidamente.
+    _fish_path >/dev/null
+
+    declare -A seen_cats=()
+    local tid ticon tname tdesc tcat tcands tsvg targs found
     if [[ -f "$TOOLS_CONF" ]]; then
-        while IFS='|' read -r tid ticon tname tdesc tcat tcands tsvg targs; do
-            [[ -z "$tid" || "$tid" =~ ^[[:space:]]*# ]] && continue
+        while IFS='|' read -r tid ticon tname tdesc tcat tcands tsvg targs || [[ -n "$tid" ]]; do
+            tid="${tid#"${tid%%[![:space:]]*}"}"; tid="${tid%"${tid##*[![:space:]]}"}"
+            [[ -z "$tid" || "$tid" =~ ^# ]] && continue
+            ticon="${ticon#"${ticon%%[![:space:]]*}"}"; ticon="${ticon%"${ticon##*[![:space:]]}"}"
+            tname="${tname#"${tname%%[![:space:]]*}"}"; tname="${tname%"${tname##*[![:space:]]}"}"
+            tdesc="${tdesc#"${tdesc%%[![:space:]]*}"}"; tdesc="${tdesc%"${tdesc##*[![:space:]]}"}"
+            tcat="${tcat#"${tcat%%[![:space:]]*}"}"; tcat="${tcat%"${tcat##*[![:space:]]}"}"
+            tcands="${tcands#"${tcands%%[![:space:]]*}"}"; tcands="${tcands%"${tcands##*[![:space:]]}"}"
+            tsvg="${tsvg#"${tsvg%%[![:space:]]*}"}"; tsvg="${tsvg%"${tsvg##*[![:space:]]}"}"
+            targs="${targs#"${targs%%[![:space:]]*}"}"; targs="${targs%"${targs##*[![:space:]]}"}"
+            targs="${targs//$'\r'/}"
+
             found="$(resolve_candidate "$tcands")" || continue
             TOOL_CMD["$tid"]="$found"
             TOOL_CAT["$tid"]="$tcat"
@@ -498,13 +570,13 @@ build_main() {
             TOOL_ARGS["$tid"]="$targs"
             [[ "$tcat" == "cli" ]] && HAS_CLI=1
             [[ "$tcat" == "desktop" ]] && HAS_DESKTOP=1
-            if [[ "$tcat" != "$last_cat" ]]; then
+            if [[ -z "${seen_cats[$tcat]:-}" ]]; then
                 case "$tcat" in
                     cli)     sep "$(t cat_cli)" ;;
                     desktop) sep "$(t cat_desktop)" ;;
                     *)       sep "$tcat" ;;
                 esac
-                last_cat="$tcat"
+                seen_cats["$tcat"]=1
             fi
             item "$ticon" "$tname" "$tdesc" "$tid" "$tsvg"
         done < "$TOOLS_CONF"
@@ -513,16 +585,19 @@ build_main() {
     sep "$(t cat_web)"
     local count=0
     if [[ -f "$SITES_CONF" ]]; then
-        # Uma entrada real é uma linha não comentada com "|" (id|ícone|nome|
-        # categoria|url) — precisa das duas condições: só "#" deixava passar
-        # as linhas em branco entre secções, e só "|" pegava até o comentário
-        # de formato no topo do arquivo, que também tem pipes.
-        count=$(grep -v '^[[:space:]]*#' "$SITES_CONF" | grep -c '|' || true)
+        local sid_c _rest_c
+        while IFS='|' read -r sid_c _rest_c || [[ -n "$sid_c" ]]; do
+            sid_c="${sid_c#"${sid_c%%[![:space:]]*}"}"
+            sid_c="${sid_c%"${sid_c##*[![:space:]]}"}"
+            [[ -z "$sid_c" || "$sid_c" =~ ^# ]] && continue
+            ((count++)) || true
+        done < "$SITES_CONF"
     fi
-    item "✨" "$(t name_ai_web)"         "$(t desc_ai_web "$count")" "__web__"
+    item "✨" "$(t name_ai_web)"         "$(t desc_ai_web "$count")" "__web__" "web-hub.svg"
 
     sep "$(t cat_config)"
-    item "📝" "$(t edit_sites)"          "$(t desc_edit_sites)"      "__edit_sites__"
+    item "📝" "$(t edit_sites)"          "$(t desc_edit_sites)"      "__edit_sites__" "edit-sites.svg"
+    item "🛠️" "$(t edit_tools)"          "$(t desc_edit_tools)"      "__edit_tools__" "edit-tools.svg"
 }
 
 build_main
@@ -546,11 +621,20 @@ case "$ID" in
         build_web() {
             ROW_TEXT=(); ROW_ID=(); ROW_ICON=()
             back_row
-            local last_cat="" sid sicon sname scat surl ssvg
+            declare -A seen_web_cats=()
+            local sid sicon sname scat surl ssvg
             if [[ -f "$SITES_CONF" ]]; then
-                while IFS='|' read -r sid sicon sname scat surl ssvg; do
-                    [[ -z "$sid" || "$sid" =~ ^[[:space:]]*# ]] && continue
-                    if [[ "$scat" != "$last_cat" ]]; then
+                while IFS='|' read -r sid sicon sname scat surl ssvg || [[ -n "$sid" ]]; do
+                    sid="${sid#"${sid%%[![:space:]]*}"}"; sid="${sid%"${sid##*[![:space:]]}"}"
+                    [[ -z "$sid" || "$sid" =~ ^# ]] && continue
+                    sicon="${sicon#"${sicon%%[![:space:]]*}"}"; sicon="${sicon%"${sicon##*[![:space:]]}"}"
+                    sname="${sname#"${sname%%[![:space:]]*}"}"; sname="${sname%"${sname##*[![:space:]]}"}"
+                    scat="${scat#"${scat%%[![:space:]]*}"}"; scat="${scat%"${scat##*[![:space:]]}"}"
+                    surl="${surl#"${surl%%[![:space:]]*}"}"; surl="${surl%"${surl##*[![:space:]]}"}"
+                    ssvg="${ssvg#"${ssvg%%[![:space:]]*}"}"; ssvg="${ssvg%"${ssvg##*[![:space:]]}"}"
+                    ssvg="${ssvg//$'\r'/}"
+
+                    if [[ -z "${seen_web_cats[$scat]:-}" ]]; then
                         case "$scat" in
                             chat)   sep "$(t cat_chat)" ;;
                             search) sep "$(t cat_search)" ;;
@@ -560,56 +644,58 @@ case "$ID" in
                             media)  sep "$(t cat_media)" ;;
                             *)      sep "$scat" ;;
                         esac
-                        last_cat="$scat"
+                        seen_web_cats["$scat"]=1
                     fi
                     item "$sicon" "$sname" "" "$sid" "$ssvg"
                 done < "$SITES_CONF"
             fi
         }
 
-        build_web
-        WEB_CHIPS="$(chips_row "$(t cat_chat)" "$(t cat_search)" "$(t cat_write)" "$(t cat_dev)" "$(t cat_code)" "$(t cat_media)")"
-        # Linha 0 é "Voltar"; o cursor abre no primeiro site real (linha 2,
-        # depois do primeiro cabeçalho).
-        WIDX=$(run_menu "🌐 $(t web_hub_title)" 2 "$WEB_CHIPS") || exit 0
-        [[ "${WIDX:-}" =~ ^[0-9]+$ ]] || exit 0
-        SEL="${ROW_ID[$WIDX]:-}"
-        [[ -z "$SEL" ]] && exec "$0"
-        if [[ "$SEL" == "__back__" ]]; then exec "$0"; fi
+        while true; do
+            build_web
+            WEB_CHIPS="$(chips_row "$(t cat_chat)" "$(t cat_search)" "$(t cat_write)" "$(t cat_dev)" "$(t cat_code)" "$(t cat_media)")"
+            # Linha 0 é "Voltar"; o cursor abre no primeiro site real (linha 2,
+            # depois do primeiro cabeçalho).
+            WIDX=$(run_menu "🌐 $(t web_hub_title)" 2 "$WEB_CHIPS") || exit 0
+            [[ "${WIDX:-}" =~ ^[0-9]+$ ]] || exit 0
+            SEL="${ROW_ID[$WIDX]:-}"
+            # Se for um cabeçalho de secção (id vazio), reabre o submenu em vez de sair
+            [[ -z "$SEL" ]] && continue
+            if [[ "$SEL" == "__back__" ]]; then exec "$0"; fi
 
-        # Extrai URL e nome do site selecionado
-        TARGET_URL=""
-        TARGET_NAME=""
-        while IFS='|' read -r sid sicon sname scat surl ssvg; do
-            if [[ "$sid" == "$SEL" ]]; then
-                TARGET_URL="$surl"
-                TARGET_NAME="$sname"
-                break
+            # Extrai URL e nome do site selecionado
+            TARGET_URL=""
+            TARGET_NAME=""
+            while IFS='|' read -r sid sicon sname scat surl ssvg || [[ -n "$sid" ]]; do
+                sid="${sid#"${sid%%[![:space:]]*}"}"; sid="${sid%"${sid##*[![:space:]]}"}"
+                if [[ "$sid" == "$SEL" ]]; then
+                    sname="${sname#"${sname%%[![:space:]]*}"}"; sname="${sname%"${sname##*[![:space:]]}"}"
+                    surl="${surl#"${surl%%[![:space:]]*}"}"; surl="${surl%"${surl##*[![:space:]]}"}"
+                    surl="${surl//$'\r'/}"
+                    TARGET_URL="$surl"
+                    TARGET_NAME="$sname"
+                    break
+                fi
+            done < "$SITES_CONF"
+
+            if [[ -n "$TARGET_URL" ]]; then
+                launch_web "$TARGET_URL" "$TARGET_NAME"
             fi
-        done < "$SITES_CONF"
-
-        if [[ -n "$TARGET_URL" ]]; then
-            launch_web "$TARGET_URL" "$TARGET_NAME"
-        fi
+            break
+        done
         ;;
     __edit_sites__)
         edit_file "$SITES_CONF"
+        ;;
+    __edit_tools__)
+        edit_file "$TOOLS_CONF"
         ;;
     *)
         # $ID não vazio chegou até aqui (a checagem lá em cima já cobriu o
         # caso de cabeçalho de secção) — só falta ser uma ferramenta do
         # tools.conf detectada em build_main().
         if [[ -n "${TOOL_CMD[$ID]:-}" ]]; then
-            if [[ "${TOOL_CAT[$ID]}" == "cli" ]]; then
-                # launch_term manda a string inteira pro "fish -c" — junta
-                # comando e argumento extra (ex.: "hermes chat") num só texto.
-                launch_term "${TOOL_NAME[$ID]}" "${TOOL_CMD[$ID]} ${TOOL_ARGS[$ID]}"
-            else
-                # launch_cmd exec's "$@" direto (sem passar por shell), então
-                # o argumento extra (ex.: "desktop" em "hermes desktop") entra
-                # como palavra separada, não colada na mesma string.
-                launch_cmd "${TOOL_CMD[$ID]}" ${TOOL_ARGS[$ID]}
-            fi
+            launch_tool "$ID"
         else
             # Estava no menu há segundos (detectado em build_main) e sumiu
             # até o clique — janela de tempo mínima, mas cobre o caso.

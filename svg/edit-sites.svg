@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256" fill="none">
+  <defs>
+    <linearGradient id="doc_grad" x1="48" y1="32" x2="208" y2="224" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#38BDF8"/>
+      <stop offset="1" stop-color="#6366F1"/>
+    </linearGradient>
+    <linearGradient id="pen_grad" x1="140" y1="130" x2="225" y2="215" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F43F5E"/>
+      <stop offset="1" stop-color="#FB7185"/>
+    </linearGradient>
+  </defs>
+  <!-- Document Base -->
+  <rect x="52" y="36" width="124" height="176" rx="18" stroke="url(#doc_grad)" stroke-width="14" fill="#1C1C24"/>
+  <!-- Document Content Lines -->
+  <line x1="82" y1="80" x2="136" y2="80" stroke="url(#doc_grad)" stroke-width="12" stroke-linecap="round"/>
+  <line x1="82" y1="114" x2="144" y2="114" stroke="url(#doc_grad)" stroke-width="12" stroke-linecap="round"/>
+  <line x1="82" y1="148" x2="118" y2="148" stroke="url(#doc_grad)" stroke-width="12" stroke-linecap="round"/>
+  <!-- Edit Pen / Pencil overlay -->
+  <g transform="rotate(-45 186 174)">
+    <rect x="172" y="100" width="28" height="96" rx="6" fill="url(#pen_grad)" stroke="#FFFFFF" stroke-width="4"/>
+    <path d="M172 196 L186 220 L200 196 Z" fill="#FDE047"/>
+    <circle cx="186" cy="216" r="3" fill="#0F172A"/>
+  </g>
+</svg>

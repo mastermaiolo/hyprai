@@ -53,7 +53,7 @@ avisa se encontrar uma regra antiga com `xray = true`.
 | Elemento | Valor | Token |
 |---|---|---|
 | Padding da `mainbox` | 16px | `space-4` |
-| Padding do `inputbar` | 12px / 16px | `space-3` / `space-4` |
+| Padding do `inputbar` | 10px 14px | `space-3` / `space-4` |
 | Padding do `element` (linha da lista) | 12px / 12px | `space-3` |
 | Espaço entre linhas da lista | 2px | `space-0` |
 | Margem acima de `message`/`listview` | 12px | `space-3` |
@@ -118,7 +118,7 @@ alternável).
 | `accent-fg` | `#262626` | Texto sobre `bg3` |
 | `error` | `#E97871` @ 95% | Borda de erro — 6.8:1 |
 | `sel` | `#A18DEE` @ 12% | Preenchimento da seleção — o accent tingido, não sólido |
-| `chip-bg` | `#A18DEE` @ 14% | "Container" tonal — pílulas de categoria e ícone de cada linha |
+| `chip-bg` | `#A18DEE` @ 14% | "Container" tonal — badge do prompt (categorias e ícones usam elevação neutra bg1/fg2) |
 | `chip-fg` | = `fg2` | Texto/ícone sobre `chip-bg` |
 | `rim-top` | `#F5F5F8` @ 22% | Realce de vidro — só a borda de cima da janela e do inputbar |
 
@@ -138,7 +138,7 @@ parecer parte do mesmo sistema, não um widget emprestado.
 `surface_container`→`bg2`, `primary`→`bg3`, `on_background`→`fg0`,
 `on_surface_variant`→`fg2`, `outline`→`fg3`/`sep`, `on_primary`→`accent-fg`,
 `primary_container`/`on_primary_container`→`chip-bg`/`chip-fg` (o "container" tonal do M3 —
-por isso as pílulas de categoria acompanham o accent do wallpaper em vez de um azul fixo).
+reservado ao badge do prompt, enquanto as pílulas de categoria mantêm elevação neutra bg1/fg2 para não sobrecarregar a lista).
 
 Em runtime, `launcher.sh` decide, em ordem:
 

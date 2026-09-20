@@ -39,11 +39,11 @@
     /* Seleção e chips: o accent tingido a baixa opacidade, não sólido —
        um preenchimento cheio à largura toda é o que torna a lista pesada.
        chip-bg/chip-fg são o "container" tonal (papel M3 primary-container)
-       usado nas categorias e nos ícones de cada linha. */
+       usado no badge do prompt (as categorias e ícones usam elevação neutra bg1/fg2). */
     sel:        #A18DEE1F;
     sep:        @fg3;
     chip-bg:    #A18DEE24;
-    chip-fg:    @fg2;
+    chip-fg:    @bg3;
 
     /* Realce superior do vidro — só o topo, como manda o HIG (glass-border
        "top edge only"). Sem isto, translucidez lê-se como cinza sujo em
@@ -105,7 +105,7 @@ inputbar {
    aqui é o nome do menu atual como pílula compacta. */
 prompt {
     background-color:  @chip-bg;
-    text-color:         @bg3;
+    text-color:         @chip-fg;
     font:               "SF Pro Text Semibold 12";
     border-radius:      999px;
     padding:            6px 14px;

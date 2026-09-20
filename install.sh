@@ -45,12 +45,40 @@ declare -A T=(
     [en:layerrule_manual]="windowrules.lua not found — add this to your hyprland.conf by hand:"
     [pt:layerrule_noninteractive]="Instalação não interativa — para ativar a exceção de vidro, adicione isto a windowrules.lua:" \
     [en:layerrule_noninteractive]="Non-interactive install — to enable the glass exception, add this to windowrules.lua:"
+    [pt:dep_missing_rofi]="✗ Erro: 'rofi' não foi encontrado no PATH. O Hypr.AI necessita do Rofi para funcionar." \
+    [en:dep_missing_rofi]="✗ Error: 'rofi' was not found in PATH. Hypr.AI requires Rofi to run." \
+    [pt:dep_warn_cli]="⚠ Aviso: '%s' não encontrado. Os agentes CLI necessitam de fish e kitty para funcionar." \
+    [en:dep_warn_cli]="⚠ Warning: '%s' not found. CLI agents require fish and kitty to run." \
+    [pt:dep_note_notify]="→ Nota: 'notify-send' não encontrado (opcional, usado para notificações)." \
+    [en:dep_note_notify]="→ Note: 'notify-send' not found (optional, used for notifications)." \
+    [pt:bind_manual_code]="  Linha para colar:" \
+    [en:bind_manual_code]="  Line to paste:" \
     [pt:done]="── Concluído! Pressione Super+I ou execute 'hyprai' no terminal ──" \
     [en:done]="── Done! Press Super+I or run 'hyprai' in terminal ──"
 )
 t() { printf -- "${T[$L:$1]:-${T[pt:$1]:-$1}}" "${2:-}"; }
 
 echo "$(t title)"
+
+# 0. Verificação de dependências
+if ! command -v rofi &>/dev/null; then
+    echo "$(t dep_missing_rofi)" >&2
+    exit 1
+fi
+
+missing_cli=()
+for dep in fish kitty; do
+    if ! command -v "$dep" &>/dev/null; then
+        missing_cli+=("$dep")
+    fi
+done
+if [[ "${#missing_cli[@]}" -gt 0 ]]; then
+    echo "$(t dep_warn_cli "${missing_cli[*]}")"
+fi
+
+if ! command -v notify-send &>/dev/null; then
+    echo "$(t dep_note_notify)"
+fi
 
 # 1. Cria diretório de destino
 mkdir -p "$DEST"/{config,rofi,ui,theme,svg} "$BIN_DIR"
@@ -137,12 +165,26 @@ if [[ -f "$BINDS_FILE" ]]; then
             fi
         fi
         echo "$(t bind_add "SUPER + $MENU_KEY")"
-        # Insere antes da secção HARDWARE CONTROLS ou no fim da secção LAUNCHER
-        if grep -F -q "LAUNCHER" "$BINDS_FILE"; then
-            sed -i "/HARDWARE CONTROLS/i hl.bind(mainMod .. \" + $MENU_KEY\",          hl.dsp.exec_cmd(launchPrefix .. os.getenv(\"HOME\") .. \"/.local/bin/hyprai\"))" "$BINDS_FILE"
+        bind_bkp="$BINDS_FILE.hyprai-backup-$(date +%Y%m%d%H%M%S)"
+        cp -a "$BINDS_FILE" "$bind_bkp"
+        echo "→ Backup criado: $bind_bkp"
+
+        BIND_LINE="hl.bind(mainMod .. \" + $MENU_KEY\",          hl.dsp.exec_cmd(launchPrefix .. os.getenv(\"HOME\") .. \"/.local/bin/hyprai\"))"
+        tmp_binds="$(mktemp)"
+        awk -v line="$BIND_LINE" '
+            !done && /HARDWARE CONTROLS/ {
+                print line
+                done=1
+            }
+            { print }
+        ' "$BINDS_FILE" > "$tmp_binds" && mv "$tmp_binds" "$BINDS_FILE"
+
+        if grep -F -q ".local/bin/hyprai" "$BINDS_FILE"; then
             echo "$(t bind_ok "SUPER + $MENU_KEY")"
         else
             echo "$(t bind_manual "SUPER + $MENU_KEY")"
+            echo "$(t bind_manual_code)"
+            printf '  %s\n' "$BIND_LINE"
         fi
     fi
 fi

@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256" fill="none">
+  <defs>
+    <linearGradient id="wrench_grad" x1="40" y1="40" x2="216" y2="216" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F59E0B"/>
+      <stop offset="0.5" stop-color="#E11D48"/>
+      <stop offset="1" stop-color="#9333EA"/>
+    </linearGradient>
+    <linearGradient id="gear_grad" x1="80" y1="80" x2="200" y2="200" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#38BDF8"/>
+      <stop offset="1" stop-color="#0284C7"/>
+    </linearGradient>
+  </defs>
+  <!-- Gear in background -->
+  <path d="M128 68 C133 68 137 64 138 59 L141 43 C149 46 157 50 164 56 L157 70 C155 75 156 80 160 83 C164 87 169 88 174 86 L188 79 C194 86 198 94 201 102 L185 105 C180 106 176 110 176 115 C176 120 180 124 185 125 L201 128 C198 136 194 144 188 151 L174 144 C169 142 164 143 160 147 C156 150 155 155 157 160 L164 174 C157 180 149 184 141 187 L138 171 C137 166 133 162 128 162 C123 162 119 166 118 171 L115 187 C107 184 99 180 92 174 L99 160 C101 155 100 150 96 147 C92 143 87 142 82 144 L68 151 C62 144 58 136 55 128 L71 125 C76 124 80 120 80 115 C80 110 76 106 71 105 L55 102 C58 94 62 86 68 79 L82 86 C87 88 92 87 96 83 C100 80 101 75 99 70 L92 56 C99 50 107 46 115 43 L118 59 C119 64 123 68 128 68 Z" fill="url(#gear_grad)" opacity="0.45"/>
+  <circle cx="128" cy="115" r="24" fill="#0D0D10"/>
+  <!-- Crossed Wrench / Tool -->
+  <path d="M211 63 C199 43 173 35 152 44 C140 49 131 58 126 69 L74 135 C70 133 65 133 61 135 L43 153 C39 157 39 163 43 167 L89 213 C93 217 99 217 103 213 L121 195 C123 191 123 186 121 182 L187 130 C198 125 207 116 212 104 C221 83 220 71 211 63 Z M174 88 C167 95 156 95 149 88 C142 81 142 70 149 63 C156 56 167 56 174 63 C181 70 181 81 174 88 Z" fill="url(#wrench_grad)"/>
+</svg>

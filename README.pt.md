@@ -19,7 +19,7 @@
 - **Vidro a sério**, não uma caixa translúcida chapada: realce de luz só no topo, uma camada de conteúdo elevada tonalmente acima do fundo desfocado, e uma opacidade calibrada no ponto em que o blur do compositor se vê mesmo (ver [DESIGN.md](DESIGN.md)).
 - **Ícones reais**: protocolo nativo de ícones do Rofi com SVG/PNG por entrada, caindo num chip de emoji quando não existe ficheiro de ícone.
 - **Cinco idiomas** — pt-PT, pt-BR, es-ES, en-GB e 中文 — escolhidos pelo locale do sistema.
-- **Design system fechado**: grelha de 4px, raios concêntricos, rótulos de uma palavra e paleta OKLCH com contraste WCAG verificado. Todos os números documentados em [DESIGN.md](DESIGN.md).
+- **Design system fechado**: grelha base e espaçamentos consistentes, raios concêntricos, rótulos de uma palavra e paleta OKLCH com contraste WCAG verificado. Todos os números documentados em [DESIGN.md](DESIGN.md).
 - **Integração com o Hyprland**: atalho global `Super + I`, funciona com `uwsm` ou Hyprland puro, e o instalador propõe adicionar a regra de camada sem a qual o vidro nem chega a aparecer.
 
 ## Ferramentas detectadas
@@ -49,7 +49,7 @@ git clone https://github.com/mastermaiolo/hyprai && cd hyprai
 ./install.sh
 ```
 
-O instalador copia tudo para `~/.config/hypr/hyprai/`, cria o executável `hyprai` em `~/.local/bin/`, regista a ponte tonal no Noctalia, adiciona o atalho `Super + I` (perguntando por outra tecla se essa combinação já estiver ocupada) e **pergunta** antes de acrescentar uma regra de camada de vidro ao teu `windowrules.lua`. Nunca mexe no blur global.
+O instalador copia tudo para `~/.config/hypr/hyprai/`, cria o executável `hyprai` em `~/.local/bin/`, regista a ponte tonal no Noctalia (se instalado), adiciona o atalho `Super + I` a `binds.lua` (se o ficheiro existir, perguntando por outra tecla se essa combinação já estiver ocupada) e **pergunta** antes de acrescentar uma regra de camada de vidro ao teu `windowrules.lua`. Nunca mexe no blur global.
 
 > Depois de instalar, muda de wallpaper ou de accent no Noctalia uma vez, para ele gerar a ponte de cor pela primeira vez.
 

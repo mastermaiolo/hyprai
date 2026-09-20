@@ -19,7 +19,7 @@
 - **Real glass**, not a flat translucent box: a top-only light rim, a content layer tonally lifted above the blurred backdrop, and an opacity tuned to the point where the compositor's blur actually reads (see [DESIGN.md](DESIGN.md)).
 - **Real icons**: Rofi's native icon protocol with per-entry SVG/PNG, falling back to an emoji chip when no icon file exists.
 - **Five languages** — pt-PT, pt-BR, es-ES, en-GB and 中文 — picked from the system locale.
-- **Closed design system**: 4px grid, concentric radii, one-word tab labels and an OKLCH palette with verified WCAG contrast. Every number is documented in [DESIGN.md](DESIGN.md).
+- **Closed design system**: base grid with consistent spacing, concentric radii, one-word tab labels and an OKLCH palette with verified WCAG contrast. Every number is documented in [DESIGN.md](DESIGN.md).
 - **Hyprland integration**: global `Super + I` shortcut, works under `uwsm` or plain Hyprland, and the installer offers to add the layer rule that lets the glass render at all.
 
 ## Detected tools
@@ -49,7 +49,7 @@ git clone https://github.com/mastermaiolo/hyprai && cd hyprai
 ./install.sh
 ```
 
-The installer copies everything to `~/.config/hypr/hyprai/`, creates the `hyprai` executable in `~/.local/bin/`, registers the tonal bridge with Noctalia, adds the `Super + I` keybind (asking for another key if that combination is already taken), and **asks** before adding a glass layer rule to your `windowrules.lua`. It never touches your global blur settings.
+The installer copies everything to `~/.config/hypr/hyprai/`, creates the `hyprai` executable in `~/.local/bin/`, registers the tonal bridge with Noctalia (if installed), adds the `Super + I` keybind to `binds.lua` (if the file exists, asking for another key if that combination is already taken), and **asks** before adding a glass layer rule to your `windowrules.lua`. It never touches your global blur settings.
 
 > After installing, change wallpaper or accent in Noctalia once so it generates the colour bridge for the first time.
 

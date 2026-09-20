@@ -181,9 +181,9 @@ id | ícone | Nome | categoria | url | svg
 ```
 
 O script lê linha a linha, agrupa pelas categorias (`chat`, `search`, `write`,
-`dev`, `code`, `media`) e insere os cabeçalhos. Pela opção *"Configurações"* no
-menu, detecta o editor disponível (`zeditor`, `nvim`, `nano`, `micro`, `kate`…)
-e abre o ficheiro certo.
+`dev`, `code`, `media`) e insere os cabeçalhos. Pelas opções *"Definições"*
+(*"Configurações"* em pt-BR) e *"Ferramentas"* no menu, detecta o editor
+disponível (`zeditor`, `nvim`, `nano`, `micro`, `kate`…) e abre o ficheiro certo.
 
 O `install.sh` **não sobrescreve** `sites.conf` nem `tools.conf` ao reinstalar:
 a curadoria sobrevive às actualizações. Em contrapartida, ao alterá-los no

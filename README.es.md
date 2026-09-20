@@ -19,7 +19,7 @@
 - **Cristal de verdad**, no una caja translúcida plana: un reflejo de luz solo en el borde superior, una capa de contenido elevada tonalmente sobre el fondo desenfocado, y una opacidad calibrada en el punto donde el desenfoque del compositor realmente se aprecia (ver [DESIGN.md](DESIGN.md)).
 - **Iconos reales**: protocolo nativo de iconos de Rofi con SVG/PNG por entrada, con un chip de emoji como respaldo cuando no existe archivo de icono.
 - **Cinco idiomas** — pt-PT, pt-BR, es-ES, en-GB y 中文 — elegidos según la configuración regional del sistema.
-- **Sistema de diseño cerrado**: rejilla de 4px, radios concéntricos, etiquetas de una palabra y paleta OKLCH con contraste WCAG verificado. Cada número está documentado en [DESIGN.md](DESIGN.md).
+- **Sistema de diseño cerrado**: rejilla base con espaciado consistente, radios concéntricos, etiquetas de una palabra y paleta OKLCH con contraste WCAG verificado. Cada número está documentado en [DESIGN.md](DESIGN.md).
 - **Integración con Hyprland**: atajo global `Super + I`, funciona con `uwsm` o Hyprland puro, y el instalador ofrece añadir la regla de capa sin la cual el cristal ni siquiera llega a mostrarse.
 
 ## Herramientas detectadas
@@ -49,7 +49,7 @@ git clone https://github.com/mastermaiolo/hyprai && cd hyprai
 ./install.sh
 ```
 
-El instalador copia todo a `~/.config/hypr/hyprai/`, crea el ejecutable `hyprai` en `~/.local/bin/`, registra el puente tonal en Noctalia, añade el atajo `Super + I` (preguntando por otra tecla si esa combinación ya está ocupada) y **pregunta** antes de añadir una regla de capa de cristal a tu `windowrules.lua`. Nunca toca tu desenfoque global.
+El instalador copia todo a `~/.config/hypr/hyprai/`, crea el ejecutable `hyprai` en `~/.local/bin/`, registra el puente tonal en Noctalia (si está instalado), añade el atajo `Super + I` a `binds.lua` (si el archivo existe, preguntando por otra tecla si esa combinación ya está ocupada) y **pregunta** antes de añadir una regla de capa de cristal a tu `windowrules.lua`. Nunca toca tu desenfoque global.
 
 > Después de instalar, cambia de fondo de pantalla o de color de acento en Noctalia una vez, para que genere el puente de color por primera vez.
 
