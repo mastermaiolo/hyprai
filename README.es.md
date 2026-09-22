@@ -2,6 +2,8 @@
 
 [🇵🇹 Português](README.pt.md) · [🇬🇧 English](README.md) · 🇪🇸 **Español** · [🇨🇳 简体中文](README.zh.md)
 
+[![Release](https://img.shields.io/github/v/release/mastermaiolo/hyprai?label=versi%C3%B3n)](https://github.com/mastermaiolo/hyprai/releases/latest)
+
 <p align="center"><img src="assets/screenshot.webp" alt="Hypr.AI — todas las herramientas de IA de tu máquina a una tecla de distancia"></p>
 
 **Lanzador de IA nativo para Hyprland** — agentes CLI, aplicaciones de escritorio y portales web curados en un único menú Rofi. Nada está fijado en el código: las herramientas solo aparecen si están realmente instaladas, y toda la ventana sigue la paleta Material You de tu fondo de pantalla.

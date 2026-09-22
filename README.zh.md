@@ -2,6 +2,8 @@
 
 [🇵🇹 Português](README.pt.md) · [🇬🇧 English](README.md) · [🇪🇸 Español](README.es.md) · 🇨🇳 **简体中文**
 
+[![Release](https://img.shields.io/github/v/release/mastermaiolo/hyprai?label=版本)](https://github.com/mastermaiolo/hyprai/releases/latest)
+
 <p align="center"><img src="assets/screenshot.webp" alt="Hypr.AI — 一键直达本机所有 AI 工具"></p>
 
 **Hyprland 原生 AI 启动器** —— 命令行智能体、桌面应用与精选网页门户，统一收进一个 Rofi 菜单。没有任何硬编码：只有真正安装了的工具才会出现，整个窗口的配色也会跟随壁纸的 Material You 调色板。
