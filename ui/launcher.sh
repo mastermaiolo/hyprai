@@ -312,6 +312,12 @@ ROW_TEXT=()
 ROW_ID=()
 ROW_ICON=()
 
+# Categorias vistas ao montar o submenu web, na ordem em que aparecem no
+# sites.conf — usado pra montar WEB_CHIPS só com quem realmente tem itens
+# (mesmo critério já aplicado a MAIN_CHIP_LABELS mais abaixo).
+declare -A SEEN_WEB_CATS=()
+WEB_CAT_ORDER=()
+
 row()  { ROW_TEXT+=("$1"); ROW_ID+=("${2:-}"); ROW_ICON+=("${3:-}"); }
 
 # Cabeçalho de secção: pequeno, discreto, sem preenchimento nem moldura.
@@ -621,8 +627,9 @@ case "$ID" in
         build_web() {
             ROW_TEXT=(); ROW_ID=(); ROW_ICON=()
             back_row
-            declare -A seen_web_cats=()
-            local sid sicon sname scat surl ssvg
+            SEEN_WEB_CATS=()
+            WEB_CAT_ORDER=()
+            local sid sicon sname scat surl ssvg cat_label
             if [[ -f "$SITES_CONF" ]]; then
                 while IFS='|' read -r sid sicon sname scat surl ssvg || [[ -n "$sid" ]]; do
                     sid="${sid#"${sid%%[![:space:]]*}"}"; sid="${sid%"${sid##*[![:space:]]}"}"
@@ -634,17 +641,19 @@ case "$ID" in
                     ssvg="${ssvg#"${ssvg%%[![:space:]]*}"}"; ssvg="${ssvg%"${ssvg##*[![:space:]]}"}"
                     ssvg="${ssvg//$'\r'/}"
 
-                    if [[ -z "${seen_web_cats[$scat]:-}" ]]; then
+                    if [[ -z "${SEEN_WEB_CATS[$scat]:-}" ]]; then
                         case "$scat" in
-                            chat)   sep "$(t cat_chat)" ;;
-                            search) sep "$(t cat_search)" ;;
-                            write)  sep "$(t cat_write)" ;;
-                            dev)    sep "$(t cat_dev)" ;;
-                            code)   sep "$(t cat_code)" ;;
-                            media)  sep "$(t cat_media)" ;;
-                            *)      sep "$scat" ;;
+                            chat)   cat_label="$(t cat_chat)" ;;
+                            search) cat_label="$(t cat_search)" ;;
+                            write)  cat_label="$(t cat_write)" ;;
+                            dev)    cat_label="$(t cat_dev)" ;;
+                            code)   cat_label="$(t cat_code)" ;;
+                            media)  cat_label="$(t cat_media)" ;;
+                            *)      cat_label="$scat" ;;
                         esac
-                        seen_web_cats["$scat"]=1
+                        sep "$cat_label"
+                        WEB_CAT_ORDER+=("$cat_label")
+                        SEEN_WEB_CATS["$scat"]=1
                     fi
                     item "$sicon" "$sname" "" "$sid" "$ssvg"
                 done < "$SITES_CONF"
@@ -653,7 +662,10 @@ case "$ID" in
 
         while true; do
             build_web
-            WEB_CHIPS="$(chips_row "$(t cat_chat)" "$(t cat_search)" "$(t cat_write)" "$(t cat_dev)" "$(t cat_code)" "$(t cat_media)")"
+            # Só entra na fileira quem realmente tem itens no sites.conf —
+            # mesmo critério do MAIN_CHIP_LABELS: um chip apontando pra uma
+            # secção vazia confunde mais do que ajuda.
+            WEB_CHIPS="$(chips_row "${WEB_CAT_ORDER[@]}")"
             # Linha 0 é "Voltar"; o cursor abre no primeiro site real (linha 2,
             # depois do primeiro cabeçalho).
             WIDX=$(run_menu "🌐 $(t web_hub_title)" 2 "$WEB_CHIPS") || exit 0
