@@ -110,7 +110,7 @@ id | 图标 | 名称 | 类别 | https://url | svg
 
 类别：`chat`、`search`、`write`、`dev`、`code`、`media`。
 
-两个文件中的 `svg` 列都指向 `svg/` 目录下的文件（PNG 同样可用），缺失时回退为第二列的 emoji。
+两个文件中的 `svg` 列都指向 `svg/` 目录下的文件（PNG 同样可用），缺失时回退为第二列的 emoji。单色 logo 请用 `fill="currentColor"` 而不是白色：启动器会用主题的文字颜色绘制它，在深色和浅色配色下都清晰可见。
 
 ## 疑难排查
 

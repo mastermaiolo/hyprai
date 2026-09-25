@@ -606,12 +606,32 @@ emoji_icon() {   # $1=emoji → caminho do PNG em cache
     printf '%s' "$out"
 }
 
+# Logos monocromáticos (DeepL, Grok, v0…) usam fill/stroke="currentColor"
+# em vez de branco fixo: branco sumia sobre um esquema claro. O rofi não
+# recolore ícones, por isso o launcher grava uma cópia com a cor do texto
+# do tema atual (fg0), em cache por cor — um wallpaper novo, uma pasta nova.
+# Sem launcher (ex.: abrir o svg noutro programa), currentColor é preto.
+ICON_FG="$(_token fg0 | cut -c1-7)"; ICON_FG="${ICON_FG:-#F5F5F8}"
+mono_icon() {   # $1=caminho do svg → caminho a usar (o próprio, se não for mono)
+    local src="$1" out
+    if [[ "$src" != *.svg ]] || ! grep -q 'currentColor' "$src" 2>/dev/null; then
+        printf '%s' "$src"; return
+    fi
+    out="${XDG_CACHE_HOME:-$HOME/.cache}/hyprai/icons/${ICON_FG#\#}/${src##*/}"
+    if [[ ! -s "$out" || "$src" -nt "$out" ]]; then
+        if ! mkdir -p "${out%/*}" || ! sed "s/currentColor/$ICON_FG/g" "$src" > "$out"; then
+            printf '%s' "$src"; return
+        fi
+    fi
+    printf '%s' "$out"
+}
+
 item() {
     local icon="$1" name; name="$(esc "$2")"
     local desc="${3:-}" id="${4:-}" icon_file="${5:-}"
     local icon_path=""
     if [[ -n "$icon_file" && -f "$ICON_DIR/$icon_file" ]]; then
-        icon_path="$ICON_DIR/$icon_file"
+        icon_path="$(mono_icon "$ICON_DIR/$icon_file")"
     elif ! icon_path="$(emoji_icon "$icon")" && [[ -f "$ICON_DIR/generic.svg" ]]; then
         icon_path="$ICON_DIR/generic.svg"
     fi

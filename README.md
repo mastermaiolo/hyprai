@@ -110,7 +110,7 @@ id | icon | Name | category | https://url | svg
 
 Categories: `chat`, `search`, `write`, `dev`, `code`, `media`.
 
-In both files the `svg` column names a file inside `svg/` (PNG works too) and falls back to the emoji in column two.
+In both files the `svg` column names a file inside `svg/` (PNG works too) and falls back to the emoji in column two. A single-colour logo should use `fill="currentColor"` instead of white: the launcher paints it in the theme's text colour, so it stays visible on both dark and light schemes.
 
 ## Troubleshooting
 

@@ -110,7 +110,7 @@ id | ícone | Nome | categoria | https://url | svg
 
 Categorias: `chat`, `search`, `write`, `dev`, `code`, `media`.
 
-Nos dois ficheiros, a coluna `svg` nomeia um ficheiro dentro de `svg/` (PNG também funciona) e cai no emoji da segunda coluna.
+Nos dois ficheiros, a coluna `svg` nomeia um ficheiro dentro de `svg/` (PNG também funciona) e cai no emoji da segunda coluna. Um logo de uma só cor deve usar `fill="currentColor"` em vez de branco: o launcher pinta-o com a cor do texto do tema, e ele continua visível em esquemas escuros e claros.
 
 ## Resolução de problemas
 

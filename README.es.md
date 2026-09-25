@@ -110,7 +110,7 @@ id | icono | Nombre | categoría | https://url | svg
 
 Categorías: `chat`, `search`, `write`, `dev`, `code`, `media`.
 
-En ambos archivos, la columna `svg` nombra un archivo dentro de `svg/` (PNG también funciona) y recurre al emoji de la segunda columna.
+En ambos archivos, la columna `svg` nombra un archivo dentro de `svg/` (PNG también funciona) y recurre al emoji de la segunda columna. Un logo de un solo color debe usar `fill="currentColor"` en lugar de blanco: el lanzador lo pinta con el color del texto del tema, así sigue visible en esquemas oscuros y claros.
 
 ## Solución de problemas
 
