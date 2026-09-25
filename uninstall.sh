@@ -75,7 +75,7 @@ if [[ -f "$DEST/config/sites.conf" || -f "$DEST/config/tools.conf" ]]; then
 fi
 
 # 2. Remoção de directórios e binário
-rm -rf "$DEST" "$STATE_DIR"
+rm -rf "$DEST" "$STATE_DIR" "${XDG_CACHE_HOME:-$HOME/.cache}/hyprai"
 rm -f "$BIN_TARGET"
 
 # 3. Limpeza estrutural no Noctalia (config.toml)

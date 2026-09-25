@@ -405,14 +405,40 @@ chips_row() {
 
 # Linha: ícone, nome, e o fornecedor em subtexto. Subtexto é opcional. $5,
 # se dado, é um arquivo dentro de svg/ — quando existe, vira o element-icon
-# real do rofi (protocolo -show-icons) e o chip de emoji nem entra no texto;
-# sem arquivo (ou arquivo ausente), cai no emoji em chip discreto de sempre.
+# real do rofi (protocolo -show-icons). O chip de emoji no texto só sobra
+# como último recurso, se nem o PNG do emoji nem o generic.svg existirem.
+#
+# Sem svg, o emoji do .conf também vai para a coluna de ícone, não para o
+# texto: uma linha com a coluna vazia ficava com o nome recuado em relação às
+# outras. O librsvg desenha emoji a preto chapado, por isso o emoji vira PNG
+# pelo pango-view (vem com o pango, de que o próprio rofi depende), uma vez
+# só, em cache. Sem pango-view, ícone genérico — o alinhamento é que importa.
+EMOJI_CACHE="${XDG_CACHE_HOME:-$HOME/.cache}/hyprai/emoji"
+emoji_icon() {   # $1=emoji → caminho do PNG em cache
+    local key out
+    [[ -n "$1" ]] && command -v pango-view &>/dev/null || return 1
+    key="$(printf '%s' "$1" | od -An -tx1 | tr -d ' \n')"
+    out="$EMOJI_CACHE/$key.png"
+    if [[ ! -s "$out" ]]; then
+        mkdir -p "$EMOJI_CACHE" || return 1
+        if ! pango-view --no-display -q --background=transparent --margin=0 \
+                --font="Noto Color Emoji 40" --text="$1" -o "$out.tmp.png" &>/dev/null \
+             || ! mv -f "$out.tmp.png" "$out"; then
+            rm -f "$out.tmp.png"
+            return 1
+        fi
+    fi
+    printf '%s' "$out"
+}
+
 item() {
     local icon="$1" name; name="$(esc "$2")"
     local desc="${3:-}" id="${4:-}" icon_file="${5:-}"
     local icon_path=""
     if [[ -n "$icon_file" && -f "$ICON_DIR/$icon_file" ]]; then
         icon_path="$ICON_DIR/$icon_file"
+    elif ! icon_path="$(emoji_icon "$icon")" && [[ -f "$ICON_DIR/generic.svg" ]]; then
+        icon_path="$ICON_DIR/generic.svg"
     fi
 
     local lead
