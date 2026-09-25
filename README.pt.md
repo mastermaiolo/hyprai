@@ -15,7 +15,7 @@
 ## Funcionalidades
 
 - **Detecção em runtime** — agentes CLI e aplicações desktop são declarados no `tools.conf` como *candidatos*; o launcher testa cada um sempre que abre e mostra só o que existe. Instalas uma ferramenta e ela aparece sozinha; desinstalas e ela desaparece. Sem editar nada.
-- **A detecção corre dentro do `fish`**, não em bash puro: o Hyprland entrega aos processos um `PATH` mínimo, por isso uma ferramenta instalada via linuxbrew/nvm/pyenv ficaria invisível mesmo funcionando perfeitamente. Testar na mesma shell que a lança mantém as duas alinhadas.
+- **A detecção usa o `PATH` da tua `fish` interactiva**, não o do Hyprland: o Hyprland entrega aos processos um `PATH` mínimo, por isso uma ferramenta instalada via linuxbrew/nvm/pyenv ficaria invisível mesmo funcionando perfeitamente. O launcher pede o `PATH` ao `fish -i` uma vez por abertura — a mesma shell interactiva que depois lança a ferramenta —, por isso o que é detectado e o que corre batem sempre certo.
 - **33 portais de IA curados** no `sites.conf`, agrupados em chat, pesquisa, escrita, dev, código e média — abrem no teu browser predefinido.
 - **Cor tonal Material You**: a paleta inteira (fundos, texto, containers — não só o accent) vem em tempo real do [Noctalia](https://github.com/noctalia-dev/noctalia-shell), com o [Caelestia](https://github.com/caelestia-dots/shell) como alternativa. O menu parece parte do teu desktop, não um widget emprestado de outro tema.
 - **Vidro a sério**, não uma caixa translúcida chapada: realce de luz só no topo, uma camada de conteúdo elevada tonalmente acima do fundo desfocado, e uma opacidade calibrada no ponto em que o blur do compositor se vê mesmo (ver [DESIGN.md](DESIGN.md)).

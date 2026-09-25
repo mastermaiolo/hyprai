@@ -50,13 +50,29 @@ avisa se encontrar uma regra antiga com `xray = true`.
 
 ## Grid
 
+A estrutura — o que separa blocos uns dos outros — está no grid de 4:
+
 | Elemento | Valor | Token |
 |---|---|---|
 | Padding da `mainbox` | 16px | `space-4` |
-| Padding do `inputbar` | 10px 14px | `space-3` / `space-4` |
-| Padding do `element` (linha da lista) | 12px / 12px | `space-3` |
-| Espaço entre linhas da lista | 2px | `space-0` |
 | Margem acima de `message`/`listview` | 12px | `space-3` |
+| Padding do `element` (linha da lista) | 12px | `space-3` |
+| Padding da `error-message` | 20px | `space-5` |
+
+O **interior** de controles compactos não está, e isso é uma exceção assumida, não um token:
+
+| Elemento | Valor | Mais próximo no grid |
+|---|---|---|
+| Padding do `inputbar` e do `textbox` (chips) | 10px 14px | 8/12 ou 12/16 |
+| Padding da pílula `prompt` | 6px 14px | 8/16 |
+| Padding do `entry` | 6px 4px | 8/4 |
+| `spacing` do `inputbar` e do `element` | 10px | 8 ou 12 |
+| Espaço entre linhas da lista | 2px | — (sub-grid) |
+
+Estes valores foram afinados a olho na tela real, não derivados da escala; levá-los ao grid
+muda cada controle em 2px, para cima ou para baixo. Se um dia forem alinhados, a regra é
+alinhar todos de uma vez e rever na tela, não um a um. Bordas de `0.5px`/`1.5px`/`2px` são
+espessuras de traço e ficam fora do grid por natureza.
 
 As linhas ficam a 2px umas das outras e o grupo respira com os 12px acima da lista — espaço
 entre itens sempre menor que o espaço à volta do grupo, que é o que faz o agrupamento ler-se
@@ -103,8 +119,9 @@ As linhas não mostram `[id]`. O Rofi devolve o índice (`-format i`) e o `launc
 
 Gerada e verificada com `scripts/palette.py --hue 285 --accent 292` do coherent-design — hue
 285 é o neutro (leve tinta violeta, nunca cinza puro), 292 é o accent. Todos os pares batem
-≥4.5:1 em modo escuro (único modo — este é um launcher utilitário, não um app com tema
-alternável).
+≥4.5:1 em modo escuro. A paleta **estática** só existe em escuro (é o fallback de um launcher
+utilitário, não um app com tema alternável); com Noctalia ou Caelestia, o modo segue o esquema
+do wallpaper, claro ou escuro — ver a guarda de contraste abaixo.
 
 | Token | Hex | Papel |
 |---|---|---|

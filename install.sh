@@ -41,8 +41,8 @@ declare -A T=(
     [en:layerrule_ask]="Layer-shell surfaces get no blur in Hyprland without an explicit rule — without this the menu ends up opaque instead of translucent. Add an exception for the 'rofi' namespace in windowrules.lua (blur + ignore_alpha, no xray)? It never touches your global blur. [y/N] "
     [pt:layerrule_ok]="✓ Exceção de vidro adicionada a windowrules.lua"    [en:layerrule_ok]="✓ Glass exception added to windowrules.lua"
     [pt:layerrule_skip]="→ Sem exceção — o menu usa o blur global, tal como está"  [en:layerrule_skip]="→ No exception — the menu uses the global blur as-is"
-    [pt:layerrule_manual]="windowrules.lua não encontrado — adicione manualmente ao seu hyprland.conf:" \
-    [en:layerrule_manual]="windowrules.lua not found — add this to your hyprland.conf by hand:"
+    [pt:layerrule_manual]="windowrules.lua não encontrado — adicione manualmente à sua config Lua do Hyprland:" \
+    [en:layerrule_manual]="windowrules.lua not found — add this to your Hyprland Lua config by hand:"
     [pt:layerrule_noninteractive]="Instalação não interativa — para ativar a exceção de vidro, adicione isto a windowrules.lua:" \
     [en:layerrule_noninteractive]="Non-interactive install — to enable the glass exception, add this to windowrules.lua:"
     [pt:dep_missing_rofi]="✗ Erro: 'rofi' não foi encontrado no PATH. O Hypr.AI necessita do Rofi para funcionar." \
@@ -199,6 +199,9 @@ fi
 # para os painéis do Noctalia (ver o layer_rule "noctalia" no mesmo arquivo);
 # esta só estende o mesmo tratamento ao namespace "rofi", nunca ao blur global.
 WINDOWRULES_FILE="$HOME/.config/hypr/config/windowrules.lua"
+# Versão numa linha da regra abaixo, para os casos em que o instalador não a
+# escreve sozinho — mesma sintaxe Lua do resto da config, não o hyprland.conf antigo.
+LAYER_RULE_LINE='hl.layer_rule({ name = "hyprai", match = { namespace = "^rofi$" }, no_anim = true, ignore_alpha = 0.2, blur = true, blur_popups = true, xray = false })'
 if [[ -f "$WINDOWRULES_FILE" ]]; then
     if grep -q 'namespace = "\^rofi\$"' "$WINDOWRULES_FILE" 2>/dev/null; then
         # A regra existe — mas versões anteriores (e a regra do Noctalia, de
@@ -245,15 +248,11 @@ EOF
         # Não interativo (ex.: instalação automatizada) — não decide por conta
         # própria, só mostra o que adicionar manualmente.
         echo "$(t layerrule_noninteractive)"
-        printf 'hl.layer_rule({ name = "hyprai", match = { namespace = "^rofi$" }, no_anim = true, ignore_alpha = 0.2, blur = true, blur_popups = true, xray = false })\n'
+        printf '%s\n' "$LAYER_RULE_LINE"
     fi
 else
     echo "$(t layerrule_manual)"
-    cat <<'EOF'
-layerrule = ignorealpha 0.2, ^rofi$
-layerrule = blur, ^rofi$
-layerrule = xray 0, ^rofi$
-EOF
+    printf '%s\n' "$LAYER_RULE_LINE"
 fi
 
 # 7. Recarrega Hyprland se estiver em execução

@@ -76,14 +76,20 @@ primeiro que existir ganha e passa a ser o comando de arranque. Falhar é
 silencioso de propósito: um nome errado deixa a entrada invisível, nunca uma
 entrada morta que rebenta ao clicar.
 
-**A parte não óbvia:** a sondagem corre dentro do `fish`, não em bash puro. O
-Hyprland entrega aos processos um `PATH` mínimo (`~/.local/bin`, `~/.cargo/bin`
-— ver `~/.config/uwsm/env`), que não inclui o que o `config.fish` acrescenta
-(linuxbrew, nvm, pyenv). Como o lançamento real já acontece dentro de
-`fish -i`, sondar noutra shell criava uma assimetria absurda: a ferramenta
+**A parte não óbvia:** a sondagem usa o `PATH` do `fish` interactivo, não o do
+Hyprland. O Hyprland entrega aos processos um `PATH` mínimo (`~/.local/bin`,
+`~/.cargo/bin` — ver `~/.config/uwsm/env`), que não inclui o que o `config.fish`
+acrescenta (linuxbrew, nvm, pyenv). Como o lançamento real já acontece dentro de
+`fish -i`, sondar com outro `PATH` criava uma assimetria absurda: a ferramenta
 funcionava perfeitamente se fosse clicada, mas nunca chegava a aparecer para
 ser clicada. Foi exactamente o que aconteceu com o Claude Code instalado via
 `brew` em `/home/linuxbrew/.linuxbrew/bin`.
+
+Na prática, o launcher pede o `PATH` ao `fish -i` **uma vez** por abertura e
+sonda os candidatos em bash com esse `PATH` — em vez de ~30 arranques de fish
+e sem interpolar campos do `.conf` numa string de shell. Tem de ser `-i`, e não
+um `fish -c` simples: quem monta o `PATH` dentro de `if status is-interactive`
+ficaria de fora, e a assimetria voltava por outra porta.
 
 O campo `args` existe para o caso de um mesmo binário servir o CLI e a GUI —
 `hermes chat` e `hermes desktop` são o mesmo candidato com argumentos

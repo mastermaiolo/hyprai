@@ -15,7 +15,7 @@
 ## Features
 
 - **Runtime detection** — CLI agents and desktop apps are declared in `tools.conf` as *candidates*; the launcher probes each one every time it opens and shows only what exists. Install a tool and it appears on its own; uninstall it and it disappears. No editing required.
-- **Detection runs inside `fish`**, not bare bash: Hyprland hands processes a minimal `PATH`, so a tool installed via linuxbrew/nvm/pyenv would be invisible even though it runs perfectly. Probing in the same shell that launches it keeps both in sync.
+- **Detection uses your interactive `fish`'s `PATH`**, not Hyprland's: Hyprland hands processes a minimal `PATH`, so a tool installed via linuxbrew/nvm/pyenv would be invisible even though it runs perfectly. The launcher asks `fish -i` for its `PATH` once per opening — the same interactive shell that later launches the tool — so what is detected and what runs always match.
 - **33 curated AI web portals** in `sites.conf`, grouped into chat, search, writing, dev, code and media — opening in your default browser.
 - **Material You tonal colour**: the entire palette (backgrounds, text, containers — not just the accent) is pulled live from [Noctalia](https://github.com/noctalia-dev/noctalia-shell), with [Caelestia](https://github.com/caelestia-dots/shell) as a fallback. The menu looks like part of your desktop, not a widget borrowed from another theme.
 - **Real glass**, not a flat translucent box: a top-only light rim, a content layer tonally lifted above the blurred backdrop, and an opacity tuned to the point where the compositor's blur actually reads (see [DESIGN.md](DESIGN.md)).

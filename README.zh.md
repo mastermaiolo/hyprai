@@ -15,7 +15,7 @@
 ## 功能
 
 - **运行时检测** —— 命令行智能体和桌面应用在 `tools.conf` 中以*候选项*声明；启动器每次打开都会逐个探测，只显示确实存在的。装上某个工具，它自己就会出现；卸载后自动消失，无需手工编辑。
-- **检测在 `fish` 内进行**，而不是裸 bash：Hyprland 交给进程的是一个最小化的 `PATH`，所以通过 linuxbrew/nvm/pyenv 安装的工具明明能跑却会「隐身」。在启动它的同一个 shell 里探测，才能让两者保持一致。
+- **检测使用你交互式 `fish` 的 `PATH`**，而不是 Hyprland 的：Hyprland 交给进程的是一个最小化的 `PATH`，所以通过 linuxbrew/nvm/pyenv 安装的工具明明能跑却会「隐身」。启动器每次打开时向 `fish -i` 取一次 `PATH`——正是之后启动工具的那个交互式 shell——所以检测到的和实际运行的始终一致。
 - **33 个精选 AI 网页门户**，收在 `sites.conf` 中，按对话、搜索、写作、开发、代码、多媒体分组，用默认浏览器打开。
 - **Material You 色调**：整套配色（背景、文字、容器，而非仅强调色）实时取自 [Noctalia](https://github.com/noctalia-dev/noctalia-shell)，并以 [Caelestia](https://github.com/caelestia-dots/shell) 作为备选。菜单看起来就是桌面的一部分，而不是从别的主题借来的挂件。
 - **真正的玻璃质感**，不是一块扁平的半透明方块：只在上缘的一道高光、在模糊背景之上按色调提亮的内容层，以及一个恰好让合成器模糊真正显现的不透明度（见 [DESIGN.md](DESIGN.md)）。

@@ -1,6 +1,6 @@
 /* ══════════════════════════════════════════════════════════════════════
    Hypr.AI · Tema Rofi
-   Construído sobre o coherent-design: grid de 4, raios concêntricos,
+   Construído sobre o coherent-design: grid de 4 na estrutura (exceções no DESIGN.md), raios concêntricos,
    paleta OKLCH com contraste verificado (scripts/palette.py --hue 285
    --accent 292 → dark violet / neon indigo, o fallback estático).
 
@@ -142,7 +142,7 @@ listview {
     lines:            10;
     columns:          1;
     fixed-height:     false;
-    spacing:          2px;   /* space-0 — linhas coladas, o grupo é que respira */
+    spacing:          2px;   /* sub-grid — linhas coladas, o grupo é que respira */
 }
 
 element {

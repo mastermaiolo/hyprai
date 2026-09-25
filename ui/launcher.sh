@@ -531,8 +531,14 @@ declare -A TOOL_ARGS=()
 _FISH_PATH=""
 _fish_path() {
     if [[ -z "$_FISH_PATH" ]]; then
+        # -i, como no lançamento (launch_term): quem monta o PATH dentro de
+        # "if status is-interactive" ficaria de fora de um fish -c simples. O
+        # marcador separa o PATH de qualquer coisa que o config.fish interativo
+        # imprima (greeting, fastfetch…); </dev/null para ele nunca esperar input.
         if command -v fish &>/dev/null; then
-            _FISH_PATH="$(fish -c 'string join : $PATH' 2>/dev/null || true)"
+            # shellcheck disable=SC2016  # $PATH é do fish, não do bash
+            _FISH_PATH="$(fish -i -c 'printf "\n__HYPRAI_PATH__%s\n" (string join : $PATH)' \
+                            </dev/null 2>/dev/null | sed -n 's/^__HYPRAI_PATH__//p' || true)"
         fi
         _FISH_PATH="${_FISH_PATH:+$_FISH_PATH:}$PATH"
     fi
