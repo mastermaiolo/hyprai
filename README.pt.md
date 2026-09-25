@@ -107,7 +107,7 @@ Nos dois ficheiros, a coluna `svg` nomeia um ficheiro dentro de `svg/` (PNG tamb
 **O menu está opaco, sem vidro.** Três causas, por ordem:
 1. Falta a regra de camada — superfícies layer-shell não recebem blur no Hyprland sem uma regra que aponte ao namespace. Corre `./install.sh` outra vez e aceita a excepção de vidro.
 2. `xray = true` nessa regra — corre `./install.sh`, que agora avisa. O xray manda o blur saltar as camadas intermédias e ir buscar o fundo, mas em desktops onde o wallpaper *é* uma camada (o do Noctalia, por exemplo) ele salta justamente o que devia desfocar: o wallpaper atravessa nítido e o vidro desaparece, sem erro nenhum. Widgets de desktop atrás do menu ficam sem blur pela mesma razão.
-3. Opacidade alta demais — acima de ~85% o blur fica sem luz para contribuir e o painel lê-se como tinta chapada. O `bg0` vem a 70%.
+3. Opacidade alta demais — acima de ~85% o blur fica sem luz para contribuir e o painel lê-se como tinta chapada. O `bg0` vem a 60%.
 
 **Uma screenshot mostra vidro mas o meu ecrã não.** São mesmo diferentes: o `grim` captura antes do passo de blur do compositor, por isso esses poucos % de transparência mostram um wallpaper *nítido* (que se lê como vidro), enquanto o teu ecrã mostra um *desfocado* (uniforme, lê-se como tinta). Confia nos olhos, não na screenshot — quando está bem calibrado, as duas coincidem.
 

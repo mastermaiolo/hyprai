@@ -20,13 +20,13 @@
     /* Paleta verificada (scripts/palette.py --hue 285 --accent 292), 4.5:1+.
        Sobrescrita em runtime, token a token, pela ponte tonal — ver
        theme/noctalia.rasi.tmpl para o mapeamento completo de papéis M3. */
-    /* 70%, não 95%. Acima de ~85% o blur do compositor deixa de aparecer:
+    /* 60%, não 95%. Acima de ~85% o blur do compositor deixa de aparecer:
        o que está atrás vira uma mancha uniforme (é o que o blur faz), e
        sobra pouca luz pra essa mancha contribuir — o painel lê como tinta
        chapada. O screenshot engana porque o grim captura sem o blur, então
        ali os poucos % de transparência ainda mostram wallpaper nítido, com
        textura, e parece vidro. Só a tela real diz a verdade aqui. */
-    bg0:        #0D0D10B3;   /* fundo da janela — o vidro em si, 70% */
+    bg0:        #0D0D1099;   /* fundo da janela — o vidro em si, 60% */
     bg1:        #1C1C21E6;   /* elevação — inputbar, badge, chip de ícone, 90% */
     bg2:        #18181C99;   /* fileira de categorias — conteúdo, ~60% */
     bg3:        #A18DEEF2;   /* accent — única cor de destaque */

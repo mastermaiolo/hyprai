@@ -20,13 +20,17 @@ ler-se como caixa cinzenta em vez de vidro.
 
 ## Opacidade do vidro (e por que o screenshot mente)
 
-`bg0` está a **70%** (`B3`), não a 95%. Isto não é gosto, é o limite físico do efeito:
+`bg0` está a **60%** (`99`), não a 95%. O teto é físico, não gosto:
 
 - O blur do compositor transforma o que está atrás numa **mancha uniforme** — é literalmente
   o que blur faz. Uma mancha uniforme só se vê se houver luz suficiente a atravessar.
 - A 95% de opacidade sobram 5% — 5% de mancha uniforme é indistinguível de tinta chapada.
   Resultado: **quanto melhor o blur funciona, mais opaco o painel parece.**
-- Acima de ~85% o efeito desaparece por completo. A faixa que funciona aqui é **65–75%**.
+- Acima de ~85% o efeito desaparece por completo.
+- O piso é de legibilidade: abaixo de ~50%, num wallpaper claro, o texto deixa de ter fundo
+  escuro que chegue por trás. Começou a 70% e desceu para **60%** depois de ver na tela real,
+  com um wallpaper escuro e um claro — a 70% o painel escurecia o fundo demais (lia-se como
+  scrim, não como vidro).
 
 **Um screenshot não serve para validar isto.** O `grim` (wlr-screencopy) captura o buffer
 antes do pipeline de blur, por isso naqueles mesmos 5% aparece wallpaper *nítido* — com
@@ -125,7 +129,7 @@ do wallpaper, claro ou escuro — ver a guarda de contraste abaixo.
 
 | Token | Hex | Papel |
 |---|---|---|
-| `bg0` | `#0D0D10` @ 70% | Fundo da janela (glass) — ver "Opacidade do vidro" |
+| `bg0` | `#0D0D10` @ 60% | Fundo da janela (glass) — ver "Opacidade do vidro" |
 | `bg1` | `#1C1C21` @ 90% | Elevação — inputbar, badge, chip de ícone |
 | `bg2` | `#18181C` @ 60% | Agrupamento secundário (`message`) |
 | `bg3` | `#A18DEE` @ 95% | Accent — única cor de destaque |
@@ -175,7 +179,7 @@ relativo, não brilho absoluto, de propósito: num esquema **claro** o `primary`
 por desenho, e uma guarda de brilho rejeitava todo wallpaper claro. A conta (curva sRGB e
 luminância relativa) corre em `awk`, sem dependência de Python.
 
-O ramo Caelestia usa os **mesmos alphas** do `.tmpl` (`bg0` 70%, `bg1` 90%, `bg2` 60%) — o
+O ramo Caelestia usa os **mesmos alphas** do `.tmpl` (`bg0` 60%, `bg1` 90%, `bg2` 60%) — o
 vidro é o mesmo independentemente de quem fornece a cor.
 
 **Depois de mexer em `theme/noctalia.rasi.tmpl`, o Noctalia só re-renderiza o `.tmpl` numa

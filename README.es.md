@@ -107,7 +107,7 @@ En ambos archivos, la columna `svg` nombra un archivo dentro de `svg/` (PNG tamb
 **El menú se ve opaco, sin cristal.** Tres causas, por orden:
 1. Falta la regla de capa — las superficies layer-shell no reciben desenfoque en Hyprland sin una regla que apunte a su namespace. Vuelve a ejecutar `./install.sh` y acepta la excepción de cristal.
 2. `xray = true` en esa regla — vuelve a ejecutar `./install.sh`, que ahora avisa. xray le dice al desenfoque que salte las capas intermedias y tome el fondo, pero en escritorios donde el fondo de pantalla *es* una capa (el de Noctalia, por ejemplo) salta justamente lo que debería desenfocar: el fondo atraviesa nítido y el cristal desaparece, sin ningún error. Los widgets de escritorio detrás del menú quedan sin desenfoque por la misma razón.
-3. Opacidad demasiado alta — por encima de ~85% el desenfoque se queda sin luz que aportar y el panel se lee como pintura plana. `bg0` viene al 70%.
+3. Opacidad demasiado alta — por encima de ~85% el desenfoque se queda sin luz que aportar y el panel se lee como pintura plana. `bg0` viene al 60%.
 
 **Una captura muestra cristal pero mi pantalla no.** Son realmente distintas: `grim` captura antes del paso de desenfoque del compositor, así que ese pequeño porcentaje de transparencia muestra un fondo *nítido* (que se lee como cristal), mientras que tu pantalla muestra uno *desenfocado* (uniforme, se lee como pintura). Confía en tus ojos, no en la captura — cuando está bien calibrado, ambas coinciden.
 

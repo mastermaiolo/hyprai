@@ -310,11 +310,11 @@ dynamic_theme() {
             error="$(scheme_color error)"
 
             # Mesmos alphas do theme/noctalia.rasi.tmpl — mudar lá, mudar aqui.
-            # bg0 a 70%: acima de ~85% o blur deixa de se ver (ver DESIGN.md).
+            # bg0 a 60%: acima de ~85% o blur deixa de se ver (ver DESIGN.md).
             if [[ -n "$background" && -n "$on_background" ]]; then
                 cat <<RASI
 * {
-    bg0:        #${background}B3;
+    bg0:        #${background}99;
     bg1:        #${surface_container_high:-$background}E6;
     bg2:        #${surface_container:-$background}99;
     bg3:        #${primary}F2;

@@ -119,7 +119,7 @@ o mesmo sintoma (painel opaco), sem erro nenhum:
    camada (o do Noctalia ocupa o ecrã inteiro), salta justamente aquilo que
    devia desfocar. O wallpaper atravessa nítido e o vidro desaparece, de forma
    intermitente conforme os widgets que estejam por trás.
-3. **Opacidade a 70%, não a 95%.** Acima de ~85% o blur não tem luz suficiente
+3. **Opacidade a 60%, não a 95%.** Acima de ~85% o blur não tem luz suficiente
    para contribuir: o que está atrás vira uma mancha uniforme (é o que o blur
    faz) e o painel lê-se como tinta chapada. **Quanto melhor o blur funciona,
    mais opaco parece** se não houver transparência que chegue.

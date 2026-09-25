@@ -107,7 +107,7 @@ In both files the `svg` column names a file inside `svg/` (PNG works too) and fa
 **The menu looks opaque, with no glass.** Three causes, in order:
 1. Missing layer rule — layer-shell surfaces get no blur in Hyprland unless a rule targets their namespace. Re-run `./install.sh` and accept the glass exception.
 2. `xray = true` on that rule — re-run `./install.sh`, which now warns about it. xray tells the blur to skip intermediate layers and sample the background, but on desktops where the wallpaper *is* a layer (Noctalia's, for one), it skips the very thing it should blur: the sharp wallpaper shows straight through and the glass vanishes, silently. Desktop widgets sitting behind the menu go unblurred for the same reason.
-3. Opacity too high — above ~85% the blur has no light left to contribute and the panel reads as flat paint. `bg0` ships at 70%.
+3. Opacity too high — above ~85% the blur has no light left to contribute and the panel reads as flat paint. `bg0` ships at 60%.
 
 **A screenshot shows glass but my screen doesn't.** They genuinely differ: `grim` captures before the compositor's blur pass, so those few percent of transparency show a *sharp* wallpaper (which reads as glass), while your display shows a *blurred* one (uniform, reads as paint). Trust your eyes, not the screenshot — when it's calibrated correctly, both agree.
 
