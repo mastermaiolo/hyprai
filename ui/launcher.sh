@@ -98,6 +98,10 @@ T+=(
     [pt_PT:err_tool_missing_body]="Pode ter sido desinstalado"
     [pt_PT:err_no_kitty]="Kitty não encontrado"
     [pt_PT:err_no_kitty_body]="Instala o terminal kitty para executar agentes CLI"
+    [pt_PT:err_no_opener]="Não há como abrir o site"
+    [pt_PT:err_no_opener_body]="Instala o xdg-utils (xdg-open)"
+    [pt_PT:err_bad_cat]="Entrada ignorada no tools.conf"
+    [pt_PT:err_bad_cat_body]="Categoria inválida (use cli ou desktop): %s"
 )
 
 # ── Português (Brasil) ──
@@ -127,6 +131,10 @@ T+=(
     [pt_BR:err_tool_missing_body]="Pode ter sido desinstalado"
     [pt_BR:err_no_kitty]="Kitty não encontrado"
     [pt_BR:err_no_kitty_body]="Instale o terminal kitty para executar agentes CLI"
+    [pt_BR:err_no_opener]="Não há como abrir o site"
+    [pt_BR:err_no_opener_body]="Instale o xdg-utils (xdg-open)"
+    [pt_BR:err_bad_cat]="Entrada ignorada no tools.conf"
+    [pt_BR:err_bad_cat_body]="Categoria inválida (use cli ou desktop): %s"
 )
 
 # ── Español (España) ──
@@ -156,6 +164,10 @@ T+=(
     [es:err_tool_missing_body]="Puede que se haya desinstalado"
     [es:err_no_kitty]="Kitty no encontrado"
     [es:err_no_kitty_body]="Instala la terminal kitty para ejecutar agentes CLI"
+    [es:err_no_opener]="No hay cómo abrir el sitio"
+    [es:err_no_opener_body]="Instala xdg-utils (xdg-open)"
+    [es:err_bad_cat]="Entrada ignorada en tools.conf"
+    [es:err_bad_cat_body]="Categoría no válida (usa cli o desktop): %s"
 )
 
 # ── English (UK) ──
@@ -185,6 +197,10 @@ T+=(
     [en:err_tool_missing_body]="It may have been uninstalled"
     [en:err_no_kitty]="Kitty not found"
     [en:err_no_kitty_body]="Install the kitty terminal to run CLI agents"
+    [en:err_no_opener]="Can't open the website"
+    [en:err_no_opener_body]="Install xdg-utils (xdg-open)"
+    [en:err_bad_cat]="Entry skipped in tools.conf"
+    [en:err_bad_cat_body]="Invalid category (use cli or desktop): %s"
 )
 
 # ── 中文 ──
@@ -214,10 +230,15 @@ T+=(
     [zh:err_tool_missing_body]="可能已被卸载"
     [zh:err_no_kitty]="未找到 Kitty"
     [zh:err_no_kitty_body]="请安装 kitty 终端以运行命令行智能体"
+    [zh:err_no_opener]="无法打开网站"
+    [zh:err_no_opener_body]="请安装 xdg-utils（xdg-open）"
+    [zh:err_bad_cat]="tools.conf 中的条目已跳过"
+    [zh:err_bad_cat_body]="无效分类（请使用 cli 或 desktop）：%s"
 )
 
 # Chave em falta cai para o inglês, não para a chave crua — um rótulo
 # "cat_media" na interface é pior que o termo em inglês.
+# shellcheck disable=SC2059  # o formato É a tradução (leva %s)
 t() { printf -- "${T[$L:$1]:-${T[en:$1]:-$1}}" "${2:-}"; }
 
 # ── Cor tonal do sistema ──────────────────────────────────────────────
@@ -437,6 +458,23 @@ run_menu() {
         "${dyn[@]}" "${mesg[@]}" -no-custom -markup-rows -format i -selected-row "${2:-1}"
 }
 
+# Tira espaço à volta de cada variável nomeada, no lugar — nameref em vez de
+# $(trim …) para não abrir um subshell por campo (~240 por abertura).
+trim_vars() {
+    local -n _tv
+    for _tv in "$@"; do
+        _tv="${_tv#"${_tv%%[![:space:]]*}"}"
+        _tv="${_tv%"${_tv##*[![:space:]]}"}"
+    done
+}
+
+# notify-send é opcional (libnotify) — sem ele, a mensagem perde-se, mas o
+# launcher nunca falha por causa disso.
+notify() {
+    command -v notify-send &>/dev/null || return 0
+    notify-send -a "Hypr.AI" "$@" || true
+}
+
 # ── Helpers de inicialização compatíveis com UWSM e Wayland/Hyprland ──
 launch_cmd() {
     if command -v uwsm &>/dev/null && uwsm check is-active &>/dev/null; then
@@ -450,9 +488,7 @@ launch_term() {
     local title="$1"
     local cmd="$2"
     if ! command -v kitty &>/dev/null; then
-        if command -v notify-send &>/dev/null; then
-            notify-send -a "Hypr.AI" "$(t err_no_kitty)" "$(t err_no_kitty_body)" || true
-        fi
+        notify "$(t err_no_kitty)" "$(t err_no_kitty_body)"
         return 1
     fi
     if command -v uwsm &>/dev/null && uwsm check is-active &>/dev/null; then
@@ -465,9 +501,13 @@ launch_term() {
 launch_web() {
     local url="$1"
     local name="${2:-Web AI}"
-    if command -v notify-send &>/dev/null; then
-        notify-send -a "Hypr.AI" "$(t opening) $name" "$url" -i "web-browser" || true
+    # Sem isto, "A abrir X" aparecia e depois nada — o erro do xdg-open em
+    # falta ia para um stderr que ninguém vê (o launcher corre de um atalho).
+    if ! command -v xdg-open &>/dev/null; then
+        notify "$(t err_no_opener)" "$(t err_no_opener_body)"
+        return 1
     fi
+    notify "$(t opening) $name" "$url" -i "web-browser"
     if command -v uwsm &>/dev/null && uwsm check is-active &>/dev/null; then
         uwsm app -- xdg-open "$url" &
     else
@@ -492,27 +532,33 @@ launch_tool() {
     fi
 }
 
+# Editores de terminal conhecidos abrem dentro do kitty; qualquer outro é
+# tratado como gráfico. Ao contrário de uma lista de GUIs: um $VISUAL gráfico
+# fora da lista (subl, gnome-text-editor…) abria um kitty vazio a correr uma
+# janela gráfica. Procura com o PATH do fish, como as ferramentas — um nvim
+# do brew também conta. EDITOR="code --wait" funciona (vira palavras); um
+# editor num caminho com espaços não, como em qualquer $EDITOR.
 edit_file() {
-    local target="$1"
-    local editor_cmd=""
-    for ed in "${VISUAL:-}" "${EDITOR:-}" zeditor code nvim micro nano kate; do
-        if [[ -n "$ed" ]] && command -v "${ed%% *}" &>/dev/null; then
-            editor_cmd="$ed"
-            break
-        fi
-    done
-    if [[ -z "$editor_cmd" ]]; then
-        launch_cmd xdg-open "$target"
-    else
-        case "${editor_cmd%% *}" in
-            zeditor|code|kate|gedit)
-                launch_cmd $editor_cmd "$target"
-                ;;
-            *)
-                launch_cmd kitty $editor_cmd "$target"
+    local target="$1" ed bin
+    local -a cmd=()
+    for ed in "${VISUAL:-}" "${EDITOR:-}" zeditor code kate gedit gnome-text-editor nvim micro nano; do
+        [[ -n "$ed" ]] || continue
+        read -ra cmd <<< "$ed"
+        bin="$(PATH="$(_fish_path)" command -v -- "${cmd[0]}" 2>/dev/null)" || continue
+        cmd[0]="$bin"
+        case "${bin##*/}" in
+            nvim|vim|vi|nano|micro|hx|helix|kak|emacs|ne|joe|mcedit)
+                if command -v kitty &>/dev/null; then
+                    launch_cmd kitty "${cmd[@]}" "$target"
+                    return
+                fi
+                continue   # editor de terminal sem terminal — tenta o próximo
                 ;;
         esac
-    fi
+        launch_cmd "${cmd[@]}" "$target"
+        return
+    done
+    launch_cmd xdg-open "$target"
 }
 
 # ── Detecção de ferramentas locais (tools.conf) ────────────────────────
@@ -549,8 +595,7 @@ resolve_candidate() {
     local cand expanded hit
     IFS=';' read -ra _cands <<< "$1"
     for cand in "${_cands[@]}"; do
-        cand="${cand#"${cand%%[![:space:]]*}"}"   # trim à esquerda
-        cand="${cand%"${cand##*[![:space:]]}"}"   # trim à direita
+        trim_vars cand
         [[ -z "$cand" ]] && continue
         expanded="${cand/#\~/$HOME}"
         if [[ "$expanded" == /* ]]; then
@@ -577,18 +622,18 @@ build_main() {
 
     declare -A seen_cats=()
     local tid ticon tname tdesc tcat tcands tsvg targs found
+    local -a bad_cats=()
     if [[ -f "$TOOLS_CONF" ]]; then
         while IFS='|' read -r tid ticon tname tdesc tcat tcands tsvg targs || [[ -n "$tid" ]]; do
-            tid="${tid#"${tid%%[![:space:]]*}"}"; tid="${tid%"${tid##*[![:space:]]}"}"
+            trim_vars tid
             [[ -z "$tid" || "$tid" =~ ^# ]] && continue
-            ticon="${ticon#"${ticon%%[![:space:]]*}"}"; ticon="${ticon%"${ticon##*[![:space:]]}"}"
-            tname="${tname#"${tname%%[![:space:]]*}"}"; tname="${tname%"${tname##*[![:space:]]}"}"
-            tdesc="${tdesc#"${tdesc%%[![:space:]]*}"}"; tdesc="${tdesc%"${tdesc##*[![:space:]]}"}"
-            tcat="${tcat#"${tcat%%[![:space:]]*}"}"; tcat="${tcat%"${tcat##*[![:space:]]}"}"
-            tcands="${tcands#"${tcands%%[![:space:]]*}"}"; tcands="${tcands%"${tcands##*[![:space:]]}"}"
-            tsvg="${tsvg#"${tsvg%%[![:space:]]*}"}"; tsvg="${tsvg%"${tsvg##*[![:space:]]}"}"
-            targs="${targs#"${targs%%[![:space:]]*}"}"; targs="${targs%"${targs##*[![:space:]]}"}"
-            targs="${targs//$'\r'/}"
+            trim_vars ticon tname tdesc tcat tcands tsvg targs
+            # Antes, uma categoria com erro de digitação virava um cabeçalho
+            # com o texto cru e a ferramenta abria como "desktop" sem aviso.
+            if [[ "$tcat" != cli && "$tcat" != desktop ]]; then
+                bad_cats+=("$tid ($tcat)")
+                continue
+            fi
 
             found="$(resolve_candidate "$tcands")" || continue
             TOOL_CMD["$tid"]="$found"
@@ -601,12 +646,16 @@ build_main() {
                 case "$tcat" in
                     cli)     sep "$(t cat_cli)" ;;
                     desktop) sep "$(t cat_desktop)" ;;
-                    *)       sep "$tcat" ;;
                 esac
                 seen_cats["$tcat"]=1
             fi
             item "$ticon" "$tname" "$tdesc" "$tid" "$tsvg"
         done < "$TOOLS_CONF"
+        # Uma notificação só, com todas — não uma por linha errada.
+        if (( ${#bad_cats[@]} )); then
+            local list; list="$(printf '%s, ' "${bad_cats[@]}")"
+            notify "$(t err_bad_cat)" "$(t err_bad_cat_body "${list%, }")"
+        fi
     fi
 
     sep "$(t cat_web)"
@@ -614,8 +663,7 @@ build_main() {
     if [[ -f "$SITES_CONF" ]]; then
         local sid_c _rest_c
         while IFS='|' read -r sid_c _rest_c || [[ -n "$sid_c" ]]; do
-            sid_c="${sid_c#"${sid_c%%[![:space:]]*}"}"
-            sid_c="${sid_c%"${sid_c##*[![:space:]]}"}"
+            trim_vars sid_c
             [[ -z "$sid_c" || "$sid_c" =~ ^# ]] && continue
             ((count++)) || true
         done < "$SITES_CONF"
@@ -653,14 +701,9 @@ case "$ID" in
             local sid sicon sname scat surl ssvg cat_label
             if [[ -f "$SITES_CONF" ]]; then
                 while IFS='|' read -r sid sicon sname scat surl ssvg || [[ -n "$sid" ]]; do
-                    sid="${sid#"${sid%%[![:space:]]*}"}"; sid="${sid%"${sid##*[![:space:]]}"}"
+                    trim_vars sid
                     [[ -z "$sid" || "$sid" =~ ^# ]] && continue
-                    sicon="${sicon#"${sicon%%[![:space:]]*}"}"; sicon="${sicon%"${sicon##*[![:space:]]}"}"
-                    sname="${sname#"${sname%%[![:space:]]*}"}"; sname="${sname%"${sname##*[![:space:]]}"}"
-                    scat="${scat#"${scat%%[![:space:]]*}"}"; scat="${scat%"${scat##*[![:space:]]}"}"
-                    surl="${surl#"${surl%%[![:space:]]*}"}"; surl="${surl%"${surl##*[![:space:]]}"}"
-                    ssvg="${ssvg#"${ssvg%%[![:space:]]*}"}"; ssvg="${ssvg%"${ssvg##*[![:space:]]}"}"
-                    ssvg="${ssvg//$'\r'/}"
+                    trim_vars sicon sname scat surl ssvg
 
                     if [[ -z "${SEEN_WEB_CATS[$scat]:-}" ]]; then
                         case "$scat" in
@@ -700,11 +743,9 @@ case "$ID" in
             TARGET_URL=""
             TARGET_NAME=""
             while IFS='|' read -r sid sicon sname scat surl ssvg || [[ -n "$sid" ]]; do
-                sid="${sid#"${sid%%[![:space:]]*}"}"; sid="${sid%"${sid##*[![:space:]]}"}"
+                trim_vars sid
                 if [[ "$sid" == "$SEL" ]]; then
-                    sname="${sname#"${sname%%[![:space:]]*}"}"; sname="${sname%"${sname##*[![:space:]]}"}"
-                    surl="${surl#"${surl%%[![:space:]]*}"}"; surl="${surl%"${surl##*[![:space:]]}"}"
-                    surl="${surl//$'\r'/}"
+                    trim_vars sname surl
                     TARGET_URL="$surl"
                     TARGET_NAME="$sname"
                     break
@@ -732,7 +773,7 @@ case "$ID" in
         else
             # Estava no menu há segundos (detectado em build_main) e sumiu
             # até o clique — janela de tempo mínima, mas cobre o caso.
-            notify-send -a "Hypr.AI" "$(t err_tool_missing)" "$(t err_tool_missing_body)" || true
+            notify "$(t err_tool_missing)" "$(t err_tool_missing_body)"
         fi
         ;;
 esac

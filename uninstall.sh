@@ -14,7 +14,29 @@ NOCTALIA_CONF="$HOME/.config/noctalia/config.toml"
 STATE_DIR="${XDG_STATE_HOME:-$HOME/.local/state}/hyprai"
 BACKUP_DATE="$(date +%Y%m%d%H%M%S)"
 
-echo "── Desinstalando Hypr.AI ──"
+# ── i18n: pt / en (o mesmo critério do install.sh) ──
+case "${LC_ALL:-${LC_MESSAGES:-${LANG:-pt_BR}}}" in
+    pt*) L=pt ;;
+    *)   L=en ;;
+esac
+
+declare -A T=(
+    [pt:title]="── Desinstalando Hypr.AI ──"                     [en:title]="── Uninstalling Hypr.AI ──"
+    [pt:backup]="→ Backup criado: %s"                            [en:backup]="→ Backup created: %s"
+    [pt:curation_ask]="Apagar também a sua curadoria (sites.conf, tools.conf)? [s/N] " \
+    [en:curation_ask]="Also delete your curation (sites.conf, tools.conf)? [y/N] "
+    [pt:curation_kept]="→ Curadoria preservada em: %s"           [en:curation_kept]="→ Curation kept at: %s"
+    [pt:noctalia_removed]="✓ Bloco removido de %s"               [en:noctalia_removed]="✓ Block removed from %s"
+    [pt:bind_removed]="✓ Atalho removido de %s"                  [en:bind_removed]="✓ Keybind removed from %s"
+    [pt:rule_removed]="✓ Regra de camada removida de %s"         [en:rule_removed]="✓ Layer rule removed from %s"
+    [pt:reloaded]="✓ Hyprland recarregado com sucesso"           [en:reloaded]="✓ Hyprland reloaded successfully"
+    [pt:finished]="✓ Hypr.AI desinstalado com sucesso."          [en:finished]="✓ Hypr.AI uninstalled successfully."
+)
+# shellcheck disable=SC2059  # o formato É a tradução (leva %s)
+t()   { printf -- "${T[$L:$1]:-${T[pt:$1]:-$1}}" "${@:2}"; }
+say() { t "$@"; echo; }
+
+say title
 
 # Escreve por cima do conteúdo em vez de mv/sed -i: um arquivo que seja
 # symlink (stow, repositório de dotfiles) continua symlink.
@@ -29,7 +51,7 @@ backup_file() {
     if [[ -f "$f" ]]; then
         local bkp="$f.hyprai-backup-$BACKUP_DATE"
         cp -a "$f" "$bkp"
-        echo "→ Backup criado: $bkp"
+        say backup "$bkp"
     fi
 }
 
@@ -37,7 +59,7 @@ backup_file() {
 preserve_curation=1
 if [[ -f "$DEST/config/sites.conf" || -f "$DEST/config/tools.conf" ]]; then
     if [[ -t 0 ]]; then
-        read -r -p "Apagar também a tua curadoria (sites.conf, tools.conf)? [s/N] " cur_ans || true
+        read -r -p "$(t curation_ask)" cur_ans || true
         case "$cur_ans" in
             [sSyY]*) preserve_curation=0 ;;
             *)       preserve_curation=1 ;;
@@ -48,7 +70,7 @@ if [[ -f "$DEST/config/sites.conf" || -f "$DEST/config/tools.conf" ]]; then
         mkdir -p "$CURATION_BACKUP"
         [[ -f "$DEST/config/sites.conf" ]] && cp -a "$DEST/config/sites.conf" "$CURATION_BACKUP/"
         [[ -f "$DEST/config/tools.conf" ]] && cp -a "$DEST/config/tools.conf" "$CURATION_BACKUP/"
-        echo "→ Curadoria preservada em: $CURATION_BACKUP"
+        say curation_kept "$CURATION_BACKUP"
     fi
 fi
 
@@ -64,7 +86,7 @@ if [[ -f "$NOCTALIA_CONF" ]] && grep -q "theme.templates.user.hyprai" "$NOCTALIA
       skip && /^[[:space:]]*\[/ { skip=0 }
       !skip
     ' "$NOCTALIA_CONF" | write_through "$NOCTALIA_CONF"
-    echo "✓ Bloco removido de $NOCTALIA_CONF"
+    say noctalia_removed "$NOCTALIA_CONF"
 fi
 
 # 4. Limpeza do atalho — nos mesmos dois arquivos onde o install.sh o põe.
@@ -83,7 +105,7 @@ for f in "$BINDS_FILE" "$HOME/.config/hypr/hyprland.lua"; do
         { if (blank) print ""; blank = 0; print }
         END { if (blank) print "" }
     ' "$f" | write_through "$f"
-    echo "✓ Atalho removido de $f"
+    say bind_removed "$f"
 done
 
 # 5. Limpeza da layer rule em windowrules.lua
@@ -107,13 +129,13 @@ if [[ -f "$WINDOWRULES_FILE" ]] && grep -qE 'name[[:space:]]*=[[:space:]]*"hypra
     }
     { print }
     ' "$WINDOWRULES_FILE" | write_through "$WINDOWRULES_FILE"
-    echo "✓ Regra de camada removida de $WINDOWRULES_FILE"
+    say rule_removed "$WINDOWRULES_FILE"
 fi
 
 # 6. Recarrega o Hyprland se em execução
 if command -v hyprctl &>/dev/null && [[ -n "${HYPRLAND_INSTANCE_SIGNATURE:-}" ]]; then
     hyprctl reload >/dev/null 2>&1 || true
-    echo "✓ Hyprland recarregado com sucesso"
+    say reloaded
 fi
 
-echo "✓ Hypr.AI desinstalado com sucesso."
+say finished

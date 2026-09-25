@@ -62,13 +62,15 @@ declare -A T=(
     [pt:finished]="── Concluído! Execute 'hyprai' no terminal ──" \
     [en:finished]="── Done! Run 'hyprai' in terminal ──"
 )
+# shellcheck disable=SC2059  # o formato É a tradução (leva %s)
 t() { printf -- "${T[$L:$1]:-${T[pt:$1]:-$1}}" "${@:2}"; }
+say() { t "$@"; echo; }
 
-echo "$(t title)"
+say title
 
 # 0. Verificação de dependências
 if ! command -v rofi &>/dev/null; then
-    echo "$(t dep_missing_rofi)" >&2
+    say dep_missing_rofi >&2
     exit 1
 fi
 
@@ -79,11 +81,11 @@ for dep in fish kitty; do
     fi
 done
 if [[ "${#missing_cli[@]}" -gt 0 ]]; then
-    echo "$(t dep_warn_cli "${missing_cli[*]}")"
+    say dep_warn_cli "${missing_cli[*]}"
 fi
 
 if ! command -v notify-send &>/dev/null; then
-    echo "$(t dep_note_notify)"
+    say dep_note_notify
 fi
 
 # 1. Cria diretório de destino
@@ -109,7 +111,7 @@ if [[ ! -f "$DEST/config/tools.conf" ]]; then
     cp "$SRC/config/tools.conf" "$DEST/config/"
 fi
 
-echo "$(t installed_ok "$DEST")"
+say installed_ok "$DEST"
 
 # 3. Estado para a ponte de cor tonal (Noctalia grava aqui em runtime)
 STATE_DIR="${XDG_STATE_HOME:-$HOME/.local/state}/hyprai"
@@ -119,7 +121,7 @@ mkdir -p "$STATE_DIR"
 NOCTALIA_CONF="$HOME/.config/noctalia/config.toml"
 if [[ -f "$NOCTALIA_CONF" ]]; then
     if grep -q "theme.templates.user.hyprai" "$NOCTALIA_CONF" 2>/dev/null; then
-        echo "$(t noctalia_found)"
+        say noctalia_found
     else
         cat >> "$NOCTALIA_CONF" <<EOF
 
@@ -127,14 +129,14 @@ if [[ -f "$NOCTALIA_CONF" ]]; then
     input_path = "$DEST/theme/noctalia.rasi.tmpl"
     output_path = "$STATE_DIR/noctalia-colors.rasi"
 EOF
-        echo "$(t noctalia_ok)"
+        say noctalia_ok
     fi
 fi
 
 # 5. Cria link simbólico em ~/.local/bin/hyprai
 ln -sf "$DEST/ui/launcher.sh" "$BIN_TARGET"
 chmod +x "$BIN_TARGET"
-echo "$(t bin_ok "$BIN_TARGET")"
+say bin_ok "$BIN_TARGET"
 
 # 6. Configuração de atalho
 #
@@ -190,7 +192,7 @@ BIND_ADDED=0
 if [[ -n "$BINDS_TARGET" ]] && grep -qE 'hyprai:begin|hl\.bind\(.*\.local/bin/hyprai' "$BINDS_TARGET"; then
     # Procura o bind em si, não a palavra "hyprai" — um comentário a citar o
     # projeto dava o atalho por configurado sem ele existir.
-    echo "$(t bind_found "$BINDS_TARGET")"
+    say bind_found "$BINDS_TARGET"
     MENU_KEY="$(grep -E 'hl\.bind\(.*\.local/bin/hyprai' "$BINDS_TARGET" | head -1 \
                 | sed -n 's/.*+ *\([[:alnum:]]\)".*/\1/p')"
     BIND_ADDED=1
@@ -200,13 +202,13 @@ else
     # sem terminal, não cria o atalho — duplicar em silêncio é pior que não ter.
     if [[ -n "${HYPRLAND_INSTANCE_SIGNATURE:-}" ]]; then
         while bind_taken 64 "$MENU_KEY"; do
-            echo "$(t bind_conflict "SUPER + $MENU_KEY")"
+            say bind_conflict "SUPER + $MENU_KEY"
             MENU_KEY="" NEW_KEY=""
             while [[ -t 0 ]]; do
                 printf '%s' "$(t bind_prompt)"
                 read -r NEW_KEY || NEW_KEY=""
                 [[ -z "$NEW_KEY" || "$NEW_KEY" =~ ^[[:alnum:]]$ ]] && break
-                echo "$(t bind_invalid)"
+                say bind_invalid
             done
             [[ -z "$NEW_KEY" ]] && break
             MENU_KEY="${NEW_KEY^^}"
@@ -214,14 +216,14 @@ else
     fi
 
     if [[ -z "$MENU_KEY" ]]; then
-        echo "$(t bind_skip)"
+        say bind_skip
         printf '  %s\n' "$(bind_line I "$BINDS_TARGET")"
     elif [[ -z "$BINDS_TARGET" ]]; then
-        echo "$(t bind_nofile)"
+        say bind_nofile
         printf '  %s\n' "$(bind_line "$MENU_KEY" "")"
     else
         BIND_LINE="$(bind_line "$MENU_KEY" "$BINDS_TARGET")"
-        echo "$(t bind_add "SUPER + $MENU_KEY" "$BINDS_TARGET")"
+        say bind_add "SUPER + $MENU_KEY" "$BINDS_TARGET"
         bind_bkp="$BINDS_TARGET.hyprai-backup-$(date +%Y%m%d%H%M%S)"
         cp -a "$BINDS_TARGET" "$bind_bkp"
         echo "→ Backup: $bind_bkp"
@@ -241,10 +243,10 @@ else
         ' "$BINDS_TARGET" | write_through "$BINDS_TARGET"
 
         if grep -qF -- "-- hyprai:begin" "$BINDS_TARGET"; then
-            echo "$(t bind_ok "SUPER + $MENU_KEY")"
+            say bind_ok "SUPER + $MENU_KEY"
             BIND_ADDED=1
         else
-            echo "$(t bind_manual "$BINDS_TARGET")"
+            say bind_manual "$BINDS_TARGET"
             printf '  %s\n' "$BIND_LINE"
         fi
     fi
@@ -271,9 +273,9 @@ if [[ -f "$WINDOWRULES_FILE" ]]; then
         # configurado e deixar o bug de pé.
         if awk '/namespace = "\^rofi\$"/,/\}\)/' "$WINDOWRULES_FILE" \
              | grep -qE 'xray[[:space:]]*=[[:space:]]*true'; then
-            echo "$(t layerrule_xray_warn)"
+            say layerrule_xray_warn
         else
-            echo "$(t layerrule_found)"
+            say layerrule_found
         fi
     elif [[ -t 0 ]]; then
         read -r -p "$(t layerrule_ask)" LAYERRULE_ANS
@@ -299,32 +301,32 @@ hl.layer_rule({
   xray = false,
 })
 EOF
-                echo "$(t layerrule_ok)"
+                say layerrule_ok
                 ;;
             *)
-                echo "$(t layerrule_skip)"
+                say layerrule_skip
                 ;;
         esac
     else
         # Não interativo (ex.: instalação automatizada) — não decide por conta
         # própria, só mostra o que adicionar manualmente.
-        echo "$(t layerrule_noninteractive)"
+        say layerrule_noninteractive
         printf '%s\n' "$LAYER_RULE_LINE"
     fi
 else
-    echo "$(t layerrule_manual)"
+    say layerrule_manual
     printf '%s\n' "$LAYER_RULE_LINE"
 fi
 
 # 7. Recarrega Hyprland se estiver em execução
 if command -v hyprctl &>/dev/null && [[ -n "${HYPRLAND_INSTANCE_SIGNATURE:-}" ]]; then
     hyprctl reload >/dev/null 2>&1 || true
-    echo "$(t reloaded)"
+    say reloaded
 fi
 
 echo ""
 if [[ "$BIND_ADDED" -eq 1 && -n "$MENU_KEY" ]]; then
-    echo "$(t finished_key "$MENU_KEY")"
+    say finished_key "$MENU_KEY"
 else
-    echo "$(t finished)"
+    say finished
 fi
