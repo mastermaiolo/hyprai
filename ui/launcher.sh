@@ -236,22 +236,33 @@ scheme_color() {
     sed -n "s/.*\"$1\": *\"\([0-9a-fA-F]\{6\}\)\".*/\1/p" "$CAELESTIA_JSON" | head -1
 }
 
-# Guarda de legibilidade: aceita um hex só se não for escuro a mais para
-# servir de accent/primary em qualquer contexto (chip, prompt, scrollbar).
-# Brilho percebido em aritmética inteira — aproximação grosseira, mas chega
-# para rejeitar os casos maus sem puxar python só por causa disto.
-_bright_enough() {
-    local hex="$1" r g b
-    r=$((16#${hex:0:2})); g=$((16#${hex:2:2})); b=$((16#${hex:4:2}))
-    (( (r * 299 + g * 587 + b * 114) / 1000 >= 120 ))
+# Guarda de legibilidade: aceita o accent só se contrastar ≥ 3:1 com o fundo
+# (WCAG 1.4.11, componentes não-texto — prompt, scrollbar). Contraste e não
+# brilho absoluto: num esquema claro o primary do M3 é escuro de propósito,
+# e uma guarda de brilho rejeitava todo wallpaper claro. awk só pela vírgula
+# flutuante da curva sRGB — já é dependência do resto do script.
+_contrast_ok() {   # $1=accent $2=fundo, hex sem '#'
+    awk -v a="$1" -v b="$2" '
+        function ch(h,   v) { h = tolower(h)   # gawk não lê "0x.." de string
+                              v = (index("0123456789abcdef", substr(h, 1, 1)) - 1) * 16 \
+                                +  index("0123456789abcdef", substr(h, 2, 1)) - 1
+                              v /= 255
+                              return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ^ 2.4 }
+        function lum(h) { return 0.2126 * ch(substr(h, 1, 2)) + 0.7152 * ch(substr(h, 3, 2)) \
+                               + 0.0722 * ch(substr(h, 5, 2)) }
+        BEGIN { la = lum(a); lb = lum(b)
+                r = la > lb ? (la + 0.05) / (lb + 0.05) : (lb + 0.05) / (la + 0.05)
+                exit !(r >= 3) }'
 }
 
 dynamic_theme() {
     # 1) Noctalia — o próprio Noctalia já renderizou theme/noctalia.rasi.tmpl
     # inteiro (todos os tokens, não só o accent); basta repassar o arquivo.
     if [[ -s "$NOCTALIA_THEME" ]] && ! grep -q '{{' "$NOCTALIA_THEME"; then
-        local accent; accent="$(sed -n 's/.*bg3:[[:space:]]*#\([0-9a-fA-F]\{6\}\).*/\1/p' "$NOCTALIA_THEME" | head -1)"
-        if [[ -n "$accent" ]] && _bright_enough "$accent"; then
+        local accent bg
+        accent="$(sed -n 's/.*bg3:[[:space:]]*#\([0-9a-fA-F]\{6\}\).*/\1/p' "$NOCTALIA_THEME" | head -1)"
+        bg="$(sed -n 's/.*bg0:[[:space:]]*#\([0-9a-fA-F]\{6\}\).*/\1/p' "$NOCTALIA_THEME" | head -1)"
+        if [[ -n "$accent" && -n "$bg" ]] && _contrast_ok "$accent" "$bg"; then
             cat "$NOCTALIA_THEME"
             return 0
         fi
@@ -260,11 +271,13 @@ dynamic_theme() {
     # 2) Caelestia (compat) — só JSON bruto, então remonta o mesmo conjunto
     # de tokens à mão a partir dos papéis M3 que o scheme.json expõe.
     if [[ -f "$CAELESTIA_JSON" ]]; then
-        local primary; primary="$(scheme_color primary)"
-        if [[ -n "$primary" ]] && _bright_enough "$primary"; then
-            local background on_background surface_container_high surface_container \
+        local primary background
+        primary="$(scheme_color primary)"
+        background="$(scheme_color background)"
+        # Sem background não há contra o que medir — cai no fundo estático.
+        if [[ -n "$primary" ]] && _contrast_ok "$primary" "${background:-0D0D10}"; then
+            local on_background surface_container_high surface_container \
                   on_surface_variant outline on_primary primary_container on_primary_container error
-            background="$(scheme_color background)"
             on_background="$(scheme_color onBackground)"
             surface_container_high="$(scheme_color surfaceContainerHigh)"
             surface_container="$(scheme_color surfaceContainer)"
@@ -275,11 +288,13 @@ dynamic_theme() {
             on_primary_container="$(scheme_color onPrimaryContainer)"
             error="$(scheme_color error)"
 
+            # Mesmos alphas do theme/noctalia.rasi.tmpl — mudar lá, mudar aqui.
+            # bg0 a 70%: acima de ~85% o blur deixa de se ver (ver DESIGN.md).
             if [[ -n "$background" && -n "$on_background" ]]; then
                 cat <<RASI
 * {
-    bg0:        #${background}F2;
-    bg1:        #${surface_container_high:-$background};
+    bg0:        #${background}B3;
+    bg1:        #${surface_container_high:-$background}E6;
     bg2:        #${surface_container:-$background}99;
     bg3:        #${primary}F2;
     fg0:        #${on_background};

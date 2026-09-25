@@ -150,11 +150,16 @@ Em runtime, `launcher.sh` decide, em ordem:
    etc.). Se faltarem os papéis de neutro, cai para um compat mínimo — só o accent.
 3. Nenhum dos dois → fica a paleta estática da tabela.
 
-Antes de aplicar, há uma **guarda de brilho** sobre o accent: um `primary` escuro a mais rejeita
-o esquema inteiro (fica o violeta estático), porque um wallpaper que produz um accent ilegível
-tende a produzir o resto do esquema igualmente ruim. Brilho percebido em aritmética inteira —
-aproximação grosseira, mas chega para apanhar os casos maus sem puxar uma dependência de Python
-só por isto.
+Antes de aplicar, há uma **guarda de contraste** sobre o accent: se o `primary` não chegar a
+**3:1** contra o `background` do mesmo esquema (WCAG 1.4.11, componentes não-texto — prompt,
+scrollbar), o esquema inteiro é rejeitado e fica o violeta estático, porque um wallpaper que
+produz um accent ilegível tende a produzir o resto do esquema igualmente ruim. É contraste
+relativo, não brilho absoluto, de propósito: num esquema **claro** o `primary` do M3 é escuro
+por desenho, e uma guarda de brilho rejeitava todo wallpaper claro. A conta (curva sRGB e
+luminância relativa) corre em `awk`, sem dependência de Python.
+
+O ramo Caelestia usa os **mesmos alphas** do `.tmpl` (`bg0` 70%, `bg1` 90%, `bg2` 60%) — o
+vidro é o mesmo independentemente de quem fornece a cor.
 
 **Depois de mexer em `theme/noctalia.rasi.tmpl`, o Noctalia só re-renderiza o `.tmpl` numa
 troca de wallpaper/scheme** — não ao editar o arquivo. Force uma troca (ou reaplique o esquema

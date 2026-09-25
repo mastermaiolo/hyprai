@@ -15,9 +15,10 @@
    linha ficam tingidos pelo mesmo accent do wallpaper, em vez de um azul
    fixo desligado do resto do sistema.
 
-   O launcher.sh ainda aplica uma guarda de brilho ao accent antes de o
-   usar no prompt/scrollbar, porque `primary` não garante contraste
-   nenhum sobre certos wallpapers.
+   O launcher.sh ainda exige contraste ≥ 3:1 entre `primary` e
+   `background` antes de usar o esquema, porque `primary` não garante
+   contraste nenhum sobre certos wallpapers. Os alphas daqui são repetidos
+   no ramo Caelestia do launcher.sh — mudar aqui, mudar lá.
    ══════════════════════════════════════════════════════════════════════ */
 * {
     bg0:        {{colors.background.default.hex}}B3;
