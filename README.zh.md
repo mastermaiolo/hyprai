@@ -51,7 +51,7 @@ git clone https://github.com/mastermaiolo/hyprai && cd hyprai
 ./install.sh
 ```
 
-安装脚本会把文件复制到 `~/.config/hypr/hyprai/`，在 `~/.local/bin/` 创建 `hyprai` 可执行文件，向 Noctalia 注册色调桥接（若已安装），向 `binds.lua` 添加 `Super + I` 快捷键（若文件存在，且若该组合已被占用会询问改用哪个键），并在向你的 `windowrules.lua` 添加玻璃 layer 规则前**先询问**。它从不改动你的全局模糊设置。
+安装脚本会把文件复制到 `~/.config/hypr/hyprai/`，在 `~/.local/bin/` 创建 `hyprai` 可执行文件，向 Noctalia 注册色调桥接（若已安装），向 `~/.config/hypr/config/binds.lua`（若不存在则向 `hyprland.lua`）添加 `Super + I` 快捷键，包在 `-- hyprai:begin/end` 标记之间（若该组合已被占用会询问改用哪个键；没有终端时宁可不创建，也不重复绑定），并在向你的 `windowrules.lua` 添加玻璃 layer 规则前**先询问**。它从不改动你的全局模糊设置。
 
 > 安装完成后，在 Noctalia 里切换一次壁纸或强调色，让它首次生成色彩桥接文件。
 

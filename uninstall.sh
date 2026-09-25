@@ -16,6 +16,14 @@ BACKUP_DATE="$(date +%Y%m%d%H%M%S)"
 
 echo "── Desinstalando Hypr.AI ──"
 
+# Escreve por cima do conteúdo em vez de mv/sed -i: um arquivo que seja
+# symlink (stow, repositório de dotfiles) continua symlink.
+write_through() {   # $1=arquivo  stdin=conteúdo novo
+    local tmp; tmp="$(mktemp)"
+    cat > "$tmp" && cat "$tmp" > "$1"
+    rm -f "$tmp"
+}
+
 backup_file() {
     local f="$1"
     if [[ -f "$f" ]]; then
@@ -51,26 +59,36 @@ rm -f "$BIN_TARGET"
 # 3. Limpeza estrutural no Noctalia (config.toml)
 if [[ -f "$NOCTALIA_CONF" ]] && grep -q "theme.templates.user.hyprai" "$NOCTALIA_CONF" 2>/dev/null; then
     backup_file "$NOCTALIA_CONF"
-    tmp_noc="$(mktemp)"
     awk '
       /^[[:space:]]*\[theme\.templates\.user\.hyprai\][[:space:]]*$/ { skip=1; next }
       skip && /^[[:space:]]*\[/ { skip=0 }
       !skip
-    ' "$NOCTALIA_CONF" > "$tmp_noc" && mv "$tmp_noc" "$NOCTALIA_CONF"
+    ' "$NOCTALIA_CONF" | write_through "$NOCTALIA_CONF"
     echo "✓ Bloco removido de $NOCTALIA_CONF"
 fi
 
-# 4. Limpeza em binds.lua (apaga só linhas que apontem ao binário)
-if [[ -f "$BINDS_FILE" ]] && grep -q "\.local/bin/hyprai" "$BINDS_FILE" 2>/dev/null; then
-    backup_file "$BINDS_FILE"
-    sed -i '\|\.local/bin/hyprai|d' "$BINDS_FILE"
-    echo "✓ Atalho removido de $BINDS_FILE"
-fi
+# 4. Limpeza do atalho — nos mesmos dois arquivos onde o install.sh o põe.
+# Tira o bloco entre "-- hyprai:begin/end" (e a linha em branco que o
+# instalador pôs antes dele) e, para instalações antigas sem marcadores,
+# só linhas hl.bind(...) que chamem o binário — não qualquer menção a ele.
+for f in "$BINDS_FILE" "$HOME/.config/hypr/hyprland.lua"; do
+    [[ -f "$f" ]] || continue
+    grep -qE 'hyprai:begin|hl\.bind\(.*\.local/bin/hyprai' "$f" || continue
+    backup_file "$f"
+    awk '
+        /^[[:space:]]*-- hyprai:begin[[:space:]]*$/ { blank = 0; skip = 1; next }
+        skip { if ($0 ~ /^[[:space:]]*-- hyprai:end[[:space:]]*$/) skip = 0; next }
+        /^[[:space:]]*hl\.bind\(.*\.local\/bin\/hyprai/ { next }
+        /^[[:space:]]*$/ { if (blank) print ""; blank = 1; next }
+        { if (blank) print ""; blank = 0; print }
+        END { if (blank) print "" }
+    ' "$f" | write_through "$f"
+    echo "✓ Atalho removido de $f"
+done
 
 # 5. Limpeza da layer rule em windowrules.lua
 if [[ -f "$WINDOWRULES_FILE" ]] && grep -qE 'name[[:space:]]*=[[:space:]]*"hyprai"' "$WINDOWRULES_FILE" 2>/dev/null; then
     backup_file "$WINDOWRULES_FILE"
-    tmp_wr="$(mktemp)"
     awk '
     BEGIN { in_hyprai=0; in_single=0 }
     /^[[:space:]]*--[[:space:]]*Hypr\.AI layer rule/ { in_hyprai=1; next }
@@ -88,7 +106,7 @@ if [[ -f "$WINDOWRULES_FILE" ]] && grep -qE 'name[[:space:]]*=[[:space:]]*"hypra
         next
     }
     { print }
-    ' "$WINDOWRULES_FILE" > "$tmp_wr" && mv "$tmp_wr" "$WINDOWRULES_FILE"
+    ' "$WINDOWRULES_FILE" | write_through "$WINDOWRULES_FILE"
     echo "✓ Regra de camada removida de $WINDOWRULES_FILE"
 fi
 

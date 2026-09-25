@@ -175,10 +175,17 @@ reabre o menu em vez de fazer nada.
   `export PATH=...` no `~/.config/uwsm/env`, e dispara o Kitty com a shell
   interactiva (`kitty --title "$title" fish -i -c "$cmd"`) para que funções,
   aliases e toolchains estejam disponíveis.
-- **Atalho sem conflitos**: antes de injectar `Super + I` no `binds.lua`, o
-  instalador consulta `hyprctl -j binds`. Se a combinação já estiver ocupada,
-  avisa e deixa escolher outra tecla — caso contrário criava duas acções na
-  mesma tecla sem aviso nenhum.
+- **Atalho sem conflitos**: antes de injectar `Super + I` no `binds.lua` (ou,
+  sem ele, no `hyprland.lua`), o instalador consulta `hyprctl -j binds`. Se a
+  combinação já estiver ocupada, avisa e deixa escolher outra tecla, verificando
+  também essa — caso contrário criava duas acções na mesma tecla sem aviso
+  nenhum. Sem terminal para perguntar, não cria o atalho e mostra a linha.
+- **Atalho portátil**: `mainMod` e `launchPrefix` só entram na linha se o
+  arquivo os definir; senão a linha é autónoma (`"SUPER + I"`). O bloco fica
+  entre `-- hyprai:begin/end`, no fim do arquivo (ou antes de um `return`
+  final), e o `uninstall.sh` tira só esse bloco. Os arquivos são reescritos
+  por cima, não substituídos — um `binds.lua` que seja symlink de um
+  repositório de dotfiles continua symlink.
 
 ### 📝 3.8. Curadoria declarativa (`config/sites.conf`)
 

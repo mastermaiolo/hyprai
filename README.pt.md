@@ -51,7 +51,7 @@ git clone https://github.com/mastermaiolo/hyprai && cd hyprai
 ./install.sh
 ```
 
-O instalador copia tudo para `~/.config/hypr/hyprai/`, cria o executável `hyprai` em `~/.local/bin/`, regista a ponte tonal no Noctalia (se instalado), adiciona o atalho `Super + I` a `binds.lua` (se o ficheiro existir, perguntando por outra tecla se essa combinação já estiver ocupada) e **pergunta** antes de acrescentar uma regra de camada de vidro ao teu `windowrules.lua`. Nunca mexe no blur global.
+O instalador copia tudo para `~/.config/hypr/hyprai/`, cria o executável `hyprai` em `~/.local/bin/`, regista a ponte tonal no Noctalia (se instalado), adiciona o atalho `Super + I` a `~/.config/hypr/config/binds.lua` — ou ao `hyprland.lua`, se aquele não existir — entre marcadores `-- hyprai:begin/end` (se a combinação já estiver ocupada pergunta por outra tecla e, sem terminal, não cria nada em vez de duplicar) e **pergunta** antes de acrescentar uma regra de camada de vidro ao teu `windowrules.lua`. Nunca mexe no blur global.
 
 > Depois de instalar, muda de wallpaper ou de accent no Noctalia uma vez, para ele gerar a ponte de cor pela primeira vez.
 

@@ -22,14 +22,20 @@ declare -A T=(
     [pt:installing]="Instalando arquivos em %s..."                  [en:installing]="Installing files to %s..."
     [pt:installed_ok]="✓ Arquivos instalados em %s"                 [en:installed_ok]="✓ Files installed to %s"
     [pt:bin_ok]="✓ Link simbólico criado em %s"                     [en:bin_ok]="✓ Symlink created at %s"
-    [pt:bind_found]="✓ Atalho já configurado em binds.lua"          [en:bind_found]="✓ Keybind already configured in binds.lua"
-    [pt:bind_add]="Adicionando o atalho %s ao binds.lua..."         [en:bind_add]="Adding the %s keybind to binds.lua..."
+    [pt:bind_found]="✓ Atalho já configurado em %s"                 [en:bind_found]="✓ Keybind already configured in %s"
+    [pt:bind_add]="Adicionando o atalho %s a %s..."                 [en:bind_add]="Adding the %s keybind to %s..."
     [pt:bind_ok]="✓ Atalho %s adicionado com sucesso"               [en:bind_ok]="✓ %s keybind added successfully"
     [pt:bind_conflict]="⚠ %s já está atribuído a outra coisa."      [en:bind_conflict]="⚠ %s is already bound to something else."
-    [pt:bind_prompt]="  Outra tecla a usar (uma letra, Enter mantém %s): " \
-    [en:bind_prompt]="  Another key to use instead (one letter, Enter keeps %s): "
-    [pt:bind_manual]="→ Não encontrei onde inserir o atalho. Adiciona %s manualmente ao teu binds.lua." \
-    [en:bind_manual]="→ Couldn't find where to insert the keybind. Add %s to your binds.lua by hand."
+    [pt:bind_prompt]="  Outra tecla (uma letra ou número; Enter para não criar atalho): " \
+    [en:bind_prompt]="  Another key (one letter or digit; Enter to skip the keybind): "
+    [pt:bind_invalid]="  Tecla inválida — use uma letra ou um número." \
+    [en:bind_invalid]="  Invalid key — use one letter or digit."
+    [pt:bind_skip]="→ Atalho não criado, para não duplicar uma tecla já em uso. Escolha uma livre e adicione à mão:" \
+    [en:bind_skip]="→ Keybind not created, so as not to duplicate a key already in use. Pick a free one and add by hand:"
+    [pt:bind_nofile]="→ Nem binds.lua nem hyprland.lua encontrados. Adicione o atalho à sua config do Hyprland:" \
+    [en:bind_nofile]="→ Neither binds.lua nor hyprland.lua found. Add the keybind to your Hyprland config:"
+    [pt:bind_manual]="→ Não consegui inserir o atalho em %s. Adicione à mão:" \
+    [en:bind_manual]="→ Couldn't insert the keybind into %s. Add it by hand:"
     [pt:reloaded]="✓ Hyprland recarregado com sucesso"              [en:reloaded]="✓ Hyprland reloaded successfully"
     [pt:noctalia_ok]="✓ Ponte de cor tonal registrada no Noctalia"  [en:noctalia_ok]="✓ Tonal color bridge registered with Noctalia"
     [pt:noctalia_found]="✓ Ponte de cor tonal já registrada no Noctalia" [en:noctalia_found]="✓ Tonal color bridge already registered with Noctalia"
@@ -51,12 +57,12 @@ declare -A T=(
     [en:dep_warn_cli]="⚠ Warning: '%s' not found. CLI agents require fish and kitty to run." \
     [pt:dep_note_notify]="→ Nota: 'notify-send' não encontrado (opcional, usado para notificações)." \
     [en:dep_note_notify]="→ Note: 'notify-send' not found (optional, used for notifications)." \
-    [pt:bind_manual_code]="  Linha para colar:" \
-    [en:bind_manual_code]="  Line to paste:" \
-    [pt:done]="── Concluído! Pressione Super+I ou execute 'hyprai' no terminal ──" \
-    [en:done]="── Done! Press Super+I or run 'hyprai' in terminal ──"
+    [pt:finished_key]="── Concluído! Pressione Super+%s ou execute 'hyprai' no terminal ──" \
+    [en:finished_key]="── Done! Press Super+%s or run 'hyprai' in terminal ──" \
+    [pt:finished]="── Concluído! Execute 'hyprai' no terminal ──" \
+    [en:finished]="── Done! Run 'hyprai' in terminal ──"
 )
-t() { printf -- "${T[$L:$1]:-${T[pt:$1]:-$1}}" "${2:-}"; }
+t() { printf -- "${T[$L:$1]:-${T[pt:$1]:-$1}}" "${@:2}"; }
 
 echo "$(t title)"
 
@@ -130,11 +136,12 @@ ln -sf "$DEST/ui/launcher.sh" "$BIN_TARGET"
 chmod +x "$BIN_TARGET"
 echo "$(t bin_ok "$BIN_TARGET")"
 
-# 6. Configuração de atalho no binds.lua
+# 6. Configuração de atalho
 #
-# Antes de injectar, confirma se a combinação já está ocupada — caso contrário
-# criava-se um conflito silencioso, com duas acções na mesma tecla e nenhum
-# aviso. modmask 64 = SUPER.
+# O bloco vai entre marcadores "-- hyprai:begin/end", para o uninstall.sh
+# tirar só o que o instalador pôs. Antes de injectar, confirma se a combinação
+# já está ocupada — senão criava-se um conflito silencioso, com duas acções na
+# mesma tecla e nenhum aviso. modmask 64 = SUPER.
 bind_taken() {   # $1=modmask  $2=tecla → 0 se já existir um bind nessa combinação
     command -v hyprctl &>/dev/null || return 1
     hyprctl -j binds 2>/dev/null | awk -v want_mod="$1" -v want_key="$2" '
@@ -147,43 +154,97 @@ bind_taken() {   # $1=modmask  $2=tecla → 0 se já existir um bind nessa combi
     '
 }
 
+# Linha do bind. mainMod/launchPrefix só se o arquivo os definir — são
+# convenção de alguns dotfiles, não do Hyprland; numa config sem eles, a
+# linha antiga dava "attempt to concatenate a nil value" e o Lua inteiro
+# deixava de carregar. Sem launchPrefix não se perde nada: o launcher já
+# abre cada ferramenta via uwsm quando há sessão uwsm.
+bind_line() {   # $1=tecla  $2=arquivo alvo (pode não existir)
+    local mod='"SUPER + '"$1"'"' cmd='os.getenv("HOME") .. "/.local/bin/hyprai"'
+    if [[ -f "$2" ]]; then
+        grep -qE '^[[:space:]]*(local[[:space:]]+)?mainMod[[:space:]]*=' "$2" \
+            && mod='mainMod .. " + '"$1"'"'
+        grep -qE '^[[:space:]]*(local[[:space:]]+)?launchPrefix[[:space:]]*=' "$2" \
+            && cmd="launchPrefix .. $cmd"
+    fi
+    printf 'hl.bind(%s, hl.dsp.exec_cmd(%s))' "$mod" "$cmd"
+}
+
+# Escreve por cima do conteúdo em vez de mv/sed -i: um binds.lua que seja
+# symlink (stow, repositório de dotfiles) continua symlink, e a mudança cai
+# no arquivo real em vez de o substituir por uma cópia solta.
+write_through() {   # $1=arquivo  stdin=conteúdo novo
+    local tmp; tmp="$(mktemp)"
+    cat > "$tmp" && cat "$tmp" > "$1"
+    rm -f "$tmp"
+}
+
+# binds.lua dedicado (layout config/*.lua) ou, na falta dele, o hyprland.lua.
+BINDS_TARGET=""
+for f in "$BINDS_FILE" "$HOME/.config/hypr/hyprland.lua"; do
+    [[ -f "$f" ]] && { BINDS_TARGET="$f"; break; }
+done
+
 MENU_KEY="I"
-if [[ -f "$BINDS_FILE" ]]; then
-    if grep -q "hyprai" "$BINDS_FILE" 2>/dev/null; then
-        echo "$(t bind_found)"
-    else
-        # Conflito só é verificável dentro de uma sessão Hyprland a correr.
-        if [[ -n "${HYPRLAND_INSTANCE_SIGNATURE:-}" ]] && bind_taken 64 "$MENU_KEY"; then
+BIND_ADDED=0
+if [[ -n "$BINDS_TARGET" ]] && grep -qE 'hyprai:begin|hl\.bind\(.*\.local/bin/hyprai' "$BINDS_TARGET"; then
+    # Procura o bind em si, não a palavra "hyprai" — um comentário a citar o
+    # projeto dava o atalho por configurado sem ele existir.
+    echo "$(t bind_found "$BINDS_TARGET")"
+    MENU_KEY="$(grep -E 'hl\.bind\(.*\.local/bin/hyprai' "$BINDS_TARGET" | head -1 \
+                | sed -n 's/.*+ *\([[:alnum:]]\)".*/\1/p')"
+    BIND_ADDED=1
+else
+    # Conflito só é verificável dentro de uma sessão Hyprland a correr.
+    # Com terminal, pergunta até ter uma tecla livre (verificando cada uma);
+    # sem terminal, não cria o atalho — duplicar em silêncio é pior que não ter.
+    if [[ -n "${HYPRLAND_INSTANCE_SIGNATURE:-}" ]]; then
+        while bind_taken 64 "$MENU_KEY"; do
             echo "$(t bind_conflict "SUPER + $MENU_KEY")"
-            if [[ -t 0 ]]; then
-                printf '%s' "$(t bind_prompt "$MENU_KEY")"
-                read -r NEW_KEY || true
-                if [[ -n "${NEW_KEY:-}" ]]; then
-                    MENU_KEY="${NEW_KEY:0:1}"
-                    MENU_KEY="${MENU_KEY^^}"
-                fi
-            fi
-        fi
-        echo "$(t bind_add "SUPER + $MENU_KEY")"
-        bind_bkp="$BINDS_FILE.hyprai-backup-$(date +%Y%m%d%H%M%S)"
-        cp -a "$BINDS_FILE" "$bind_bkp"
-        echo "→ Backup criado: $bind_bkp"
+            MENU_KEY="" NEW_KEY=""
+            while [[ -t 0 ]]; do
+                printf '%s' "$(t bind_prompt)"
+                read -r NEW_KEY || NEW_KEY=""
+                [[ -z "$NEW_KEY" || "$NEW_KEY" =~ ^[[:alnum:]]$ ]] && break
+                echo "$(t bind_invalid)"
+            done
+            [[ -z "$NEW_KEY" ]] && break
+            MENU_KEY="${NEW_KEY^^}"
+        done
+    fi
 
-        BIND_LINE="hl.bind(mainMod .. \" + $MENU_KEY\",          hl.dsp.exec_cmd(launchPrefix .. os.getenv(\"HOME\") .. \"/.local/bin/hyprai\"))"
-        tmp_binds="$(mktemp)"
+    if [[ -z "$MENU_KEY" ]]; then
+        echo "$(t bind_skip)"
+        printf '  %s\n' "$(bind_line I "$BINDS_TARGET")"
+    elif [[ -z "$BINDS_TARGET" ]]; then
+        echo "$(t bind_nofile)"
+        printf '  %s\n' "$(bind_line "$MENU_KEY" "")"
+    else
+        BIND_LINE="$(bind_line "$MENU_KEY" "$BINDS_TARGET")"
+        echo "$(t bind_add "SUPER + $MENU_KEY" "$BINDS_TARGET")"
+        bind_bkp="$BINDS_TARGET.hyprai-backup-$(date +%Y%m%d%H%M%S)"
+        cp -a "$BINDS_TARGET" "$bind_bkp"
+        echo "→ Backup: $bind_bkp"
+
+        # No fim do arquivo — ou antes de um "return" final, onde nada depois
+        # dele correria (e um Lua com código após o return nem compila).
         awk -v line="$BIND_LINE" '
-            !done && /HARDWARE CONTROLS/ {
-                print line
-                done=1
+            { buf[++n] = $0 }
+            END {
+                last = n; while (last > 0 && buf[last] ~ /^[[:space:]]*$/) last--
+                at = (last > 0 && buf[last] ~ /^[[:space:]]*return([[:space:]]|$)/) ? last : n + 1
+                for (i = 1; i <= n + 1; i++) {
+                    if (i == at) { print ""; print "-- hyprai:begin"; print line; print "-- hyprai:end" }
+                    if (i <= n) print buf[i]
+                }
             }
-            { print }
-        ' "$BINDS_FILE" > "$tmp_binds" && mv "$tmp_binds" "$BINDS_FILE"
+        ' "$BINDS_TARGET" | write_through "$BINDS_TARGET"
 
-        if grep -F -q ".local/bin/hyprai" "$BINDS_FILE"; then
+        if grep -qF -- "-- hyprai:begin" "$BINDS_TARGET"; then
             echo "$(t bind_ok "SUPER + $MENU_KEY")"
+            BIND_ADDED=1
         else
-            echo "$(t bind_manual "SUPER + $MENU_KEY")"
-            echo "$(t bind_manual_code)"
+            echo "$(t bind_manual "$BINDS_TARGET")"
             printf '  %s\n' "$BIND_LINE"
         fi
     fi
@@ -262,4 +323,8 @@ if command -v hyprctl &>/dev/null && [[ -n "${HYPRLAND_INSTANCE_SIGNATURE:-}" ]]
 fi
 
 echo ""
-echo "$(t done)"
+if [[ "$BIND_ADDED" -eq 1 && -n "$MENU_KEY" ]]; then
+    echo "$(t finished_key "$MENU_KEY")"
+else
+    echo "$(t finished)"
+fi
