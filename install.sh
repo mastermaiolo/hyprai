@@ -90,8 +90,12 @@ fi
 if ! command -v notify-send &>/dev/null; then
     say dep_note_notify
 fi
-if command -v fc-list &>/dev/null && ! fc-list : family | grep -qx 'Inter'; then
-    say dep_note_font
+# A lista vai para uma variável antes do grep: em pipe, o grep -q sai ao
+# primeiro acerto, o fc-list morre de SIGPIPE a meio da lista e, com
+# pipefail, o pipe inteiro "falha" — o aviso saía justamente com a Inter lá.
+if command -v fc-list &>/dev/null; then
+    font_families="$(fc-list : family 2>/dev/null || true)"
+    grep -qx 'Inter' <<< "$font_families" || say dep_note_font
 fi
 
 # 1. Cria diretório de destino
@@ -283,7 +287,7 @@ if [[ -f "$WINDOWRULES_FILE" ]]; then
         # desktops onde o wallpaper é uma camada. Avisa em vez de dar por
         # configurado e deixar o bug de pé.
         if awk '/namespace = "\^rofi\$"/,/\}\)/' "$WINDOWRULES_FILE" \
-             | grep -qE 'xray[[:space:]]*=[[:space:]]*true'; then
+             | grep -E 'xray[[:space:]]*=[[:space:]]*true' >/dev/null; then
             say layerrule_xray_warn
         else
             say layerrule_found

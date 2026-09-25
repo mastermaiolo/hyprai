@@ -1042,7 +1042,7 @@ doctor() {
     fi
     local wr="${XDG_CONFIG_HOME:-$HOME/.config}/hypr/config/windowrules.lua"
     if [[ -f "$wr" ]] && grep -q 'namespace = "\^rofi\$"' "$wr"; then
-        if awk '/namespace = "\^rofi\$"/,/\}\)/' "$wr" | grep -qE 'xray[[:space:]]*=[[:space:]]*true'; then
+        if awk '/namespace = "\^rofi\$"/,/\}\)/' "$wr" | grep -E 'xray[[:space:]]*=[[:space:]]*true' >/dev/null; then
             bad "$(t doc_rule_xray)"
         else
             ok "$(t doc_rule_ok)"
