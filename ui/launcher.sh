@@ -669,9 +669,14 @@ run_menu() {
     # e "icon\x1f<path>" — uma variável bash não guarda NUL (trunca a string),
     # por isso o byte só pode nascer aqui, no printf que escreve direto no pipe,
     # nunca num array/variável intermediária.
+    # Linha sem id é cabeçalho de secção: nonselectable, para as setas não
+    # pararem nela (antes o cursor podia ficar num cabeçalho e o Enter só
+    # reabria o menu).
     local i
     for i in "${!ROW_TEXT[@]}"; do
-        if [[ -n "${ROW_ICON[i]:-}" ]]; then
+        if [[ -z "${ROW_ID[i]:-}" ]]; then
+            printf '%s\x00nonselectable\x1ftrue\n' "${ROW_TEXT[i]}"
+        elif [[ -n "${ROW_ICON[i]:-}" ]]; then
             printf '%s\x00icon\x1f%s\n' "${ROW_TEXT[i]}" "${ROW_ICON[i]}"
         else
             printf '%s\n' "${ROW_TEXT[i]}"
