@@ -41,6 +41,26 @@ else
     ROFI_THEME="$BASE_DIR/rofi/hyprai.rasi"
 fi
 
+# Preferências (terminal, …) — como o tools.conf, o install.sh nunca o
+# sobrescreve. user.rasi: ajustes pessoais ao tema (posição, largura, fonte),
+# aplicados por último; não vem no repositório, é só do utilizador.
+if [[ -f "${XDG_CONFIG_HOME:-$HOME/.config}/hypr/hyprai/config/hyprai.conf" ]]; then
+    HYPRAI_CONF="${XDG_CONFIG_HOME:-$HOME/.config}/hypr/hyprai/config/hyprai.conf"
+else
+    HYPRAI_CONF="$BASE_DIR/config/hyprai.conf"
+fi
+USER_RASI="${XDG_CONFIG_HOME:-$HOME/.config}/hypr/hyprai/rofi/user.rasi"
+
+# "chave = valor" do hyprai.conf; # comenta. Vazio se não houver.
+conf_get() {
+    [[ -f "$HYPRAI_CONF" ]] || return 0
+    awk -F= -v k="$1" '
+        /^[[:space:]]*#/ { next }
+        { key = $1; gsub(/[[:space:]]/, "", key) }
+        key == k { sub(/^[^=]*=/, ""); gsub(/^[[:space:]]+|[[:space:]]+$/, ""); v = $0 }
+        END { if (v != "") print v }' "$HYPRAI_CONF"
+}
+
 # Determina localização dos ícones SVG (element-icon real do rofi, não emoji)
 if [[ -d "${XDG_CONFIG_HOME:-$HOME/.config}/hypr/hyprai/svg" ]]; then
     ICON_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/hypr/hyprai/svg"
@@ -96,8 +116,39 @@ T+=(
     [pt_PT:opening]="A abrir"
     [pt_PT:err_tool_missing]="Já não foi encontrado"
     [pt_PT:err_tool_missing_body]="Pode ter sido desinstalado"
-    [pt_PT:err_no_kitty]="Kitty não encontrado"
-    [pt_PT:err_no_kitty_body]="Instala o terminal kitty para executar agentes CLI"
+    [pt_PT:err_no_term]="Nenhum terminal encontrado"
+    [pt_PT:err_no_term_body]="Instala kitty, ghostty, foot, alacritty ou wezterm — ou define terminal = no hyprai.conf"
+    [pt_PT:usage]="uso: hyprai [--doctor]"
+    [pt_PT:doc_title]="Hypr.AI · diagnóstico"
+    [pt_PT:doc_deps]="Dependências"
+    [pt_PT:doc_files]="Arquivos em uso"
+    [pt_PT:doc_theme]="Tema"
+    [pt_PT:doc_tools]="Ferramentas e sites"
+    [pt_PT:doc_missing]="não encontrado"
+    [pt_PT:doc_optional]="opcional"
+    [pt_PT:doc_need_cli]="necessário para os agentes CLI"
+    [pt_PT:doc_need_web]="necessário para abrir os sites"
+    [pt_PT:doc_terminal]="terminal"
+    [pt_PT:doc_term_fallback]="terminal = %s não encontrado; a usar o automático"
+    [pt_PT:doc_term_none]="nenhum terminal encontrado — os agentes CLI não abrem"
+    [pt_PT:doc_theme_noctalia]="cor tonal do Noctalia"
+    [pt_PT:doc_theme_caelestia]="cor tonal do Caelestia"
+    [pt_PT:doc_theme_static]="paleta estática (violeta) — sem Noctalia nem Caelestia utilizáveis"
+    [pt_PT:doc_theme_lowc]="accent com contraste < 3:1 sobre o fundo — esquema rejeitado"
+    [pt_PT:doc_theme_notrendered]="o arquivo de cores ainda não foi gerado — troca de wallpaper uma vez"
+    [pt_PT:doc_found]="%s ferramentas detectadas"
+    [pt_PT:doc_notfound]="não encontradas (normal se não estiverem instaladas): %s"
+    [pt_PT:doc_dup]="id repetido: %s"
+    [pt_PT:doc_badcat]="categoria inválida (use cli ou desktop): %s"
+    [pt_PT:doc_nosvg]="ícone inexistente em svg/: %s"
+    [pt_PT:doc_badurl]="URL sem http(s)://: %s"
+    [pt_PT:doc_fields]="linha incompleta: %s"
+    [pt_PT:doc_bind_ok]="atalho %s"
+    [pt_PT:doc_bind_none]="nenhum atalho do hyprai no binds.lua/hyprland.lua"
+    [pt_PT:doc_rule_ok]="regra de vidro para ^rofi$"
+    [pt_PT:doc_rule_none]="sem regra de vidro para ^rofi$ — o menu fica sem blur"
+    [pt_PT:doc_rule_xray]="a regra de vidro tem xray = true — o vidro desaparece"
+    [pt_PT:doc_summary]="%s problema(s), %s aviso(s)"
     [pt_PT:err_no_opener]="Não há como abrir o site"
     [pt_PT:err_no_opener_body]="Instala o xdg-utils (xdg-open)"
     [pt_PT:err_bad_cat]="Entrada ignorada no tools.conf"
@@ -129,8 +180,39 @@ T+=(
     [pt_BR:opening]="Abrindo"
     [pt_BR:err_tool_missing]="Não encontrado"
     [pt_BR:err_tool_missing_body]="Pode ter sido desinstalado"
-    [pt_BR:err_no_kitty]="Kitty não encontrado"
-    [pt_BR:err_no_kitty_body]="Instale o terminal kitty para executar agentes CLI"
+    [pt_BR:err_no_term]="Nenhum terminal encontrado"
+    [pt_BR:err_no_term_body]="Instale kitty, ghostty, foot, alacritty ou wezterm — ou defina terminal = no hyprai.conf"
+    [pt_BR:usage]="uso: hyprai [--doctor]"
+    [pt_BR:doc_title]="Hypr.AI · diagnóstico"
+    [pt_BR:doc_deps]="Dependências"
+    [pt_BR:doc_files]="Arquivos em uso"
+    [pt_BR:doc_theme]="Tema"
+    [pt_BR:doc_tools]="Ferramentas e sites"
+    [pt_BR:doc_missing]="não encontrado"
+    [pt_BR:doc_optional]="opcional"
+    [pt_BR:doc_need_cli]="necessário para os agentes CLI"
+    [pt_BR:doc_need_web]="necessário para abrir os sites"
+    [pt_BR:doc_terminal]="terminal"
+    [pt_BR:doc_term_fallback]="terminal = %s não encontrado; usando o automático"
+    [pt_BR:doc_term_none]="nenhum terminal encontrado — os agentes CLI não abrem"
+    [pt_BR:doc_theme_noctalia]="cor tonal do Noctalia"
+    [pt_BR:doc_theme_caelestia]="cor tonal do Caelestia"
+    [pt_BR:doc_theme_static]="paleta estática (violeta) — sem Noctalia nem Caelestia utilizáveis"
+    [pt_BR:doc_theme_lowc]="accent com contraste < 3:1 sobre o fundo — esquema rejeitado"
+    [pt_BR:doc_theme_notrendered]="o arquivo de cores ainda não foi gerado — troque de wallpaper uma vez"
+    [pt_BR:doc_found]="%s ferramentas detectadas"
+    [pt_BR:doc_notfound]="não encontradas (normal se não estiverem instaladas): %s"
+    [pt_BR:doc_dup]="id repetido: %s"
+    [pt_BR:doc_badcat]="categoria inválida (use cli ou desktop): %s"
+    [pt_BR:doc_nosvg]="ícone inexistente em svg/: %s"
+    [pt_BR:doc_badurl]="URL sem http(s)://: %s"
+    [pt_BR:doc_fields]="linha incompleta: %s"
+    [pt_BR:doc_bind_ok]="atalho %s"
+    [pt_BR:doc_bind_none]="nenhum atalho do hyprai no binds.lua/hyprland.lua"
+    [pt_BR:doc_rule_ok]="regra de vidro para ^rofi$"
+    [pt_BR:doc_rule_none]="sem regra de vidro para ^rofi$ — o menu fica sem blur"
+    [pt_BR:doc_rule_xray]="a regra de vidro tem xray = true — o vidro desaparece"
+    [pt_BR:doc_summary]="%s problema(s), %s aviso(s)"
     [pt_BR:err_no_opener]="Não há como abrir o site"
     [pt_BR:err_no_opener_body]="Instale o xdg-utils (xdg-open)"
     [pt_BR:err_bad_cat]="Entrada ignorada no tools.conf"
@@ -162,8 +244,39 @@ T+=(
     [es:opening]="Abriendo"
     [es:err_tool_missing]="Ya no se encuentra"
     [es:err_tool_missing_body]="Puede que se haya desinstalado"
-    [es:err_no_kitty]="Kitty no encontrado"
-    [es:err_no_kitty_body]="Instala la terminal kitty para ejecutar agentes CLI"
+    [es:err_no_term]="No se encontró ninguna terminal"
+    [es:err_no_term_body]="Instala kitty, ghostty, foot, alacritty o wezterm — o define terminal = en hyprai.conf"
+    [es:usage]="uso: hyprai [--doctor]"
+    [es:doc_title]="Hypr.AI · diagnóstico"
+    [es:doc_deps]="Dependencias"
+    [es:doc_files]="Archivos en uso"
+    [es:doc_theme]="Tema"
+    [es:doc_tools]="Herramientas y sitios"
+    [es:doc_missing]="no encontrado"
+    [es:doc_optional]="opcional"
+    [es:doc_need_cli]="necesario para los agentes CLI"
+    [es:doc_need_web]="necesario para abrir los sitios"
+    [es:doc_terminal]="terminal"
+    [es:doc_term_fallback]="terminal = %s no encontrada; usando la automática"
+    [es:doc_term_none]="no se encontró ninguna terminal — los agentes CLI no se abren"
+    [es:doc_theme_noctalia]="color tonal de Noctalia"
+    [es:doc_theme_caelestia]="color tonal de Caelestia"
+    [es:doc_theme_static]="paleta estática (violeta) — sin Noctalia ni Caelestia utilizables"
+    [es:doc_theme_lowc]="acento con contraste < 3:1 sobre el fondo — esquema rechazado"
+    [es:doc_theme_notrendered]="el archivo de colores aún no se generó — cambia de fondo de pantalla una vez"
+    [es:doc_found]="%s herramientas detectadas"
+    [es:doc_notfound]="no encontradas (normal si no están instaladas): %s"
+    [es:doc_dup]="id repetido: %s"
+    [es:doc_badcat]="categoría no válida (usa cli o desktop): %s"
+    [es:doc_nosvg]="icono inexistente en svg/: %s"
+    [es:doc_badurl]="URL sin http(s)://: %s"
+    [es:doc_fields]="línea incompleta: %s"
+    [es:doc_bind_ok]="atajo %s"
+    [es:doc_bind_none]="ningún atajo de hyprai en binds.lua/hyprland.lua"
+    [es:doc_rule_ok]="regla de cristal para ^rofi$"
+    [es:doc_rule_none]="sin regla de cristal para ^rofi$ — el menú queda sin desenfoque"
+    [es:doc_rule_xray]="la regla de cristal tiene xray = true — el cristal desaparece"
+    [es:doc_summary]="%s problema(s), %s aviso(s)"
     [es:err_no_opener]="No hay cómo abrir el sitio"
     [es:err_no_opener_body]="Instala xdg-utils (xdg-open)"
     [es:err_bad_cat]="Entrada ignorada en tools.conf"
@@ -195,8 +308,39 @@ T+=(
     [en:opening]="Opening"
     [en:err_tool_missing]="No longer found"
     [en:err_tool_missing_body]="It may have been uninstalled"
-    [en:err_no_kitty]="Kitty not found"
-    [en:err_no_kitty_body]="Install the kitty terminal to run CLI agents"
+    [en:err_no_term]="No terminal found"
+    [en:err_no_term_body]="Install kitty, ghostty, foot, alacritty or wezterm — or set terminal = in hyprai.conf"
+    [en:usage]="usage: hyprai [--doctor]"
+    [en:doc_title]="Hypr.AI · doctor"
+    [en:doc_deps]="Dependencies"
+    [en:doc_files]="Files in use"
+    [en:doc_theme]="Theme"
+    [en:doc_tools]="Tools and sites"
+    [en:doc_missing]="not found"
+    [en:doc_optional]="optional"
+    [en:doc_need_cli]="needed for CLI agents"
+    [en:doc_need_web]="needed to open websites"
+    [en:doc_terminal]="terminal"
+    [en:doc_term_fallback]="terminal = %s not found; using the automatic one"
+    [en:doc_term_none]="no terminal found — CLI agents won't open"
+    [en:doc_theme_noctalia]="Noctalia tonal colour"
+    [en:doc_theme_caelestia]="Caelestia tonal colour"
+    [en:doc_theme_static]="static palette (violet) — no usable Noctalia or Caelestia"
+    [en:doc_theme_lowc]="accent contrast < 3:1 against the background — scheme rejected"
+    [en:doc_theme_notrendered]="the colour file hasn't been generated yet — change wallpaper once"
+    [en:doc_found]="%s tools detected"
+    [en:doc_notfound]="not found (normal if not installed): %s"
+    [en:doc_dup]="duplicate id: %s"
+    [en:doc_badcat]="invalid category (use cli or desktop): %s"
+    [en:doc_nosvg]="icon missing from svg/: %s"
+    [en:doc_badurl]="URL without http(s)://: %s"
+    [en:doc_fields]="incomplete line: %s"
+    [en:doc_bind_ok]="keybind %s"
+    [en:doc_bind_none]="no hyprai keybind in binds.lua/hyprland.lua"
+    [en:doc_rule_ok]="glass rule for ^rofi$"
+    [en:doc_rule_none]="no glass rule for ^rofi$ — the menu gets no blur"
+    [en:doc_rule_xray]="the glass rule has xray = true — the glass disappears"
+    [en:doc_summary]="%s problem(s), %s warning(s)"
     [en:err_no_opener]="Can't open the website"
     [en:err_no_opener_body]="Install xdg-utils (xdg-open)"
     [en:err_bad_cat]="Entry skipped in tools.conf"
@@ -228,8 +372,39 @@ T+=(
     [zh:opening]="正在打开"
     [zh:err_tool_missing]="已找不到"
     [zh:err_tool_missing_body]="可能已被卸载"
-    [zh:err_no_kitty]="未找到 Kitty"
-    [zh:err_no_kitty_body]="请安装 kitty 终端以运行命令行智能体"
+    [zh:err_no_term]="未找到终端"
+    [zh:err_no_term_body]="请安装 kitty、ghostty、foot、alacritty 或 wezterm，或在 hyprai.conf 中设置 terminal ="
+    [zh:usage]="用法：hyprai [--doctor]"
+    [zh:doc_title]="Hypr.AI · 诊断"
+    [zh:doc_deps]="依赖"
+    [zh:doc_files]="使用中的文件"
+    [zh:doc_theme]="主题"
+    [zh:doc_tools]="工具与网站"
+    [zh:doc_missing]="未找到"
+    [zh:doc_optional]="可选"
+    [zh:doc_need_cli]="命令行智能体需要"
+    [zh:doc_need_web]="打开网站需要"
+    [zh:doc_terminal]="终端"
+    [zh:doc_term_fallback]="未找到 terminal = %s；改用自动选择"
+    [zh:doc_term_none]="未找到终端 —— 命令行智能体无法打开"
+    [zh:doc_theme_noctalia]="Noctalia 色调"
+    [zh:doc_theme_caelestia]="Caelestia 色调"
+    [zh:doc_theme_static]="静态调色板（紫色）—— 没有可用的 Noctalia 或 Caelestia"
+    [zh:doc_theme_lowc]="强调色与背景对比度 < 3:1 —— 配色被拒绝"
+    [zh:doc_theme_notrendered]="颜色文件尚未生成 —— 请更换一次壁纸"
+    [zh:doc_found]="检测到 %s 个工具"
+    [zh:doc_notfound]="未找到（未安装则属正常）：%s"
+    [zh:doc_dup]="重复的 id：%s"
+    [zh:doc_badcat]="无效分类（请用 cli 或 desktop）：%s"
+    [zh:doc_nosvg]="svg/ 中缺少图标：%s"
+    [zh:doc_badurl]="URL 缺少 http(s)://：%s"
+    [zh:doc_fields]="不完整的行：%s"
+    [zh:doc_bind_ok]="快捷键 %s"
+    [zh:doc_bind_none]="binds.lua/hyprland.lua 中没有 hyprai 快捷键"
+    [zh:doc_rule_ok]="^rofi$ 的玻璃规则"
+    [zh:doc_rule_none]="没有 ^rofi$ 的玻璃规则 —— 菜单没有模糊"
+    [zh:doc_rule_xray]="玻璃规则设置了 xray = true —— 玻璃效果会消失"
+    [zh:doc_summary]="%s 个问题，%s 个警告"
     [zh:err_no_opener]="无法打开网站"
     [zh:err_no_opener_body]="请安装 xdg-utils（xdg-open）"
     [zh:err_bad_cat]="tools.conf 中的条目已跳过"
@@ -239,7 +414,7 @@ T+=(
 # Chave em falta cai para o inglês, não para a chave crua — um rótulo
 # "cat_media" na interface é pior que o termo em inglês.
 # shellcheck disable=SC2059  # o formato É a tradução (leva %s)
-t() { printf -- "${T[$L:$1]:-${T[en:$1]:-$1}}" "${2:-}"; }
+t() { printf -- "${T[$L:$1]:-${T[en:$1]:-$1}}" "${@:2}"; }
 
 # ── Cor tonal do sistema ──────────────────────────────────────────────
 # TODOS os neutros seguem o wallpaper agora, não só o accent — bg0…fg3,
@@ -468,6 +643,8 @@ back_row() {
 run_menu() {
     local dyn=(); [[ -n "$DYNAMIC_THEME_STR" ]] && dyn=(-theme-str "$DYNAMIC_THEME_STR")
     local mesg=(); [[ -n "${3:-}" ]] && mesg=(-mesg "$3")
+    # Depois do tema dinâmico, para um ajuste pessoal ganhar sempre.
+    local usr=(); [[ -s "$USER_RASI" ]] && usr=(-theme-str "$(cat "$USER_RASI")")
     # O protocolo de ícone do rofi precisa de um byte NUL literal entre o texto
     # e "icon\x1f<path>" — uma variável bash não guarda NUL (trunca a string),
     # por isso o byte só pode nascer aqui, no printf que escreve direto no pipe,
@@ -481,7 +658,7 @@ run_menu() {
         fi
     done | rofi -dmenu -show-icons -p "$1" -theme "$ROFI_THEME" \
         -theme-str "entry { placeholder: \"$(t search_placeholder)\"; }" \
-        "${dyn[@]}" "${mesg[@]}" -no-custom -markup-rows -format i -selected-row "${2:-1}"
+        "${dyn[@]}" "${usr[@]}" "${mesg[@]}" -no-custom -markup-rows -format i -selected-row "${2:-1}"
 }
 
 # Tira espaço à volta de cada variável nomeada, no lugar — nameref em vez de
@@ -510,18 +687,53 @@ launch_cmd() {
     fi
 }
 
+# ── Terminal ──────────────────────────────────────────────────────────
+# terminal = no hyprai.conf (ou HYPRAI_TERMINAL, que ganha) escolhe; vazio ou
+# não encontrado, fica o primeiro destes que existir. Cada um tem a sua forma
+# de receber título e comando — um desconhecido recebe o "-e" que quase todos
+# aceitam.
+TERMINALS_AUTO=(kitty ghostty foot alacritty wezterm)
+TERM_BIN="" TERM_SOURCE=""
+pick_terminal() {
+    [[ -n "$TERM_BIN" ]] && return 0
+    local want="${HYPRAI_TERMINAL:-$(conf_get terminal)}" t
+    if [[ -n "$want" ]]; then
+        TERM_BIN="$(PATH="$(_fish_path)" command -v -- "$want" 2>/dev/null)" || TERM_BIN=""
+        if [[ -n "$TERM_BIN" ]]; then
+            TERM_SOURCE="${HYPRAI_TERMINAL:+HYPRAI_TERMINAL}"; TERM_SOURCE="${TERM_SOURCE:-hyprai.conf}"
+            return 0
+        fi
+    fi
+    for t in "${TERMINALS_AUTO[@]}"; do
+        TERM_BIN="$(PATH="$(_fish_path)" command -v -- "$t" 2>/dev/null)" || continue
+        TERM_SOURCE="auto"
+        return 0
+    done
+    TERM_BIN=""
+    return 1
+}
+
+# Monta em TERM_ARGV a linha que abre $@ num terminal com o título $1.
+term_argv() {
+    local title="$1"; shift
+    case "${TERM_BIN##*/}" in
+        kitty)     TERM_ARGV=("$TERM_BIN" --title "$title" "$@") ;;
+        ghostty)   TERM_ARGV=("$TERM_BIN" "--title=$title" -e "$@") ;;
+        foot)      TERM_ARGV=("$TERM_BIN" "--title=$title" "$@") ;;
+        alacritty) TERM_ARGV=("$TERM_BIN" --title "$title" -e "$@") ;;
+        wezterm)   TERM_ARGV=("$TERM_BIN" start --always-new-process -- "$@") ;;
+        *)         TERM_ARGV=("$TERM_BIN" -e "$@") ;;
+    esac
+}
+
 launch_term() {
-    local title="$1"
-    local cmd="$2"
-    if ! command -v kitty &>/dev/null; then
-        notify "$(t err_no_kitty)" "$(t err_no_kitty_body)"
+    local title="$1" cmd="$2"
+    if ! pick_terminal; then
+        notify "$(t err_no_term)" "$(t err_no_term_body)"
         return 1
     fi
-    if command -v uwsm &>/dev/null && uwsm check is-active &>/dev/null; then
-        uwsm app -- kitty --title "$title" fish -i -c "$cmd" &
-    else
-        kitty --title "$title" fish -i -c "$cmd" &
-    fi
+    term_argv "$title" fish -i -c "$cmd"
+    launch_cmd "${TERM_ARGV[@]}"
 }
 
 launch_web() {
@@ -558,10 +770,10 @@ launch_tool() {
     fi
 }
 
-# Editores de terminal conhecidos abrem dentro do kitty; qualquer outro é
-# tratado como gráfico. Ao contrário de uma lista de GUIs: um $VISUAL gráfico
-# fora da lista (subl, gnome-text-editor…) abria um kitty vazio a correr uma
-# janela gráfica. Procura com o PATH do fish, como as ferramentas — um nvim
+# Editores de terminal conhecidos abrem no terminal (pick_terminal); qualquer
+# outro é tratado como gráfico. Ao contrário de uma lista de GUIs: um $VISUAL
+# gráfico fora da lista (subl, gnome-text-editor…) abria um terminal vazio a
+# correr uma janela gráfica. Procura com o PATH do fish, como as ferramentas — um nvim
 # do brew também conta. EDITOR="code --wait" funciona (vira palavras); um
 # editor num caminho com espaços não, como em qualquer $EDITOR.
 edit_file() {
@@ -574,8 +786,9 @@ edit_file() {
         cmd[0]="$bin"
         case "${bin##*/}" in
             nvim|vim|vi|nano|micro|hx|helix|kak|emacs|ne|joe|mcedit)
-                if command -v kitty &>/dev/null; then
-                    launch_cmd kitty "${cmd[@]}" "$target"
+                if pick_terminal; then
+                    term_argv "${target##*/}" "${cmd[@]}" "$target"
+                    launch_cmd "${TERM_ARGV[@]}"
                     return
                 fi
                 continue   # editor de terminal sem terminal — tenta o próximo
@@ -700,6 +913,154 @@ build_main() {
     item "📝" "$(t edit_sites)"          "$(t desc_edit_sites)"      "__edit_sites__" "edit-sites.svg"
     item "🛠️" "$(t edit_tools)"          "$(t desc_edit_tools)"      "__edit_tools__" "edit-tools.svg"
 }
+
+# ── hyprai --doctor ───────────────────────────────────────────────────
+# Diagnóstico em texto, sem abrir o rofi: responde "porque é que X não
+# aparece / não abre / não tem vidro" sem ler o código. Só lê — não muda
+# nada. Sai com 1 se houver problemas (✗), 0 se só avisos (⚠) ou nada.
+doctor() {
+    local problems=0 warnings=0
+    ok()   { printf '  ✓ %s\n' "$*"; }
+    info() { printf '  · %s\n' "$*"; }
+    warn() { printf '  ⚠ %s\n' "$*"; warnings=$((warnings + 1)); }
+    bad()  { printf '  ✗ %s\n' "$*"; problems=$((problems + 1)); }
+    head_() { printf '\n%s\n' "$*"; }
+    has()  { command -v "$1" &>/dev/null; }
+
+    printf '%s\n' "$(t doc_title)"
+
+    # Dependências
+    head_ "$(t doc_deps)"
+    if has rofi; then ok "rofi $(rofi -v 2>/dev/null | sed -n 's/^Version: *//p' | head -1)"
+    else bad "rofi — $(t doc_missing)"; fi
+    # shellcheck disable=SC2016  # $version é do fish
+    if has fish; then ok "fish $(fish -c 'echo $version' 2>/dev/null)"
+    else warn "fish — $(t doc_missing) ($(t doc_need_cli))"; fi
+    local want="${HYPRAI_TERMINAL:-$(conf_get terminal)}"
+    if pick_terminal; then
+        if [[ -n "$want" && "$TERM_SOURCE" == auto ]]; then
+            warn "$(t doc_term_fallback "$want") → ${TERM_BIN##*/}"
+        else
+            ok "$(t doc_terminal): ${TERM_BIN##*/} ($TERM_SOURCE)"
+        fi
+    else
+        warn "$(t doc_term_none)"
+    fi
+    if has xdg-open; then ok "xdg-open"; else warn "xdg-open — $(t doc_missing) ($(t doc_need_web))"; fi
+    local o
+    for o in notify-send pango-view uwsm hyprctl; do
+        if has "$o"; then ok "$o"; else info "$o — $(t doc_missing) ($(t doc_optional))"; fi
+    done
+
+    # Arquivos em uso
+    head_ "$(t doc_files)"
+    info "tools.conf  $TOOLS_CONF"
+    info "sites.conf  $SITES_CONF"
+    info "tema        $ROFI_THEME"
+    [[ -f "$HYPRAI_CONF" ]] && info "hyprai.conf $HYPRAI_CONF"
+    [[ -f "$USER_RASI" ]] && info "user.rasi   $USER_RASI"
+
+    # Tema: quem forneceu a cor e, se ninguém, porquê
+    head_ "$(t doc_theme)"
+    if [[ -n "$DYNAMIC_THEME_STR" && "$DYNAMIC_THEME_STR" == "$(cat "$NOCTALIA_THEME" 2>/dev/null)" ]]; then
+        ok "$(t doc_theme_noctalia) — accent $(_token bg3 | cut -c1-7)"
+    elif [[ -n "$DYNAMIC_THEME_STR" ]]; then
+        ok "$(t doc_theme_caelestia) — accent $(_token bg3 | cut -c1-7)"
+    else
+        info "$(t doc_theme_static)"
+    fi
+    if [[ "$DYNAMIC_THEME_STR" != "$(cat "$NOCTALIA_THEME" 2>/dev/null)" || -z "$DYNAMIC_THEME_STR" ]]; then
+        if [[ -s "$NOCTALIA_THEME" ]] && ! grep -q '{{' "$NOCTALIA_THEME"; then
+            warn "Noctalia: $(t doc_theme_lowc)"
+        elif [[ -f "$HOME/.config/noctalia/config.toml" ]]; then
+            warn "Noctalia: $(t doc_theme_notrendered)"
+        fi
+    fi
+
+    # tools.conf
+    head_ "$(t doc_tools)"
+    local -A seen=()
+    local -a found=() missing=()
+    local n=0 line tid ticon tname tdesc tcat tcands tsvg targs hit
+    if [[ -f "$TOOLS_CONF" ]]; then
+        while IFS= read -r line || [[ -n "$line" ]]; do
+            n=$((n + 1))
+            IFS='|' read -r tid ticon tname tdesc tcat tcands tsvg targs <<< "$line"
+            trim_vars tid; [[ -z "$tid" || "$tid" =~ ^# ]] && continue
+            trim_vars tcat tcands tsvg
+            [[ -z "$tcands" ]] && { bad "tools.conf:$n $(t doc_fields "$tid")"; continue; }
+            [[ -n "${seen[$tid]:-}" ]] && bad "tools.conf:$n $(t doc_dup "$tid")"
+            seen[$tid]=1
+            [[ "$tcat" == cli || "$tcat" == desktop ]] || bad "tools.conf:$n $(t doc_badcat "$tid ($tcat)")"
+            [[ -n "$tsvg" && ! -f "$ICON_DIR/$tsvg" ]] && warn "tools.conf:$n $(t doc_nosvg "$tsvg")"
+            if hit="$(resolve_candidate "$tcands")"; then found+=("$tid → $hit")
+            else missing+=("$tid"); fi
+        done < "$TOOLS_CONF"
+    else
+        bad "tools.conf — $(t doc_missing)"
+    fi
+    ok "$(t doc_found "${#found[@]}")"
+    for line in "${found[@]}"; do printf '      %s\n' "$line"; done
+    if (( ${#missing[@]} )); then
+        local list; list="$(printf '%s, ' "${missing[@]}")"
+        info "$(t doc_notfound "${list%, }")"
+    fi
+
+    # sites.conf
+    local sid sicon sname scat surl ssvg
+    seen=(); n=0
+    local nsites=0
+    if [[ -f "$SITES_CONF" ]]; then
+        while IFS= read -r line || [[ -n "$line" ]]; do
+            n=$((n + 1))
+            IFS='|' read -r sid sicon sname scat surl ssvg <<< "$line"
+            trim_vars sid; [[ -z "$sid" || "$sid" =~ ^# ]] && continue
+            trim_vars scat surl ssvg
+            nsites=$((nsites + 1))
+            [[ -z "$surl" ]] && { bad "sites.conf:$n $(t doc_fields "$sid")"; continue; }
+            [[ -n "${seen[$sid]:-}" ]] && bad "sites.conf:$n $(t doc_dup "$sid")"
+            seen[$sid]=1
+            [[ "$surl" =~ ^https?:// ]] || bad "sites.conf:$n $(t doc_badurl "$surl")"
+            [[ -n "$ssvg" && ! -f "$ICON_DIR/$ssvg" ]] && warn "sites.conf:$n $(t doc_nosvg "$ssvg")"
+        done < "$SITES_CONF"
+        ok "sites.conf: $nsites sites"
+    else
+        bad "sites.conf — $(t doc_missing)"
+    fi
+
+    # Hyprland
+    head_ "Hyprland"
+    local f bindf="" key=""
+    for f in "${XDG_CONFIG_HOME:-$HOME/.config}/hypr/config/binds.lua" "${XDG_CONFIG_HOME:-$HOME/.config}/hypr/hyprland.lua"; do
+        [[ -f "$f" ]] && grep -qE 'hl\.bind\(.*\.local/bin/hyprai' "$f" && { bindf="$f"; break; }
+    done
+    if [[ -n "$bindf" ]]; then
+        key="$(grep -E 'hl\.bind\(.*\.local/bin/hyprai' "$bindf" | head -1 | sed -n 's/.*+ *\([[:alnum:]]\)".*/\1/p')"
+        ok "$(t doc_bind_ok "Super+${key:-?}") (${bindf/#$HOME/\~})"
+    else
+        warn "$(t doc_bind_none)"
+    fi
+    local wr="${XDG_CONFIG_HOME:-$HOME/.config}/hypr/config/windowrules.lua"
+    if [[ -f "$wr" ]] && grep -q 'namespace = "\^rofi\$"' "$wr"; then
+        if awk '/namespace = "\^rofi\$"/,/\}\)/' "$wr" | grep -qE 'xray[[:space:]]*=[[:space:]]*true'; then
+            bad "$(t doc_rule_xray)"
+        else
+            ok "$(t doc_rule_ok)"
+        fi
+    else
+        warn "$(t doc_rule_none)"
+    fi
+
+    printf '\n%s\n' "$(t doc_summary "$problems" "$warnings")"
+    (( problems == 0 ))
+}
+
+case "${1:-}" in
+    "")         ;;
+    --doctor)   doctor; exit $? ;;
+    -h|--help)  t usage; echo; exit 0 ;;
+    *)          { t usage; echo; } >&2; exit 2 ;;
+esac
 
 build_main
 # Só entra na fileira de chips quem realmente tem itens — um chip

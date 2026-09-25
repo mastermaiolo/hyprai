@@ -23,8 +23,8 @@ esac
 declare -A T=(
     [pt:title]="── Desinstalando Hypr.AI ──"                     [en:title]="── Uninstalling Hypr.AI ──"
     [pt:backup]="→ Backup criado: %s"                            [en:backup]="→ Backup created: %s"
-    [pt:curation_ask]="Apagar também a sua curadoria (sites.conf, tools.conf)? [s/N] " \
-    [en:curation_ask]="Also delete your curation (sites.conf, tools.conf)? [y/N] "
+    [pt:curation_ask]="Apagar também a sua curadoria (sites.conf, tools.conf, hyprai.conf, user.rasi)? [s/N] " \
+    [en:curation_ask]="Also delete your curation (sites.conf, tools.conf, hyprai.conf, user.rasi)? [y/N] "
     [pt:curation_kept]="→ Curadoria preservada em: %s"           [en:curation_kept]="→ Curation kept at: %s"
     [pt:noctalia_removed]="✓ Bloco removido de %s"               [en:noctalia_removed]="✓ Block removed from %s"
     [pt:bind_removed]="✓ Atalho removido de %s"                  [en:bind_removed]="✓ Keybind removed from %s"
@@ -55,9 +55,12 @@ backup_file() {
     fi
 }
 
-# 1. Preservação de curadoria (sites.conf, tools.conf)
+# 1. Preservação de curadoria: os .conf e o rofi/user.rasi são do utilizador
+CURATION_FILES=(config/sites.conf config/tools.conf config/hyprai.conf rofi/user.rasi)
 preserve_curation=1
-if [[ -f "$DEST/config/sites.conf" || -f "$DEST/config/tools.conf" ]]; then
+has_curation=0
+for c in "${CURATION_FILES[@]}"; do [[ -f "$DEST/$c" ]] && has_curation=1; done
+if [[ "$has_curation" -eq 1 ]]; then
     if [[ -t 0 ]]; then
         read -r -p "$(t curation_ask)" cur_ans || true
         case "$cur_ans" in
@@ -68,8 +71,9 @@ if [[ -f "$DEST/config/sites.conf" || -f "$DEST/config/tools.conf" ]]; then
     if [[ "$preserve_curation" -eq 1 ]]; then
         CURATION_BACKUP="$HOME/.config/hypr/hyprai-backup-$BACKUP_DATE"
         mkdir -p "$CURATION_BACKUP"
-        [[ -f "$DEST/config/sites.conf" ]] && cp -a "$DEST/config/sites.conf" "$CURATION_BACKUP/"
-        [[ -f "$DEST/config/tools.conf" ]] && cp -a "$DEST/config/tools.conf" "$CURATION_BACKUP/"
+        for c in "${CURATION_FILES[@]}"; do
+            [[ -f "$DEST/$c" ]] && cp -a "$DEST/$c" "$CURATION_BACKUP/"
+        done
         say curation_kept "$CURATION_BACKUP"
     fi
 fi

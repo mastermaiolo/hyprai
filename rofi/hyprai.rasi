@@ -50,7 +50,7 @@
        vez de vidro. */
     rim-top:    #F5F5F838;
 
-    font:   "SF Pro Text 11";
+    font:   "Inter 11";
 
     background-color:   transparent;
     text-color:         @fg0;
@@ -61,22 +61,13 @@
 }
 
 window {
-    /* location:center + y-offset negativo devia ser o jeito "correto" de
-       dizer "centralizado, mas deslocado" — mas nesta build do rofi
-       (2.0.0-dirty) o y-offset simplesmente não move nada com center como
-       âncora (testado: mesma posição com e sem offset). Voltando pra
-       north + deslocamento positivo a partir do topo, que já se provou
-       funcionar. 112px vem do monitor (1080px / 190mm ≈ 5,68px/mm) menos
-       os ~2cm (112px) que o usuário pediu pra subir a partir do centro
-       "visto" (~561px, puxado pra baixo pelos 41px que a barra do
-       Noctalia reserva no topo) — 561 − 112 − metade da altura da janela. */
-    location:       north;
-    /* Medido a partir do fim da barra reservada do Noctalia (41px), não do
-       y=0 da tela — testado: y-offset 112px deu topo real em 153px = 41+112.
-       Centro "natural" (janela sem offset, olhando só a área útil) fica em
-       ~561px; quero 112px (2cm) acima disso = 449px de centro, o que dá
-       este y-offset pra uma janela de 674px de altura. */
-    y-offset:       71px;
+    /* Centro da tela: o único padrão que serve a qualquer monitor e barra.
+       Uma posição afinada à mão para um ecrã (north + y-offset em px)
+       pertence ao rofi/user.rasi, que o install.sh nunca sobrescreve e o
+       launcher aplica por último — ver o exemplo no README. Nota: no rofi
+       2.0, y-offset não move a janela com location: center; para deslocar,
+       use location: north + y-offset. */
+    location:       center;
     width:          640px;
     /* Só a borda de cima renderiza — largura 0 nos outros três lados.
        É o que faz o painel ler-se como vidro em vez de caixa com moldura. */
@@ -106,7 +97,7 @@ inputbar {
 prompt {
     background-color:  @chip-bg;
     text-color:         @chip-fg;
-    font:               "SF Pro Text Semibold 12";
+    font:               "Inter Semibold 12";
     border-radius:      999px;
     padding:            6px 14px;
 }
@@ -115,7 +106,7 @@ entry {
     placeholder:        "pesquisar ferramenta ou site de IA...";
     placeholder-color:  @fg2;
     text-color:         @fg0;
-    font:               "SF Pro Text 13";
+    font:               "Inter 13";
     padding:            6px 4px;
 }
 
@@ -133,7 +124,7 @@ message {
 textbox {
     padding:    10px 14px;
     text-color: @fg2;
-    font:       "SF Pro Text 10";
+    font:       "Inter 10";
 }
 
 listview {

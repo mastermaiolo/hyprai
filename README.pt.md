@@ -40,7 +40,9 @@ O que não estiver na lista leva uma linha no `tools.conf` — ver [Adicionar fe
 
 - Hyprland
 - rofi (1.7+, pelo protocolo de ícones)
-- bash, e **fish** — os agentes CLI abrem dentro do `kitty` a correr a tua fish interactiva, que é também o que faz a detecção ver o teu `PATH` real
+- bash, e **fish** — os agentes CLI abrem num terminal a correr a tua fish interactiva, que é também o que faz a detecção ver o teu `PATH` real
+- Um terminal: kitty, ghostty, foot, alacritty ou wezterm (o primeiro que existir, ou o definido no `hyprai.conf`)
+- A fonte **Inter** (Arch: `pacman -S inter-font`) — sem ela, o tema cai na fonte padrão
 - **Recomendado:** [Noctalia](https://github.com/noctalia-dev/noctalia-shell) ou [Caelestia](https://github.com/caelestia-dots/shell) — sem nenhum dos dois, o menu cai numa paleta violeta escura fixa
 - Opcional: libnotify (notificações), uwsm (isolamento de sessão)
 
@@ -59,19 +61,29 @@ O instalador copia tudo para `~/.config/hypr/hyprai/`, cria o executável `hypra
 
 - `Super + I` — abrir o menu
 - `hyprai` — o mesmo, a partir de um terminal
+- `hyprai --doctor` — diagnóstico: dependências, terminal, origem do tema, o que foi e não foi detectado, erros nos `.conf`, atalho e regra de vidro
 - Escreve para filtrar; `Enter` abre; `Esc` fecha
 - **Portais Web** abre um submenu; `↩ Voltar` regressa
 
 ## Configuração
 
-Dois ficheiros declarativos em texto simples, ambos editáveis a partir do menu:
+Ficheiros em texto simples — os dois primeiros editáveis a partir do menu:
 
 | Ficheiro | O que guarda |
 |---|---|
 | `~/.config/hypr/hyprai/config/tools.conf` | Agentes CLI e aplicações desktop, com os candidatos de detecção |
 | `~/.config/hypr/hyprai/config/sites.conf` | Portais web curados, agrupados por categoria |
+| `~/.config/hypr/hyprai/config/hyprai.conf` | Preferências — por agora `terminal =` (vazio = automático; `HYPRAI_TERMINAL` sobrepõe-se) |
+| `~/.config/hypr/hyprai/rofi/user.rasi` | Opcional, só teu: ajustes ao tema aplicados por último — posição, largura, fonte |
 
-> O `install.sh` **não sobrescreve** estes dois ficheiros ao reinstalar — a tua curadoria sobrevive às actualizações. Ao alterá-los no repositório, copia-os à mão.
+A janela abre centrada. Para a mudar de sítio (por exemplo, abaixo de uma barra no topo), cria o `user.rasi`:
+
+```css
+/* ~/.config/hypr/hyprai/rofi/user.rasi */
+window { location: north; y-offset: 120px; width: 720px; }
+```
+
+> O `install.sh` **não sobrescreve** nenhum destes ficheiros ao reinstalar — a tua curadoria sobrevive às actualizações. Ao alterá-los no repositório, copia-os à mão.
 
 ## Adicionar ferramenta ou site
 
@@ -81,7 +93,7 @@ Dois ficheiros declarativos em texto simples, ambos editáveis a partir do menu:
 id | ícone | Nome | Subtexto | categoria | candidatos | svg | args
 ```
 
-- `categoria` — `cli` (corre num terminal kitty) ou `desktop` (aplicação gráfica)
+- `categoria` — `cli` (corre no teu terminal) ou `desktop` (aplicação gráfica)
 - `candidatos` — um ou mais binários/caminhos separados por `;`, testados por ordem; o primeiro que existir ganha e passa a ser o comando de arranque. Um nome solto é procurado no `PATH`; um caminho absoluto (ou começado por `~`) é testado directamente
 - `args` — argumentos fixos opcionais, para quando um binário serve o CLI e a GUI:
 
@@ -102,6 +114,8 @@ Nos dois ficheiros, a coluna `svg` nomeia um ficheiro dentro de `svg/` (PNG tamb
 
 ## Resolução de problemas
 
+Começa por `hyprai --doctor` — responde sozinho à maioria dos casos abaixo.
+
 **Uma ferramenta que tenho instalada não aparece.** O nome do binário em `candidatos` provavelmente não corresponde ao teu — confirma com `which <nome>` e ajusta a linha. A detecção falha em silêncio de propósito: um nome errado deixa apenas a entrada invisível.
 
 **O menu está opaco, sem vidro.** Três causas, por ordem:
@@ -118,6 +132,7 @@ Nos dois ficheiros, a coluna `svg` nomeia um ficheiro dentro de `svg/` (PNG tamb
 ```
 hyprai/
 ├── config/
+│   ├── hyprai.conf       # Preferências (terminal)
 │   ├── sites.conf        # Portais web curados
 │   └── tools.conf        # Agentes CLI/apps desktop — testados em runtime
 ├── rofi/

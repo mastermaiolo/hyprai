@@ -90,7 +90,8 @@ e usa **16px** (`r-lg`). O scrollbar é um controle compacto → capsule (`999px
 
 ## Tipografia
 
-**SF Pro Text**, a fonte do sistema deste desktop (Qt e GTK). Proporcional, não monoespaçada:
+**Inter** (Arch: `inter-font`), sem fallback declarado — sem ela o Pango usa a fonte padrão do
+sistema. Proporcional, não monoespaçada:
 mono num launcher lê como terminal, e aqui nada é literal de código. 11pt ≈ 15px, a densidade
 desktop do coherent-design; o subtexto usa `size="small"` do Pango (≈9pt).
 

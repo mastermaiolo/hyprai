@@ -40,7 +40,9 @@
 
 - Hyprland
 - rofi（1.7 以上，图标协议所需）
-- bash，以及 **fish** —— 命令行智能体在 `kitty` 里以你的交互式 fish 启动，这同时也是检测能看到真实 `PATH` 的原因
+- bash，以及 **fish** —— 命令行智能体在终端里以你的交互式 fish 启动，这同时也是检测能看到真实 `PATH` 的原因
+- 一个终端：kitty、ghostty、foot、alacritty 或 wezterm（取第一个找到的，或 `hyprai.conf` 中指定的）
+- **Inter** 字体（Arch：`pacman -S inter-font`）—— 没有时主题回退到默认字体
 - **推荐：** [Noctalia](https://github.com/noctalia-dev/noctalia-shell) 或 [Caelestia](https://github.com/caelestia-dots/shell) —— 两者都没有时，菜单会退回一套固定的暗紫配色
 - 可选：libnotify（通知）、uwsm（会话隔离）
 
@@ -59,19 +61,29 @@ git clone https://github.com/mastermaiolo/hyprai && cd hyprai
 
 - `Super + I` —— 打开菜单
 - `hyprai` —— 在终端里同样可用
+- `hyprai --doctor` —— 诊断：依赖、终端、主题来源、检测到与未检测到的工具、`.conf` 错误、快捷键与玻璃规则
 - 输入即筛选；`Enter` 打开；`Esc` 关闭
 - **网页门户**会打开子菜单；`↩ 返回`回到上一层
 
 ## 配置
 
-两个声明式纯文本文件，都可以直接从菜单里编辑：
+纯文本文件 —— 前两个可以直接从菜单里编辑：
 
 | 文件 | 内容 |
 |---|---|
 | `~/.config/hypr/hyprai/config/tools.conf` | 命令行智能体与桌面应用，含检测候选项 |
 | `~/.config/hypr/hyprai/config/sites.conf` | 精选网页门户，按类别分组 |
+| `~/.config/hypr/hyprai/config/hyprai.conf` | 偏好设置 —— 目前是 `terminal =`（留空 = 自动；`HYPRAI_TERMINAL` 优先） |
+| `~/.config/hypr/hyprai/rofi/user.rasi` | 可选，仅属于你：最后应用的主题调整 —— 位置、宽度、字体 |
 
-> `install.sh` 在重装时**刻意不覆盖**这两个文件 —— 你的精选内容不会在更新中丢失。在仓库里修改它们之后，需要手动复制过去。
+窗口默认居中。要移动它（例如放到顶栏下方），创建 `user.rasi`：
+
+```css
+/* ~/.config/hypr/hyprai/rofi/user.rasi */
+window { location: north; y-offset: 120px; width: 720px; }
+```
+
+> `install.sh` 在重装时**刻意不覆盖**这些文件 —— 你的精选内容不会在更新中丢失。在仓库里修改它们之后，需要手动复制过去。
 
 ## 添加工具或网站
 
@@ -81,7 +93,7 @@ git clone https://github.com/mastermaiolo/hyprai && cd hyprai
 id | 图标 | 名称 | 副标题 | 类别 | 候选项 | svg | args
 ```
 
-- `类别` —— `cli`（在 kitty 终端中运行）或 `desktop`（图形应用）
+- `类别` —— `cli`（在你的终端中运行）或 `desktop`（图形应用）
 - `候选项` —— 一个或多个二进制名/路径，用 `;` 分隔，按顺序探测；第一个存在的胜出，并成为启动命令。裸名称在 `PATH` 中查找；绝对路径（或以 `~` 开头）直接测试
 - `args` —— 可选的固定参数，适用于同一个二进制同时提供 CLI 与 GUI 的情况：
 
@@ -102,6 +114,8 @@ id | 图标 | 名称 | 类别 | https://url | svg
 
 ## 疑难排查
 
+先运行 `hyprai --doctor` —— 下面的大多数情况它都能直接回答。
+
 **我装了的工具没有出现。** `候选项` 里的二进制名大概和你的不一致 —— 用 `which <名称>` 确认后修改那一行。检测是刻意静默失败的：名字写错只会让该条目保持隐藏。
 
 **菜单不透明，没有玻璃质感。** 三种原因，按顺序排查：
@@ -118,6 +132,7 @@ id | 图标 | 名称 | 类别 | https://url | svg
 ```
 hyprai/
 ├── config/
+│   ├── hyprai.conf       # 偏好设置（终端）
 │   ├── sites.conf        # 精选网页门户
 │   └── tools.conf        # 命令行智能体/桌面应用 —— 运行时探测
 ├── rofi/

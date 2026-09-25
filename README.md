@@ -40,7 +40,9 @@ Anything not on the list takes one line in `tools.conf` — see [Adding a tool o
 
 - Hyprland
 - rofi (1.7+, for the icon protocol)
-- bash, and **fish** — CLI agents open inside `kitty` running your interactive fish shell, which is also what makes detection see your real `PATH`
+- bash, and **fish** — CLI agents open in a terminal running your interactive fish shell, which is also what makes detection see your real `PATH`
+- A terminal: kitty, ghostty, foot, alacritty or wezterm (the first one found, or the one set in `hyprai.conf`)
+- The **Inter** font (Arch: `pacman -S inter-font`) — without it, the theme falls back to the default font
 - **Recommended:** [Noctalia](https://github.com/noctalia-dev/noctalia-shell) or [Caelestia](https://github.com/caelestia-dots/shell) — without either, the menu falls back to a fixed dark violet palette
 - Optional: libnotify (notifications), uwsm (session scoping)
 
@@ -59,19 +61,29 @@ The installer copies everything to `~/.config/hypr/hyprai/`, creates the `hyprai
 
 - `Super + I` — open the menu
 - `hyprai` — same thing, from a terminal
+- `hyprai --doctor` — diagnosis: dependencies, terminal, theme source, what was and wasn't detected, config errors, keybind and glass rule
 - Type to filter; `Enter` opens; `Esc` closes
 - **Web portals** opens a submenu; `↩ Back` returns
 
 ## Configuration
 
-Two declarative plain-text files, both editable from inside the menu:
+Plain-text files — the first two editable from inside the menu:
 
 | File | What it holds |
 |---|---|
 | `~/.config/hypr/hyprai/config/tools.conf` | CLI agents and desktop apps, with detection candidates |
 | `~/.config/hypr/hyprai/config/sites.conf` | Curated web portals, grouped by category |
+| `~/.config/hypr/hyprai/config/hyprai.conf` | Preferences — for now `terminal =` (empty = automatic; `HYPRAI_TERMINAL` overrides it) |
+| `~/.config/hypr/hyprai/rofi/user.rasi` | Optional, yours alone: theme tweaks applied last — position, width, font |
 
-> `install.sh` deliberately **does not overwrite** these two files on reinstall — your curation survives updates. When changing them in the repository, copy them across by hand.
+The window opens centred. To move it (for example below a top bar), create `user.rasi`:
+
+```css
+/* ~/.config/hypr/hyprai/rofi/user.rasi */
+window { location: north; y-offset: 120px; width: 720px; }
+```
+
+> `install.sh` deliberately **does not overwrite** any of these files on reinstall — your curation survives updates. When changing them in the repository, copy them across by hand.
 
 ## Adding a tool or site
 
@@ -81,7 +93,7 @@ Two declarative plain-text files, both editable from inside the menu:
 id | icon | Name | Subtext | category | candidates | svg | args
 ```
 
-- `category` — `cli` (runs in a kitty terminal) or `desktop` (graphical app)
+- `category` — `cli` (runs in your terminal) or `desktop` (graphical app)
 - `candidates` — one or more binaries/paths separated by `;`, probed in order; the first that exists wins and becomes the launch command. A bare name is looked up in `PATH`; an absolute path (or one starting with `~`) is tested directly
 - `args` — optional fixed arguments, for when one binary serves both the CLI and the GUI:
 
@@ -102,6 +114,8 @@ In both files the `svg` column names a file inside `svg/` (PNG works too) and fa
 
 ## Troubleshooting
 
+Start with `hyprai --doctor` — it answers most of the cases below by itself.
+
 **A tool I have installed doesn't show up.** The binary name in `candidates` probably doesn't match yours — check with `which <name>` and adjust the line. Detection fails silently by design: a wrong name just leaves the entry invisible.
 
 **The menu looks opaque, with no glass.** Three causes, in order:
@@ -118,6 +132,7 @@ In both files the `svg` column names a file inside `svg/` (PNG works too) and fa
 ```
 hyprai/
 ├── config/
+│   ├── hyprai.conf       # Preferences (terminal)
 │   ├── sites.conf        # Curated web portals
 │   └── tools.conf        # CLI agents/desktop apps — probed at runtime
 ├── rofi/

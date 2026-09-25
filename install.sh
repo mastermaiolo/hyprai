@@ -53,8 +53,10 @@ declare -A T=(
     [en:layerrule_noninteractive]="Non-interactive install — to enable the glass exception, add this to windowrules.lua:"
     [pt:dep_missing_rofi]="✗ Erro: 'rofi' não foi encontrado no PATH. O Hypr.AI necessita do Rofi para funcionar." \
     [en:dep_missing_rofi]="✗ Error: 'rofi' was not found in PATH. Hypr.AI requires Rofi to run." \
-    [pt:dep_warn_cli]="⚠ Aviso: '%s' não encontrado. Os agentes CLI necessitam de fish e kitty para funcionar." \
-    [en:dep_warn_cli]="⚠ Warning: '%s' not found. CLI agents require fish and kitty to run." \
+    [pt:dep_warn_cli]="⚠ Aviso: '%s' não encontrado. Os agentes CLI necessitam de fish e de um terminal (kitty, ghostty, foot, alacritty ou wezterm)." \
+    [en:dep_warn_cli]="⚠ Warning: '%s' not found. CLI agents need fish and a terminal (kitty, ghostty, foot, alacritty or wezterm)." \
+    [pt:dep_note_font]="→ Nota: fonte Inter não encontrada — o tema cai na fonte padrão (Arch: pacman -S inter-font)." \
+    [en:dep_note_font]="→ Note: Inter font not found — the theme falls back to the default font (Arch: pacman -S inter-font)." \
     [pt:dep_note_notify]="→ Nota: 'notify-send' não encontrado (opcional, usado para notificações)." \
     [en:dep_note_notify]="→ Note: 'notify-send' not found (optional, used for notifications)." \
     [pt:finished_key]="── Concluído! Pressione Super+%s ou execute 'hyprai' no terminal ──" \
@@ -75,17 +77,21 @@ if ! command -v rofi &>/dev/null; then
 fi
 
 missing_cli=()
-for dep in fish kitty; do
-    if ! command -v "$dep" &>/dev/null; then
-        missing_cli+=("$dep")
-    fi
+command -v fish &>/dev/null || missing_cli+=("fish")
+has_term=0
+for term in kitty ghostty foot alacritty wezterm; do
+    command -v "$term" &>/dev/null && { has_term=1; break; }
 done
+[[ "$has_term" -eq 1 ]] || missing_cli+=("terminal")
 if [[ "${#missing_cli[@]}" -gt 0 ]]; then
     say dep_warn_cli "${missing_cli[*]}"
 fi
 
 if ! command -v notify-send &>/dev/null; then
     say dep_note_notify
+fi
+if command -v fc-list &>/dev/null && ! fc-list : family | grep -qx 'Inter'; then
+    say dep_note_font
 fi
 
 # 1. Cria diretório de destino
@@ -110,6 +116,11 @@ fi
 if [[ ! -f "$DEST/config/tools.conf" ]]; then
     cp "$SRC/config/tools.conf" "$DEST/config/"
 fi
+if [[ ! -f "$DEST/config/hyprai.conf" ]]; then
+    cp "$SRC/config/hyprai.conf" "$DEST/config/"
+fi
+# rofi/user.rasi (ajustes pessoais ao tema) não vem do repositório — o cp do
+# hyprai.rasi acima nunca lhe toca.
 
 say installed_ok "$DEST"
 

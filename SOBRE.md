@@ -13,7 +13,8 @@ O **Hypr.AI** é um launcher nativo para Wayland/Hyprland, accionado via
 [Rofi](https://github.com/davatorium/rofi), que reúne todo o ecossistema de IA
 numa interface teclado-cêntrica, dividida em três pilares:
 
-1. **Agentes de linha de comando (CLI)**, abertos no Kitty com a fish shell;
+1. **Agentes de linha de comando (CLI)**, abertos no teu terminal (kitty, ghostty, foot,
+   alacritty ou wezterm) com a fish shell;
 2. **Aplicações desktop** (IDEs, clientes locais de modelos);
 3. **Portais web de IA**, abertos no browser predefinido.
 
@@ -26,8 +27,8 @@ pesadas e uma dúzia de separadores no browser. O Hypr.AI resolve essa
 fragmentação:
 
 - **Acesso imediato**: `Super + I` a partir de qualquer lado;
-- **Zero fricção de terminal**: os agentes arrancam dentro de instâncias
-  dedicadas do Kitty, com a tua fish e o teu ambiente intactos;
+- **Zero fricção de terminal**: os agentes arrancam em janelas de
+  terminal dedicadas, com a tua fish e o teu ambiente intactos;
 - **Nada fixo no código**: ferramentas e sites vivem em ficheiros de texto
   declarativos, editáveis a partir do próprio menu;
 - **Só mostra o que existe**: uma ferramenta aparece quando a instalas e
@@ -46,6 +47,7 @@ aplicações e ligações em vez de perfis de cor.
 ```
 hyprai/
 ├── config/
+│   ├── hyprai.conf        # Preferências (terminal)
 │   ├── sites.conf         # Portais web curados
 │   └── tools.conf         # Agentes CLI/apps desktop — candidatos a detectar
 ├── rofi/
@@ -172,8 +174,8 @@ reabre o menu em vez de fazer nada.
   para gerir ciclos de vida via unidades transientes do systemd.
 - **Resolução de `$PATH`**: como o `systemd --user` não herda `~/.local/bin`
   por omissão, o projecto usa caminhos absolutos no `binds.lua`, conta com
-  `export PATH=...` no `~/.config/uwsm/env`, e dispara o Kitty com a shell
-  interactiva (`kitty --title "$title" fish -i -c "$cmd"`) para que funções,
+  `export PATH=...` no `~/.config/uwsm/env`, e dispara o terminal com a shell
+  interactiva (ex.: `kitty --title "$title" fish -i -c "$cmd"`) para que funções,
   aliases e toolchains estejam disponíveis.
 - **Atalho sem conflitos**: antes de injectar `Super + I` no `binds.lua` (ou,
   sem ele, no `hyprland.lua`), o instalador consulta `hyprctl -j binds`. Se a
@@ -198,7 +200,7 @@ O script lê linha a linha, agrupa pelas categorias (`chat`, `search`, `write`,
 (*"Configurações"* em pt-BR) e *"Ferramentas"* no menu, detecta o editor
 disponível (`zeditor`, `nvim`, `nano`, `micro`, `kate`…) e abre o ficheiro certo.
 
-O `install.sh` **não sobrescreve** `sites.conf` nem `tools.conf` ao reinstalar:
+O `install.sh` **não sobrescreve** `sites.conf`, `tools.conf`, `hyprai.conf` nem `rofi/user.rasi` ao reinstalar:
 a curadoria sobrevive às actualizações. Em contrapartida, ao alterá-los no
 repositório é preciso copiá-los à mão para a instalação.
 
@@ -218,6 +220,9 @@ identificador cru: `cat_media` na interface é pior que o termo em inglês.
 |---|---|
 | **Abrir o menu** | `Super + I` |
 | **Abrir via terminal** | `hyprai` |
+| **Diagnosticar** | `hyprai --doctor` |
+| **Trocar o terminal** | `terminal = …` em `~/.config/hypr/hyprai/config/hyprai.conf` |
+| **Mudar a posição da janela** | Criar `~/.config/hypr/hyprai/rofi/user.rasi` (ver README) |
 | **Adicionar um site** | Editar `~/.config/hypr/hyprai/config/sites.conf` |
 | **Adicionar uma ferramenta** | Uma linha em `~/.config/hypr/hyprai/config/tools.conf` |
 | **Reinstalar/actualizar** | Correr `./install.sh` |
