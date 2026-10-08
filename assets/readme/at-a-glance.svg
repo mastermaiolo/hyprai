@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 240" width="1200" height="240">
+<defs>
+  <pattern id="grid" width="24" height="24" patternUnits="userSpaceOnUse"><path d="M24 0H0V24" fill="none" stroke="#FFFFFF" stroke-opacity=".03" stroke-width="1"/></pattern>
+</defs>
+<rect x="2" y="2" width="1196" height="236" rx="14" fill="#0B0D0F" stroke="#2A2D31" stroke-width="1"/>
+<rect x="3" y="3" width="1194" height="234" fill="url(#grid)"/>
+
+<!-- Card 1: Runtime Probe -->
+<g transform="translate(30, 24)">
+  <rect x="0" y="0" width="268" height="192" rx="10" fill="#13161A" stroke="#2A2D31" stroke-width="1"/>
+  <rect x="0" y="0" width="268" height="3" rx="1.5" fill="#00D2FF"/>
+  <text x="20" y="32" font-family="JetBrains Mono, monospace" font-size="10px" font-weight="600" fill="#8E8A82" letter-spacing="1.5">RUNTIME PROBING</text>
+  <text x="20" y="68" font-family="Inter, sans-serif" font-size="22px" font-weight="700" fill="#E9E5DC">fish -i PATH</text>
+  <text x="20" y="96" font-family="Inter, sans-serif" font-size="12px" fill="#8E8A82">Probed once per trigger.</text>
+  <text x="20" y="116" font-family="Inter, sans-serif" font-size="12px" fill="#8E8A82">Solves Brew / NVM / Pyenv</text>
+  <text x="20" y="136" font-family="Inter, sans-serif" font-size="12px" fill="#8E8A82">minimal Hyprland PATH gap.</text>
+  <text x="20" y="172" font-family="JetBrains Mono, monospace" font-size="10px" fill="#00D2FF">0ms STALE ENTRIES</text>
+</g>
+
+<!-- Card 2: Tool Matrix -->
+<g transform="translate(318, 24)">
+  <rect x="0" y="0" width="268" height="192" rx="10" fill="#13161A" stroke="#2A2D31" stroke-width="1"/>
+  <rect x="0" y="0" width="268" height="3" rx="1.5" fill="#38BDF8"/>
+  <text x="20" y="32" font-family="JetBrains Mono, monospace" font-size="10px" font-weight="600" fill="#8E8A82" letter-spacing="1.5">ECOSYSTEM COVERAGE</text>
+  <text x="20" y="68" font-family="Inter, sans-serif" font-size="22px" font-weight="700" fill="#E9E5DC">60+ Candidates</text>
+  <text x="20" y="96" font-family="Inter, sans-serif" font-size="12px" fill="#8E8A82">18 Terminal CLI agents.</text>
+  <text x="20" y="116" font-family="Inter, sans-serif" font-size="12px" fill="#8E8A82">12 Native desktop apps.</text>
+  <text x="20" y="136" font-family="Inter, sans-serif" font-size="12px" fill="#8E8A82">33 Curated web portals.</text>
+  <text x="20" y="172" font-family="JetBrains Mono, monospace" font-size="10px" fill="#38BDF8">AUTO-DISCOVERY</text>
+</g>
+
+<!-- Card 3: Tonal Glass -->
+<g transform="translate(606, 24)">
+  <rect x="0" y="0" width="268" height="192" rx="10" fill="#13161A" stroke="#2A2D31" stroke-width="1"/>
+  <rect x="0" y="0" width="268" height="3" rx="1.5" fill="#B62B32"/>
+  <text x="20" y="32" font-family="JetBrains Mono, monospace" font-size="10px" font-weight="600" fill="#8E8A82" letter-spacing="1.5">MATERIAL YOU GLASS</text>
+  <text x="20" y="68" font-family="Inter, sans-serif" font-size="22px" font-weight="700" fill="#E9E5DC">Noctalia Live</text>
+  <text x="20" y="96" font-family="Inter, sans-serif" font-size="12px" fill="#8E8A82">60% physical glass opacity.</text>
+  <text x="20" y="116" font-family="Inter, sans-serif" font-size="12px" fill="#8E8A82">1.5px top rim lighting.</text>
+  <text x="20" y="136" font-family="Inter, sans-serif" font-size="12px" fill="#8E8A82">Zero reload on palette shift.</text>
+  <text x="20" y="172" font-family="JetBrains Mono, monospace" font-size="10px" fill="#B62B32">WCAG ≥ 4.5:1 CONTRAST</text>
+</g>
+
+<!-- Card 4: Control Surface -->
+<g transform="translate(894, 24)">
+  <rect x="0" y="0" width="276" height="192" rx="10" fill="#13161A" stroke="#2A2D31" stroke-width="1"/>
+  <rect x="0" y="0" width="276" height="3" rx="1.5" fill="#E9E5DC"/>
+  <text x="20" y="32" font-family="JetBrains Mono, monospace" font-size="10px" font-weight="600" fill="#8E8A82" letter-spacing="1.5">INTEGRATION &amp; LOCALES</text>
+  <text x="20" y="68" font-family="Inter, sans-serif" font-size="22px" font-weight="700" fill="#E9E5DC">Super + I</text>
+  <text x="20" y="96" font-family="Inter, sans-serif" font-size="12px" fill="#8E8A82">Global Hyprland keybind.</text>
+  <text x="20" y="116" font-family="Inter, sans-serif" font-size="12px" fill="#8E8A82">UWSM transient unit scoping.</text>
+  <text x="20" y="136" font-family="Inter, sans-serif" font-size="12px" fill="#8E8A82">5 Locales (EN, PT, ES, ZH).</text>
+  <text x="20" y="172" font-family="JetBrains Mono, monospace" font-size="10px" fill="#E9E5DC">ZERO FRICTION</text>
+</g>
+</svg>

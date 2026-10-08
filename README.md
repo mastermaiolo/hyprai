@@ -1,160 +1,371 @@
-# Hypr.AI
+<div align="center">
 
-[🇵🇹 Português](README.pt.md) · 🇬🇧 **English** · [🇪🇸 Español](README.es.md) · [🇨🇳 简体中文](README.zh.md)
+# HYPR.AI
 
-[![Release](https://img.shields.io/github/v/release/mastermaiolo/hyprai?label=release)](https://github.com/mastermaiolo/hyprai/releases/latest)
+**Native AI Command Surface &amp; Launcher for Hyprland**
 
-<p align="center"><img src="assets/screenshot.webp" alt="Hypr.AI — every AI tool on your machine, one keystroke away"></p>
+[![Release](https://img.shields.io/github/v/release/mastermaiolo/hyprai?style=flat-square&color=00D2FF&label=release)](https://github.com/mastermaiolo/hyprai/releases/latest)
+[![Licence](https://img.shields.io/badge/licence-MIT-E9E5DC?style=flat-square&labelColor=13161A)](LICENSE)
+[![Platform](https://img.shields.io/badge/compositor-Hyprland%20%2F%20Wayland-38BDF8?style=flat-square&labelColor=13161A)](https://hyprland.org)
+[![Shell](https://img.shields.io/badge/runtime-fish%20%2B%20bash%20%2B%20rofi-B62B32?style=flat-square&labelColor=13161A)](https://github.com/davatorium/rofi)
 
-**Native AI launcher for Hyprland** — CLI agents, desktop apps and curated web portals behind a single Rofi menu. Nothing is hard-coded: tools appear only if they are actually installed, and the whole window follows your wallpaper's Material You palette.
+<br/>
 
-## Contents
+**English (UK)** · [Português (Brasil)](README.pt-br.md) · [Português (Portugal)](README.pt-pt.md) · [Español](README.es-es.md) · [简体中文](README.zh-cn.md)
 
-[Features](#features) · [Detected tools](#detected-tools) · [Requirements](#requirements) · [Installation](#installation) · [Usage](#usage) · [Configuration](#configuration) · [Adding a tool or site](#adding-a-tool-or-site) · [Troubleshooting](#troubleshooting) · [Architecture](#architecture) · [Credits](#credits) · [Licence](#licence)
+<br/>
 
-## Features
+<img src="assets/readme/hero.svg" alt="Hypr.AI Hero Canvas" width="100%"/>
 
-- **Runtime detection** — CLI agents and desktop apps are declared in `tools.conf` as *candidates*; the launcher probes each one every time it opens and shows only what exists. Install a tool and it appears on its own; uninstall it and it disappears. No editing required.
-- **Detection uses your interactive `fish`'s `PATH`**, not Hyprland's: Hyprland hands processes a minimal `PATH`, so a tool installed via linuxbrew/nvm/pyenv would be invisible even though it runs perfectly. The launcher asks `fish -i` for its `PATH` once per opening — the same interactive shell that later launches the tool — so what is detected and what runs always match.
-- **33 curated AI web portals** in `sites.conf`, grouped into chat, search, writing, dev, code and media — opening in your default browser.
-- **Material You tonal colour**: the entire palette (backgrounds, text, containers — not just the accent) is pulled live from [Noctalia](https://github.com/noctalia-dev/noctalia-shell), with [Caelestia](https://github.com/caelestia-dots/shell) as a fallback. The menu looks like part of your desktop, not a widget borrowed from another theme.
-- **Real glass**, not a flat translucent box: a top-only light rim, a content layer tonally lifted above the blurred backdrop, and an opacity tuned to the point where the compositor's blur actually reads (see [DESIGN.md](DESIGN.md)).
-- **Real icons**: Rofi's native icon protocol with per-entry SVG/PNG, falling back to an emoji chip when no icon file exists.
-- **Five languages** — pt-PT, pt-BR, es-ES, en-GB and 中文 — picked from the system locale.
-- **Closed design system**: base grid with consistent spacing, concentric radii, one-word tab labels and an OKLCH palette with verified WCAG contrast. Every number is documented in [DESIGN.md](DESIGN.md).
-- **Hyprland integration**: global `Super + I` shortcut, works under `uwsm` or plain Hyprland, and the installer offers to add the layer rule that lets the glass render at all.
+</div>
 
-## Detected tools
+<br/>
 
-Everything below ships pre-configured as a candidate and stays invisible until you install it.
+> **Native AI launcher for Hyprland** — CLI agents, desktop environments, and curated cloud portals unified under a single, keyboard-driven Rofi glass interface. Nothing is hard-coded: tools appear only when genuinely installed on your system, and the entire window follows your desktop wallpaper's Material You palette in real time.
 
-| Category | Tools |
-|---|---|
-| CLI agents | Claude Code · Antigravity CLI · Gemini CLI · Codex CLI · Aider · GitHub Copilot CLI · Cursor CLI · OpenCode · Goose · Ollama · Qwen Code · Crush · Mods · Plandex · Droid · OpenHands · Cline · Hermes |
-| Desktop apps | Claude Desktop · Antigravity 2.0 · Cursor · Windsurf · Zed · LM Studio · Jan · GPT4All · AnythingLLM · Chatbox · Msty · Hermes Desktop |
-| Web portals | 33 sites — Gemini, Claude, ChatGPT, DeepSeek, Grok, Kimi, Qwen, Mistral, Copilot, Perplexity, v0, Lovable, Midjourney, Suno, ElevenLabs, Runway and more |
+---
 
-Anything not on the list takes one line in `tools.conf` — see [Adding a tool or site](#adding-a-tool-or-site).
+## 01 / Navigation Index
 
-## Requirements
+- [02 / At a Glance](#02--at-a-glance)
+- [03 / Capabilities &amp; Engineering](#03--capabilities--engineering)
+- [04 / Candidate Atlas &amp; Showcase](#04--candidate-atlas--showcase)
+- [05 / Control Surface &amp; Usage](#05--control-surface--usage)
+- [06 / Requirements &amp; Installation](#06--requirements--installation)
+- [07 / Configuration &amp; Customisation](#07--configuration--customisation)
+- [08 / Pipeline Architecture &amp; Internals](#08--pipeline-architecture--internals)
+- [09 / Troubleshooting &amp; Diagnostics](#09--troubleshooting--diagnostics)
+- [10 / Lineage &amp; Provenance](#10--lineage--provenance)
 
-- Hyprland
-- rofi (1.7+, for the icon protocol)
-- bash, and **fish** — CLI agents open in a terminal running your interactive fish shell, which is also what makes detection see your real `PATH`
-- A terminal: kitty, ghostty, foot, alacritty or wezterm (the first one found, or the one set in `hyprai.conf`)
-- The **Inter** font (Arch: `pacman -S inter-font`) — without it, the theme falls back to the default font
-- **Recommended:** [Noctalia](https://github.com/noctalia-dev/noctalia-shell) or [Caelestia](https://github.com/caelestia-dots/shell) — without either, the menu falls back to a fixed dark violet palette
-- Optional: libnotify (notifications), uwsm (session scoping)
+---
 
-## Installation
+## 02 / At a Glance
+
+Hypr.AI eliminates the friction of switching between terminal windows, heavy IDEs, and browser tabs when orchestrating modern AI tools.
+
+<br/>
+
+<div align="center">
+  <img src="assets/readme/at-a-glance.svg" alt="Hypr.AI At a Glance" width="100%"/>
+</div>
+
+<br/>
+
+### Key Architectural Strengths
+
+| Pillar | Technical Implementation | Architectural Guarantee |
+|---|---|---|
+| **Runtime Detection** | Dynamic candidate probing via interactive `fish` shell environment | Zero stale or dead entries; auto-discovery on install/uninstall |
+| **Material You Glass** | 60% background alpha, 1.5px top-rim lighting, live Noctalia bridge | Deep compositor blur matching current wallpaper tonal scheme |
+| **Protocol Safety** | NUL-delimited icon streaming directly to Rofi dmenu pipe | Preserves high-resolution SVGs/PNGs without shell truncation |
+| **Non-Intrusive Keybinds** | Conflict detection via `hyprctl -j binds` during automated setup | Safe `Super + I` registration without overriding existing macros |
+| **Multi-Language Core** | Automated locale resolution supporting 5 language suites | Native strings in EN-GB, PT-BR, PT-PT, ES-ES, and ZH-CN |
+
+---
+
+## 03 / Capabilities &amp; Engineering
+
+<br/>
+
+<div align="center">
+  <img src="assets/readme/capabilities.svg" alt="Hypr.AI Subsystem Capabilities" width="100%"/>
+</div>
+
+<br/>
+
+### 1. Interactive Fish Shell PATH Resolution
+Under Wayland and UWSM, Hyprland launches processes with a minimal system `PATH` (typically limited to `/usr/bin`, `~/.local/bin`, and `~/.cargo/bin`). Environments managed via Linuxbrew (`/home/linuxbrew/.linuxbrew/bin`), NVM, Pyenv, or asdf are typically configured inside `~/.config/fish/config.fish` within interactive guards (`if status is-interactive`).
+
+If a launcher evaluates candidate binaries using a standard subshell, CLI agents installed via Brew or virtual environments become completely invisible. Hypr.AI solves this by querying `fish -i` for its full evaluated `$PATH` **exactly once** upon menu invocation, testing all candidate binaries against this consolidated path in native Bash. This eliminates the latency of spawning 30 separate Fish processes whilst ensuring that what is detected mirrors what actually executes.
+
+### 2. Physically Calibrated Glass Optics
+Producing authentic glass on Wayland requires careful balance between compositor blur and surface transparency:
+- **Calibrated Opacity (60%):** Window background `bg0` is calibrated to 60% opacity (`#0D0D10` @ `0x99`). Exceeding ~85% opacity chokes incoming light, rendering the compositor blur indistinguishable from flat paint. Below 50%, text legibility degrades over bright wallpapers.
+- **Top-Only Rim Light:** Authentic physical glass only catches specular illumination on its top edge. Hypr.AI applies `border: 1.5px 0px 0px 0px`, avoiding full-box borders that flatten the appearance.
+- **`xray = false` Layer Rule:** Hyprland's `xray` directive instructs the blur shader to skip intermediate layers. However, when using modern wallpaper daemons (such as Noctalia) where the wallpaper itself occupies a full-screen layer, `xray = true` skips the wallpaper, causing blur to collapse silently. Hypr.AI mandates and validates `xray = false`.
+
+### 3. Parallel Array Protocol &amp; NUL Delimiters
+Rofi's native icon protocol (`-show-icons`) expects a raw NUL byte (`\0`) between the entry text and metadata flags (e.g. `entry\0icon\x1f/path/to/icon.svg`). Because Bash variables cannot store NUL characters without truncating string content at the byte boundary, Hypr.AI maintains parallel arrays for labels, unique IDs, and icon paths, formatting and streaming the NUL bytes directly into the standard input pipe via `printf`. The selection returns purely as a numeric index (`-format i`), mapping directly back to candidate actions without polluting the UI with raw IDs.
+
+---
+
+## 04 / Candidate Atlas &amp; Showcase
+
+<br/>
+
+<div align="center">
+  <img src="assets/readme/showcase.svg" alt="Hypr.AI Candidate Atlas" width="100%"/>
+</div>
+
+<br/>
+
+### Ecosystem Candidates Matrix
+
+Hypr.AI ships with pre-configured candidate definitions across three primary domains. Candidates remain hidden until their corresponding binaries or environments are detected.
+
+| Domain | Supported Tools &amp; Ecosystem Nodes | Launch Subsystem |
+|---|---|---|
+| **CLI Agents** | Claude Code, Antigravity CLI, Gemini CLI, Codex CLI, Aider, GitHub Copilot CLI, Cursor CLI, OpenCode, Goose, Ollama, Qwen Code, Crush, Mods, Plandex, Droid, OpenHands, Cline, Hermes CLI | Dedicated terminal window (`kitty`, `ghostty`, `foot`, `alacritty`, `wezterm`) executing `fish -i -c "$cmd"` |
+| **Desktop Environments** | Claude Desktop, Antigravity 2.0, Cursor, Windsurf, Zed, LM Studio, Jan, GPT4All, AnythingLLM, Chatbox, Msty, Hermes Desktop | Native Wayland application spawn |
+| **Curated Web Portals** | 33 curated services categorised into Chat, Search, Writing, Development, Code, and Media | Default Wayland browser (`xdg-open "$url"`) |
+
+<br/>
+
+<div align="center">
+  <img src="assets/screenshot.webp" alt="Hypr.AI Interface Capture" width="85%"/>
+  <p><em>Hypr.AI running under Hyprland with Noctalia Material You tonal integration</em></p>
+</div>
+
+<br/>
+
+<details>
+<summary><strong>Full List of 33 Curated Web Portals (Click to Expand)</strong></summary>
+<br/>
+
+- **Chat &amp; Core Models:** ChatGPT, Claude, Gemini, DeepSeek, Grok, Kimi, Qwen, Mistral, Microsoft Copilot, Poe, HuggingChat, DuckDuckGo AI.
+- **Search &amp; Intelligence:** Perplexity AI, Genspark, Felo, Phind, Consensus.
+- **Writing &amp; Synthesis:** Claude Artifacts, Notion AI, Lex, TypingMind.
+- **Development &amp; Code:** v0 by Vercel, Lovable, Bolt.new, Replit Agent, GitHub Copilot Web.
+- **Media &amp; Generation:** Midjourney, Suno, Udio, ElevenLabs, Runway Gen-3, Luma Dream Machine, Flux / Black Forest Labs.
+
+</details>
+
+---
+
+## 05 / Control Surface &amp; Usage
+
+<br/>
+
+<div align="center">
+  <img src="assets/readme/control-surface.svg" alt="Hypr.AI Control Surface" width="100%"/>
+</div>
+
+<br/>
+
+### Keyboard Ergonomics &amp; Hotkeys
+
+| Input / Shortcut | Operational Context | Action Performed |
+|---|---|---|
+| `Super + I` | Global Hyprland Desktop | Toggles the Hypr.AI launcher surface |
+| `hyprai` | Shell / Terminal Prompt | Dispatches launcher from command line |
+| `hyprai --doctor` | Shell / Terminal Prompt | Executes complete diagnostic evaluation |
+| `Type to Filter` | In-Menu Search Field | Real-time fuzzy filtering across names, vendors, and tags |
+| `Enter` | Selected Row | Spawns agent in dedicated terminal, launches app, or opens portal |
+| `Esc` | In-Menu | Dismisses launcher instantly without residual state |
+| `↩ Back` | Portals / Settings Submenu | Navigates back to the root launcher menu |
+
+---
+
+## 06 / Requirements &amp; Installation
+
+### Prerequisites
+
+- **Compositor:** Hyprland
+- **Menu Engine:** `rofi` (version 1.7+ with icon protocol support)
+- **Shells:** `bash` and `fish` (Fish is required for interactive PATH resolution and CLI execution)
+- **Terminal Emulator:** `kitty`, `ghostty`, `foot`, `alacritty`, or `wezterm` (auto-detected or configured in `hyprai.conf`)
+- **Typography:** **Inter** font family (`pacman -S inter-font` on Arch Linux)
+- **Colour Framework (Recommended):** [Noctalia](https://github.com/noctalia-dev/noctalia-shell) or [Caelestia](https://github.com/caelestia-dots/shell) (defaults to static Dark Violet / Neon Indigo without either)
+- **Optional Dependencies:** `libnotify` (desktop notifications), `uwsm` (systemd user session management)
+
+### Automated Installation
 
 ```bash
-git clone https://github.com/mastermaiolo/hyprai && cd hyprai
+# Clone the repository
+git clone https://github.com/mastermaiolo/hyprai.git
+cd hyprai
+
+# Execute installer
 ./install.sh
 ```
 
-The installer copies everything to `~/.config/hypr/hyprai/`, creates the `hyprai` executable in `~/.local/bin/`, registers the tonal bridge with Noctalia (if installed), adds the `Super + I` keybind to `~/.config/hypr/config/binds.lua` — or to `hyprland.lua` if there is none — between `-- hyprai:begin/end` markers (if the combination is already taken it asks for another key, and without a terminal it creates nothing rather than a duplicate), and **asks** before adding a glass layer rule to your `windowrules.lua`. It never touches your global blur settings.
+### What the Installer Does
 
-> After installing, change wallpaper or accent in Noctalia once so it generates the colour bridge for the first time.
+1. Deploys scripts, configuration schemas, and icons to `~/.config/hypr/hyprai/`.
+2. Creates the `hyprai` wrapper executable in `~/.local/bin/hyprai`.
+3. Registers the Material You tonal template with Noctalia (if present).
+4. Probes `hyprctl -j binds` to ensure `Super + I` is available; prompts for an alternative key if occupied, and appends the keybind safely between `-- hyprai:begin/end` markers in `~/.config/hypr/config/binds.lua` (or `hyprland.lua`).
+5. Prompts before appending the required glass blur layer rule to `windowrules.lua`.
 
-## Usage
+> [!TIP]
+> After initial installation under Noctalia, cycle your wallpaper or accent colour once so Noctalia can render the tonal palette bridge file (`~/.local/state/hyprai/noctalia-colors.rasi`).
 
-- `Super + I` — open the menu
-- `hyprai` — same thing, from a terminal
-- `hyprai --doctor` — diagnosis: dependencies, terminal, theme source, what was and wasn't detected, config errors, keybind and glass rule
-- Type to filter; `Enter` opens; `Esc` closes
-- **Web portals** opens a submenu; `↩ Back` returns
+---
 
-## Configuration
+## 07 / Configuration &amp; Customisation
 
-Plain-text files — the first two editable from inside the menu:
+All configurations live in human-readable text files inside `~/.config/hypr/hyprai/config/`:
 
-| File | What it holds |
+| Configuration File | Operational Purpose |
 |---|---|
-| `~/.config/hypr/hyprai/config/tools.conf` | CLI agents and desktop apps, with detection candidates |
-| `~/.config/hypr/hyprai/config/sites.conf` | Curated web portals, grouped by category |
-| `~/.config/hypr/hyprai/config/hyprai.conf` | Preferences — for now `terminal =` (empty = automatic; `HYPRAI_TERMINAL` overrides it) |
-| `~/.config/hypr/hyprai/rofi/user.rasi` | Optional, yours alone: theme tweaks applied last — position, width, font |
+| `config/tools.conf` | Candidate definitions for CLI agents and desktop applications |
+| `config/sites.conf` | Curated AI web portals, grouped by functional categories |
+| `config/hyprai.conf` | Runtime preferences (e.g. `terminal = kitty`, or leave empty for auto-detection) |
+| `rofi/user.rasi` | Optional user overrides (custom geometry, offsets, widths, fonts) |
 
-The window opens centred. To move it (for example below a top bar), create `user.rasi`:
+> [!IMPORTANT]
+> The `./install.sh` script **never overwrites** existing `.conf` files or `user.rasi` upon re-execution. Your custom additions and curation remain untouched during updates.
+
+### Adding a Custom Local Tool
+
+Add a line to `~/.config/hypr/hyprai/config/tools.conf`:
+
+```conf
+# id | icon | Name | Subtext | category | candidates | svg | args
+myagent|🤖|My Agent|Custom Lab|cli|myagent;myagent-cli|myagent.svg|--chat
+```
+
+- **`category`:** `cli` (launches in interactive fish terminal) or `desktop` (launches as graphical application).
+- **`candidates`:** Semicolon-separated list of executable names or paths. Probed in sequence; the first match wins. Bare names resolve via `$PATH`; paths starting with `~` or `/` are checked directly.
+- **`svg`:** Vector icon file inside `~/.config/hypr/hyprai/svg/` (falls back to emoji in column 2).
+- **`args`:** Optional static arguments (useful when a single binary serves both CLI and GUI modes).
+
+### Adding a Custom Web Portal
+
+Add a line to `~/.config/hypr/hyprai/config/sites.conf`:
+
+```conf
+# id | icon | Name | category | url | svg
+myportal|🌐|My Portal|chat|https://example.ai|portal.svg
+```
+
+Available portal categories: `chat`, `search`, `write`, `dev`, `code`, `media`.
+
+### Repositioning the Window
+
+To reposition the window (for instance, beneath a top bar), create `~/.config/hypr/hyprai/rofi/user.rasi`:
 
 ```css
 /* ~/.config/hypr/hyprai/rofi/user.rasi */
-window { location: north; y-offset: 120px; width: 720px; }
+window {
+    location: north;
+    y-offset: 120px;
+    width: 720px;
+}
 ```
 
-> `install.sh` deliberately **does not overwrite** any of these files on reinstall — your curation survives updates. When changing them in the repository, copy them across by hand.
+---
 
-## Adding a tool or site
+## 08 / Pipeline Architecture &amp; Internals
 
-**A local tool** (`tools.conf`):
+<br/>
 
-```conf
-id | icon | Name | Subtext | category | candidates | svg | args
-```
+<div align="center">
+  <img src="assets/readme/architecture.svg" alt="Hypr.AI Execution Pipeline Architecture" width="100%"/>
+</div>
 
-- `category` — `cli` (runs in your terminal) or `desktop` (graphical app)
-- `candidates` — one or more binaries/paths separated by `;`, probed in order; the first that exists wins and becomes the launch command. A bare name is looked up in `PATH`; an absolute path (or one starting with `~`) is tested directly
-- `args` — optional fixed arguments, for when one binary serves both the CLI and the GUI:
+<br/>
 
-```conf
-hermes_cli|🪽|Hermes|Nous Research|cli|hermes|hermes.png|chat
-hermes_desktop|🪽|Hermes Desktop|Nous Research|desktop|hermes|hermes-agent-text.svg|desktop
-```
-
-**A web portal** (`sites.conf`):
-
-```conf
-id | icon | Name | category | https://url | svg
-```
-
-Categories: `chat`, `search`, `write`, `dev`, `code`, `media`.
-
-In both files the `svg` column names a file inside `svg/` (PNG works too) and falls back to the emoji in column two. A single-colour logo should use `fill="currentColor"` instead of white: the launcher paints it in the theme's text colour, so it stays visible on both dark and light schemes.
-
-## Troubleshooting
-
-Start with `hyprai --doctor` — it answers most of the cases below by itself.
-
-**A tool I have installed doesn't show up.** The binary name in `candidates` probably doesn't match yours — check with `which <name>` and adjust the line. Detection fails silently by design: a wrong name just leaves the entry invisible.
-
-**The menu looks opaque, with no glass.** Three causes, in order:
-1. Missing layer rule — layer-shell surfaces get no blur in Hyprland unless a rule targets their namespace. Re-run `./install.sh` and accept the glass exception.
-2. `xray = true` on that rule — re-run `./install.sh`, which now warns about it. xray tells the blur to skip intermediate layers and sample the background, but on desktops where the wallpaper *is* a layer (Noctalia's, for one), it skips the very thing it should blur: the sharp wallpaper shows straight through and the glass vanishes, silently. Desktop widgets sitting behind the menu go unblurred for the same reason.
-3. Opacity too high — above ~85% the blur has no light left to contribute and the panel reads as flat paint. `bg0` ships at 60%.
-
-**A screenshot shows glass but my screen doesn't.** They genuinely differ: `grim` captures before the compositor's blur pass, so those few percent of transparency show a *sharp* wallpaper (which reads as glass), while your display shows a *blurred* one (uniform, reads as paint). Trust your eyes, not the screenshot — when it's calibrated correctly, both agree.
-
-**Colours don't follow my wallpaper.** Noctalia only re-renders the template on a wallpaper/scheme change. Force it with `noctalia msg config-reload && noctalia msg templates-apply`.
-
-## Architecture
+### Repository Layout
 
 ```
 hyprai/
+├── assets/
+│   ├── readme/            # Modular design system SVGs (hero, capabilities, etc.)
+│   └── screenshot.webp    # Physical UI capture
 ├── config/
-│   ├── hyprai.conf       # Preferences (terminal)
-│   ├── sites.conf        # Curated web portals
-│   └── tools.conf        # CLI agents/desktop apps — probed at runtime
+│   ├── hyprai.conf        # Terminal emulator & general preferences
+│   ├── sites.conf         # Curated web portals
+│   └── tools.conf         # CLI agents & desktop app candidates
 ├── rofi/
-│   └── hyprai.rasi       # Theme — grid, radii and palette
-├── svg/                  # Per-entry icons (Rofi's icon protocol)
+│   └── hyprai.rasi        # Design system stylesheet (4px grid, radii, tokens)
+├── svg/                   # Vector icon library for native Rofi protocol
 ├── theme/
-│   └── noctalia.rasi.tmpl # Template Noctalia renders into the tonal bridge
+│   └── noctalia.rasi.tmpl # Material You template compiled by Noctalia
 ├── ui/
-│   └── launcher.sh       # The launcher itself
-├── install.sh
-├── uninstall.sh
-└── DESIGN.md             # Tokens and the reasoning behind each number
+│   └── launcher.sh        # Core orchestration & probing engine
+├── install.sh             # Idempotent installer & keybind injector
+├── uninstall.sh           # Clean uninstaller
+├── DESIGN.md              # Coherent-design tokens & optical specifications
+└── SOBRE.md               # Portuguese architectural manifesto
 ```
 
-Rows are built as parallel arrays (text, id, icon) and handed to `rofi -dmenu -format i`, so the returned index maps back to an id without ever printing it on screen. The tonal bridge is a `.rasi` fragment Noctalia regenerates on every scheme change; `launcher.sh` passes it straight through with `-theme-str`, so colour changes need no restart.
+---
 
-## Credits
+## 09 / Troubleshooting &amp; Diagnostics
 
-Built on the architecture, ergonomics and design conventions of [HyprVision](https://github.com/mastermaiolo/hyprvision).
+Always begin diagnostic investigation with the built-in diagnostic harness:
 
-Layout, spacing, palette and contrast follow the **coherent-design** system — see [DESIGN.md](DESIGN.md) for the tokens and the reasoning.
+```bash
+hyprai --doctor
+```
 
-## Licence
+`hyprai --doctor` inspects installed dependencies, terminal detection, active theme source, detected candidates, syntax anomalies, keybind status, and compositor layer rules.
 
-MIT
+<br/>
+
+<div align="center">
+  <img src="assets/readme/failure-modes.svg" alt="Hypr.AI Troubleshooting Matrix" width="100%"/>
+</div>
+
+<br/>
+
+### Common Diagnostic Scenarios
+
+<details>
+<summary><strong>1. A tool I have installed does not appear in the menu</strong></summary>
+<br/>
+
+The candidate executable name in `tools.conf` likely differs from the binary name on your system.
+1. Run `which <tool-name>` in an interactive Fish terminal to locate the binary.
+2. Verify if the binary name matches the `candidates` field in `tools.conf`.
+3. Candidate detection fails silently by design to keep the menu clean. Add your alias or binary name to the candidate list separated by a semicolon (`;`).
+
+</details>
+
+<details>
+<summary><strong>2. The menu appears completely opaque without glass blur</strong></summary>
+<br/>
+
+1. **Missing Layer Rule:** Wayland layer-shell surfaces receive no blur in Hyprland without an explicit rule targeting their namespace. Re-run `./install.sh` and accept the glass exception.
+2. **`xray = true` Enabled:** If your layer rule specifies `xray = true`, the compositor skips intermediate layers. Because Noctalia wallpaper occupies a layer, the blur bypasses the wallpaper entirely, rendering the surface transparent or flat. Re-run `./install.sh` or ensure `xray = false` in your configuration.
+3. **Excessive Opacity:** If `bg0` alpha is set higher than 85%, incoming blur is blocked and reads as flat paint. Hypr.AI defaults to 60%.
+
+</details>
+
+<details>
+<summary><strong>3. Screenshots display glass, but physical monitors show flat surfaces</strong></summary>
+<br/>
+
+Tools like `grim` capture frame buffers prior to the compositor's blur pass. Even 5% transparency reveals sharp wallpaper details in screenshots (which the brain interprets as glass), while the physical display shows uniform blur. Always calibrate optical opacity based on direct monitor observation.
+
+</details>
+
+<details>
+<summary><strong>4. Colours do not adapt when changing wallpapers in Noctalia</strong></summary>
+<br/>
+
+Noctalia renders templates upon wallpaper or scheme transitions. If the palette desynchronises, force an update via:
+```bash
+noctalia msg config-reload && noctalia msg templates-apply
+```
+
+</details>
+
+---
+
+## 10 / Lineage &amp; Provenance
+
+<br/>
+
+<div align="center">
+  <img src="assets/readme/provenance.svg" alt="Hypr.AI Lineage &amp; Provenance" width="100%"/>
+</div>
+
+<br/>
+
+### Lineage &amp; Design Heritage
+
+- **Architecture:** Directly derived from the conventions, ergonomics, and Wayland menu architecture of [HyprVision](https://github.com/mastermaiolo/hyprvision).
+- **Design System:** Follows the **coherent-design** methodology — strict 4px grid, concentric border radii (24px window, 16px container, 8px child elements), and verified OKLCH palettes maintaining WCAG contrast ratios &ge; 4.5:1. Complete specifications are documented in [DESIGN.md](DESIGN.md).
+- **Author:** Master Maiolo · MAIOLO / SYSTEMS LAB.
+
+### Licence
+
+This project is licensed under the **MIT Licence**. See the [LICENSE](LICENSE) file for complete details.
+
+---
+
+<div align="center">
+<sub>MAIOLO / SYSTEMS LAB · HYPR.AI · NATIVE AI COMMAND SURFACE FOR HYPRLAND</sub>
+</div>

@@ -1,0 +1,88 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 380" width="1200" height="380">
+<defs>
+  <pattern id="grid" width="24" height="24" patternUnits="userSpaceOnUse"><path d="M24 0H0V24" fill="none" stroke="#FFFFFF" stroke-opacity=".03" stroke-width="1"/></pattern>
+</defs>
+<rect x="2" y="2" width="1196" height="376" rx="16" fill="#0B0D0F" stroke="#2A2D31" stroke-width="1"/>
+<rect x="3" y="3" width="1194" height="374" fill="url(#grid)"/>
+
+<!-- Header -->
+<text x="40" y="44" font-family="JetBrains Mono, monospace" font-size="12px" font-weight="600" fill="#00D2FF" letter-spacing="2">PIPELINE ARCHITECTURE &amp; EXECUTION GRAPH</text>
+<text x="1160" y="44" font-family="JetBrains Mono, monospace" font-size="12px" font-weight="600" fill="#8E8A82" text-anchor="end">WAYLAND / ROFI / FISH PIPELINE</text>
+<line x1="40" y1="58" x2="1160" y2="58" stroke="#2A2D31" stroke-width="1"/>
+
+<!-- Box 1: Ingestion & Trigger -->
+<g transform="translate(40, 80)">
+  <rect x="0" y="0" width="240" height="260" rx="10" fill="#13161A" stroke="#2A2D31" stroke-width="1"/>
+  <rect x="0" y="0" width="240" height="3" fill="#00D2FF" rx="1.5"/>
+  <text x="18" y="28" font-family="JetBrains Mono, monospace" font-size="11px" font-weight="600" fill="#00D2FF">01 / TRIGGER</text>
+  <text x="18" y="56" font-family="Inter, sans-serif" font-size="14px" font-weight="600" fill="#E9E5DC">Hyprland Ingestion</text>
+  <text x="18" y="80" font-family="Inter, sans-serif" font-size="11px" fill="#8E8A82">• Hotkey: Super + I</text>
+  <text x="18" y="100" font-family="Inter, sans-serif" font-size="11px" fill="#8E8A82">• Hyprland binds.lua</text>
+  <text x="18" y="120" font-family="Inter, sans-serif" font-size="11px" fill="#8E8A82">• UWSM app scoping</text>
+  <text x="18" y="140" font-family="Inter, sans-serif" font-size="11px" fill="#8E8A82">• CLI entry: ~/.local/bin/hyprai</text>
+  
+  <rect x="18" y="190" width="204" height="48" rx="6" fill="#0B0D0F" stroke="#2A2D31" stroke-width="1"/>
+  <text x="28" y="210" font-family="JetBrains Mono, monospace" font-size="10px" fill="#00D2FF">uwsm app -- hyprai</text>
+  <text x="28" y="226" font-family="JetBrains Mono, monospace" font-size="9px" fill="#8E8A82">transient unit lifecycle</text>
+</g>
+
+<!-- Arrow 1 -> 2 -->
+<path d="M288 210 L336 210" stroke="#00D2FF" stroke-width="1.5" stroke-dasharray="4 3"/>
+<polygon points="336,207 342,210 336,213" fill="#00D2FF"/>
+
+<!-- Box 2: Discovery & Tonal Bridge -->
+<g transform="translate(346, 80)">
+  <rect x="0" y="0" width="240" height="260" rx="10" fill="#13161A" stroke="#2A2D31" stroke-width="1"/>
+  <rect x="0" y="0" width="240" height="3" fill="#38BDF8" rx="1.5"/>
+  <text x="18" y="28" font-family="JetBrains Mono, monospace" font-size="11px" font-weight="600" fill="#38BDF8">02 / PROBE &amp; THEME</text>
+  <text x="18" y="56" font-family="Inter, sans-serif" font-size="14px" font-weight="600" fill="#E9E5DC">Runtime Resolution</text>
+  <text x="18" y="80" font-family="Inter, sans-serif" font-size="11px" fill="#8E8A82">• Evaluates fish -i PATH</text>
+  <text x="18" y="100" font-family="Inter, sans-serif" font-size="11px" fill="#8E8A82">• Probes candidates in tools.conf</text>
+  <text x="18" y="120" font-family="Inter, sans-serif" font-size="11px" fill="#8E8A82">• Parses sites.conf &amp; hyprai.conf</text>
+  <text x="18" y="140" font-family="Inter, sans-serif" font-size="11px" fill="#8E8A82">• Noctalia live tonal bridge</text>
+  
+  <rect x="18" y="190" width="204" height="48" rx="6" fill="#0B0D0F" stroke="#2A2D31" stroke-width="1"/>
+  <text x="28" y="210" font-family="JetBrains Mono, monospace" font-size="10px" fill="#38BDF8">PATH &lt;= fish -i</text>
+  <text x="28" y="226" font-family="JetBrains Mono, monospace" font-size="9px" fill="#8E8A82">dynamic OKLCH injection</text>
+</g>
+
+<!-- Arrow 2 -> 3 -->
+<path d="M594 210 L642 210" stroke="#38BDF8" stroke-width="1.5" stroke-dasharray="4 3"/>
+<polygon points="642,207 648,210 642,213" fill="#38BDF8"/>
+
+<!-- Box 3: Presentation (Rofi Glass) -->
+<g transform="translate(652, 80)">
+  <rect x="0" y="0" width="240" height="260" rx="10" fill="#13161A" stroke="#2A2D31" stroke-width="1"/>
+  <rect x="0" y="0" width="240" height="3" fill="#B62B32" rx="1.5"/>
+  <text x="18" y="28" font-family="JetBrains Mono, monospace" font-size="11px" font-weight="600" fill="#B62B32">03 / ROFI SURFACE</text>
+  <text x="18" y="56" font-family="Inter, sans-serif" font-size="14px" font-weight="600" fill="#E9E5DC">Presentation Engine</text>
+  <text x="18" y="80" font-family="Inter, sans-serif" font-size="11px" fill="#8E8A82">• rofi -dmenu -format i</text>
+  <text x="18" y="100" font-family="Inter, sans-serif" font-size="11px" fill="#8E8A82">• NUL icon stream injection</text>
+  <text x="18" y="120" font-family="Inter, sans-serif" font-size="11px" fill="#8E8A82">• 4px coherent grid system</text>
+  <text x="18" y="140" font-family="Inter, sans-serif" font-size="11px" fill="#8E8A82">• 60% alpha + 1.5px top rim</text>
+  
+  <rect x="18" y="190" width="204" height="48" rx="6" fill="#0B0D0F" stroke="#2A2D31" stroke-width="1"/>
+  <text x="28" y="210" font-family="JetBrains Mono, monospace" font-size="10px" fill="#B62B32">layerrule = blur, rofi</text>
+  <text x="28" y="226" font-family="JetBrains Mono, monospace" font-size="9px" fill="#8E8A82">xray=false optical blur</text>
+</g>
+
+<!-- Arrow 3 -> 4 -->
+<path d="M900 210 L948 210" stroke="#B62B32" stroke-width="1.5" stroke-dasharray="4 3"/>
+<polygon points="948,207 954,210 948,213" fill="#B62B32"/>
+
+<!-- Box 4: Dispatch & Execution -->
+<g transform="translate(958, 80)">
+  <rect x="0" y="0" width="202" height="260" rx="10" fill="#13161A" stroke="#2A2D31" stroke-width="1"/>
+  <rect x="0" y="0" width="202" height="3" fill="#E9E5DC" rx="1.5"/>
+  <text x="18" y="28" font-family="JetBrains Mono, monospace" font-size="11px" font-weight="600" fill="#E9E5DC">04 / DISPATCH</text>
+  <text x="18" y="56" font-family="Inter, sans-serif" font-size="14px" font-weight="600" fill="#E9E5DC">Action Spawner</text>
+  <text x="18" y="80" font-family="Inter, sans-serif" font-size="11px" fill="#8E8A82">• CLI: Terminal + Fish</text>
+  <text x="18" y="100" font-family="Inter, sans-serif" font-size="11px" fill="#8E8A82">• GUI: Direct binary run</text>
+  <text x="18" y="120" font-family="Inter, sans-serif" font-size="11px" fill="#8E8A82">• Web: xdg-open URL</text>
+  <text x="18" y="140" font-family="Inter, sans-serif" font-size="11px" fill="#8E8A82">• Config: Editor launch</text>
+  
+  <rect x="18" y="190" width="166" height="48" rx="6" fill="#0B0D0F" stroke="#2A2D31" stroke-width="1"/>
+  <text x="26" y="210" font-family="JetBrains Mono, monospace" font-size="10px" fill="#E9E5DC">Spawn Target</text>
+  <text x="26" y="226" font-family="JetBrains Mono, monospace" font-size="9px" fill="#8E8A82">Zero state pollution</text>
+</g>
+</svg>

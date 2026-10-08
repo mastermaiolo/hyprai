@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 360" width="1200" height="360">
+<defs>
+  <pattern id="grid" width="24" height="24" patternUnits="userSpaceOnUse"><path d="M24 0H0V24" fill="none" stroke="#FFFFFF" stroke-opacity=".03" stroke-width="1"/></pattern>
+</defs>
+<rect x="2" y="2" width="1196" height="356" rx="16" fill="#0B0D0F" stroke="#2A2D31" stroke-width="1"/>
+<rect x="3" y="3" width="1194" height="354" fill="url(#grid)"/>
+
+<!-- Header -->
+<text x="40" y="44" font-family="JetBrains Mono, monospace" font-size="12px" font-weight="600" fill="#00D2FF" letter-spacing="2">ECOSYSTEM SHOWCASE &amp; CANDIDATE ATLAS</text>
+<text x="1160" y="44" font-family="JetBrains Mono, monospace" font-size="12px" font-weight="600" fill="#8E8A82" text-anchor="end">PROBED DYNAMICALLY AT LAUNCH</text>
+<line x1="40" y1="58" x2="1160" y2="58" stroke="#2A2D31" stroke-width="1"/>
+
+<!-- Pillar 1: CLI Agents -->
+<g transform="translate(40, 78)">
+  <rect x="0" y="0" width="354" height="254" rx="10" fill="#13161A" stroke="#2A2D31" stroke-width="1"/>
+  <rect x="0" y="0" width="354" height="3" fill="#00D2FF" rx="1.5"/>
+  <text x="20" y="28" font-family="JetBrains Mono, monospace" font-size="11px" font-weight="600" fill="#00D2FF">CLI AGENTS · TERMINAL &amp; FISH</text>
+  
+  <g transform="translate(20, 44)">
+    <text x="0" y="16" font-family="Inter, sans-serif" font-size="12px" font-weight="600" fill="#E9E5DC">• Claude Code <tspan fill="#8E8A82" font-weight="400">(Anthropic)</tspan></text>
+    <text x="0" y="38" font-family="Inter, sans-serif" font-size="12px" font-weight="600" fill="#E9E5DC">• Antigravity CLI <tspan fill="#8E8A82" font-weight="400">(Google)</tspan></text>
+    <text x="0" y="60" font-family="Inter, sans-serif" font-size="12px" font-weight="600" fill="#E9E5DC">• Gemini CLI <tspan fill="#8E8A82" font-weight="400">(Google)</tspan></text>
+    <text x="0" y="82" font-family="Inter, sans-serif" font-size="12px" font-weight="600" fill="#E9E5DC">• Codex CLI <tspan fill="#8E8A82" font-weight="400">(OpenAI)</tspan></text>
+    <text x="0" y="104" font-family="Inter, sans-serif" font-size="12px" font-weight="600" fill="#E9E5DC">• Aider <tspan fill="#8E8A82" font-weight="400">(Paul Gauthier)</tspan></text>
+    <text x="0" y="126" font-family="Inter, sans-serif" font-size="12px" font-weight="600" fill="#E9E5DC">• GitHub Copilot CLI <tspan fill="#8E8A82" font-weight="400">(GitHub)</tspan></text>
+    <text x="0" y="148" font-family="Inter, sans-serif" font-size="12px" font-weight="600" fill="#E9E5DC">• Ollama / Qwen Code / OpenCode</text>
+    <text x="0" y="170" font-family="Inter, sans-serif" font-size="12px" font-weight="600" fill="#E9E5DC">• Plandex / Droid / OpenHands / Hermes</text>
+    <text x="0" y="196" font-family="JetBrains Mono, monospace" font-size="10px" fill="#00D2FF">&gt; 18 Pre-configured Candidates</text>
+  </g>
+</g>
+
+<!-- Pillar 2: Desktop Apps -->
+<g transform="translate(423, 78)">
+  <rect x="0" y="0" width="354" height="254" rx="10" fill="#13161A" stroke="#2A2D31" stroke-width="1"/>
+  <rect x="0" y="0" width="354" height="3" fill="#38BDF8" rx="1.5"/>
+  <text x="20" y="28" font-family="JetBrains Mono, monospace" font-size="11px" font-weight="600" fill="#38BDF8">DESKTOP APPS · WAYLAND GUI</text>
+  
+  <g transform="translate(20, 44)">
+    <text x="0" y="16" font-family="Inter, sans-serif" font-size="12px" font-weight="600" fill="#E9E5DC">• Claude Desktop <tspan fill="#8E8A82" font-weight="400">(Anthropic)</tspan></text>
+    <text x="0" y="38" font-family="Inter, sans-serif" font-size="12px" font-weight="600" fill="#E9E5DC">• Antigravity 2.0 <tspan fill="#8E8A82" font-weight="400">(Google DeepMind)</tspan></text>
+    <text x="0" y="60" font-family="Inter, sans-serif" font-size="12px" font-weight="600" fill="#E9E5DC">• Cursor / Windsurf / Zed IDE</text>
+    <text x="0" y="82" font-family="Inter, sans-serif" font-size="12px" font-weight="600" fill="#E9E5DC">• LM Studio <tspan fill="#8E8A82" font-weight="400">(Local LLM Runtime)</tspan></text>
+    <text x="0" y="104" font-family="Inter, sans-serif" font-size="12px" font-weight="600" fill="#E9E5DC">• Jan / GPT4All <tspan fill="#8E8A82" font-weight="400">(Offline)</tspan></text>
+    <text x="0" y="126" font-family="Inter, sans-serif" font-size="12px" font-weight="600" fill="#E9E5DC">• AnythingLLM / Chatbox / Msty</text>
+    <text x="0" y="148" font-family="Inter, sans-serif" font-size="12px" font-weight="600" fill="#E9E5DC">• Hermes Desktop <tspan fill="#8E8A82" font-weight="400">(Nous Research)</tspan></text>
+    <text x="0" y="170" font-family="Inter, sans-serif" font-size="12px" font-weight="600" fill="#8E8A82">Instantly detected upon installation</text>
+    <text x="0" y="196" font-family="JetBrains Mono, monospace" font-size="10px" fill="#38BDF8">&gt; 12 Graphical Environments</text>
+  </g>
+</g>
+
+<!-- Pillar 3: Web Portals -->
+<g transform="translate(806, 78)">
+  <rect x="0" y="0" width="354" height="254" rx="10" fill="#13161A" stroke="#2A2D31" stroke-width="1"/>
+  <rect x="0" y="0" width="354" height="3" fill="#B62B32" rx="1.5"/>
+  <text x="20" y="28" font-family="JetBrains Mono, monospace" font-size="11px" font-weight="600" fill="#B62B32">WEB PORTALS · 6 CATEGORIES</text>
+  
+  <g transform="translate(20, 44)">
+    <text x="0" y="16" font-family="Inter, sans-serif" font-size="12px" font-weight="600" fill="#E9E5DC">• Chat: <tspan fill="#8E8A82" font-weight="400">ChatGPT, Claude, Gemini, DeepSeek</tspan></text>
+    <text x="0" y="38" font-family="Inter, sans-serif" font-size="12px" font-weight="600" fill="#E9E5DC">• Models: <tspan fill="#8E8A82" font-weight="400">Grok, Kimi, Qwen, Mistral, Copilot</tspan></text>
+    <text x="0" y="60" font-family="Inter, sans-serif" font-size="12px" font-weight="600" fill="#E9E5DC">• Search: <tspan fill="#8E8A82" font-weight="400">Perplexity, Genspark, Felo</tspan></text>
+    <text x="0" y="82" font-family="Inter, sans-serif" font-size="12px" font-weight="600" fill="#E9E5DC">• Dev &amp; Code: <tspan fill="#8E8A82" font-weight="400">v0, Lovable, Bolt.new, Replit</tspan></text>
+    <text x="0" y="104" font-family="Inter, sans-serif" font-size="12px" font-weight="600" fill="#E9E5DC">• Media: <tspan fill="#8E8A82" font-weight="400">Midjourney, Suno, ElevenLabs, Runway</tspan></text>
+    <text x="0" y="126" font-family="Inter, sans-serif" font-size="12px" font-weight="600" fill="#E9E5DC">• Writing: <tspan fill="#8E8A82" font-weight="400">Notion AI, Lex, TypingMind</tspan></text>
+    <text x="0" y="148" font-family="Inter, sans-serif" font-size="12px" font-weight="600" fill="#8E8A82">Grouped categories with ↩ Back navigation</text>
+    <text x="0" y="170" font-family="Inter, sans-serif" font-size="12px" font-weight="600" fill="#8E8A82">Opens directly in default Wayland browser</text>
+    <text x="0" y="196" font-family="JetBrains Mono, monospace" font-size="10px" fill="#B62B32">&gt; 33 Curated Cloud Gateways</text>
+  </g>
+</g>
+</svg>

@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 320" width="1200" height="320">
+<defs>
+  <pattern id="grid" width="24" height="24" patternUnits="userSpaceOnUse"><path d="M24 0H0V24" fill="none" stroke="#FFFFFF" stroke-opacity=".03" stroke-width="1"/></pattern>
+</defs>
+<rect x="2" y="2" width="1196" height="316" rx="16" fill="#0B0D0F" stroke="#2A2D31" stroke-width="1"/>
+<rect x="3" y="3" width="1194" height="314" fill="url(#grid)"/>
+
+<!-- Section Header -->
+<text x="40" y="44" font-family="JetBrains Mono, monospace" font-size="12px" font-weight="600" fill="#00D2FF" letter-spacing="2">SUBSYSTEM ARCHITECTURE &amp; CAPABILITIES</text>
+<text x="1160" y="44" font-family="JetBrains Mono, monospace" font-size="12px" font-weight="600" fill="#8E8A82" text-anchor="end">ENGINEERING DEEP DIVE</text>
+<line x1="40" y1="58" x2="1160" y2="58" stroke="#2A2D31" stroke-width="1"/>
+
+<!-- Column 1: Interactive Fish PATH -->
+<g transform="translate(40, 80)">
+  <rect x="0" y="0" width="354" height="210" rx="10" fill="#13161A" stroke="#2A2D31" stroke-width="1"/>
+  <rect x="0" y="0" width="4" height="210" fill="#00D2FF" rx="2"/>
+  <text x="24" y="32" font-family="JetBrains Mono, monospace" font-size="11px" font-weight="600" fill="#00D2FF">01 / INTERACTIVE FISH RESOLUTION</text>
+  <text x="24" y="60" font-family="Inter, sans-serif" font-size="15px" font-weight="600" fill="#E9E5DC">True Environment Inspection</text>
+  <text x="24" y="86" font-family="Inter, sans-serif" font-size="12px" fill="#8E8A82">Hyprland assigns processes a minimal PATH,</text>
+  <text x="24" y="106" font-family="Inter, sans-serif" font-size="12px" fill="#8E8A82">hiding Linuxbrew, Pyenv, and NVM tools.</text>
+  <text x="24" y="126" font-family="Inter, sans-serif" font-size="12px" fill="#8E8A82">Hypr.AI evaluates 'fish -i' PATH exactly once</text>
+  <text x="24" y="146" font-family="Inter, sans-serif" font-size="12px" fill="#8E8A82">per invocation, eliminating asymmetric launches.</text>
+  
+  <rect x="24" y="166" width="306" height="26" rx="4" fill="#0B0D0F" stroke="#2A2D31" stroke-width="1"/>
+  <text x="34" y="183" font-family="JetBrains Mono, monospace" font-size="10px" fill="#00D2FF">$PATH &lt;= fish -i -c 'echo $PATH'</text>
+</g>
+
+<!-- Column 2: Calibrated Glass & Layer Rules -->
+<g transform="translate(423, 80)">
+  <rect x="0" y="0" width="354" height="210" rx="10" fill="#13161A" stroke="#2A2D31" stroke-width="1"/>
+  <rect x="0" y="0" width="4" height="210" fill="#38BDF8" rx="2"/>
+  <text x="24" y="32" font-family="JetBrains Mono, monospace" font-size="11px" font-weight="600" fill="#38BDF8">02 / CALIBRATED GLASS OPTICS</text>
+  <text x="24" y="60" font-family="Inter, sans-serif" font-size="15px" font-weight="600" fill="#E9E5DC">Physically Grounded Blur</text>
+  <text x="24" y="86" font-family="Inter, sans-serif" font-size="12px" fill="#8E8A82">Window background calibrated at 60% alpha.</text>
+  <text x="24" y="106" font-family="Inter, sans-serif" font-size="12px" fill="#8E8A82">Higher opacities flatten blur into paint.</text>
+  <text x="24" y="126" font-family="Inter, sans-serif" font-size="12px" fill="#8E8A82">Enforces 'xray = false' so compositor blur</text>
+  <text x="24" y="146" font-family="Inter, sans-serif" font-size="12px" fill="#8E8A82">doesn't bypass full-screen wallpaper layers.</text>
+  
+  <rect x="24" y="166" width="306" height="26" rx="4" fill="#0B0D0F" stroke="#2A2D31" stroke-width="1"/>
+  <text x="34" y="183" font-family="JetBrains Mono, monospace" font-size="10px" fill="#38BDF8">layerrule = blur, rofi | xray=false</text>
+</g>
+
+<!-- Column 3: Parallel Arrays & NUL Protocol -->
+<g transform="translate(806, 80)">
+  <rect x="0" y="0" width="354" height="210" rx="10" fill="#13161A" stroke="#2A2D31" stroke-width="1"/>
+  <rect x="0" y="0" width="4" height="210" fill="#B62B32" rx="2"/>
+  <text x="24" y="32" font-family="JetBrains Mono, monospace" font-size="11px" font-weight="600" fill="#B62B32">03 / PARALLEL ARRAY DISPATCH</text>
+  <text x="24" y="60" font-family="Inter, sans-serif" font-size="15px" font-weight="600" fill="#E9E5DC">NUL Byte Protocol Safety</text>
+  <text x="24" y="86" font-family="Inter, sans-serif" font-size="12px" fill="#8E8A82">Rofi icon protocol requires \0 delimiter.</text>
+  <text x="24" y="106" font-family="Inter, sans-serif" font-size="12px" fill="#8E8A82">Bash cannot store NUL in strings without truncating.</text>
+  <text x="24" y="126" font-family="Inter, sans-serif" font-size="12px" fill="#8E8A82">Data flows in parallel arrays, injected on pipe.</text>
+  <text x="24" y="146" font-family="Inter, sans-serif" font-size="12px" fill="#8E8A82">Maps '-format i' cleanly back to candidate IDs.</text>
+  
+  <rect x="24" y="166" width="306" height="26" rx="4" fill="#0B0D0F" stroke="#2A2D31" stroke-width="1"/>
+  <text x="34" y="183" font-family="JetBrains Mono, monospace" font-size="10px" fill="#E9E5DC">printf "%s\0icon\x1f%s\n" "$txt" "$icon"</text>
+</g>
+</svg>

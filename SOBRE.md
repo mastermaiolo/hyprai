@@ -1,7 +1,7 @@
 # 🧠 Hypr.AI · Guia do Projecto
 
 Este documento explica **o que é**, **para que serve** e sobretudo **porque foi
-construído assim**. O [README](README.pt.md) cobre a utilização; aqui ficam as
+construído assim**. O [README](README.pt-pt.md) cobre a utilização; aqui ficam as
 decisões de engenharia e o raciocínio por trás delas — incluindo as que só se
 percebem depois de bater com a cabeça na parede.
 
@@ -61,7 +61,7 @@ hyprai/
 ├── install.sh             # Instalação, atalho e registo no Noctalia
 ├── uninstall.sh           # Remoção simétrica
 ├── DESIGN.md              # Tokens e o porquê de cada número
-└── README*.md             # Documentação (pt, en, es, zh)
+└── README*.md             # Documentação (en-gb, pt-br, pt-pt, es-es, zh-cn)
 ```
 
 ### 🔍 3.1. Detecção em runtime — a decisão central

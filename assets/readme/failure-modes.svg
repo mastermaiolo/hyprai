@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 340" width="1200" height="340">
+<defs>
+  <pattern id="grid" width="24" height="24" patternUnits="userSpaceOnUse"><path d="M24 0H0V24" fill="none" stroke="#FFFFFF" stroke-opacity=".03" stroke-width="1"/></pattern>
+</defs>
+<rect x="2" y="2" width="1196" height="336" rx="16" fill="#0B0D0F" stroke="#2A2D31" stroke-width="1"/>
+<rect x="3" y="3" width="1194" height="334" fill="url(#grid)"/>
+
+<!-- Header -->
+<text x="40" y="44" font-family="JetBrains Mono, monospace" font-size="12px" font-weight="600" fill="#B62B32" letter-spacing="2">DIAGNOSTIC MATRIX &amp; FAILURE MODES</text>
+<text x="1160" y="44" font-family="JetBrains Mono, monospace" font-size="12px" font-weight="600" fill="#8E8A82" text-anchor="end">FIRST STEP: hyprai --doctor</text>
+<line x1="40" y1="58" x2="1160" y2="58" stroke="#2A2D31" stroke-width="1"/>
+
+<!-- Box 1: Invisible Tool -->
+<g transform="translate(40, 78)">
+  <rect x="0" y="0" width="268" height="234" rx="10" fill="#13161A" stroke="#2A2D31" stroke-width="1"/>
+  <rect x="0" y="0" width="268" height="3" fill="#00D2FF" rx="1.5"/>
+  <text x="20" y="28" font-family="JetBrains Mono, monospace" font-size="10px" font-weight="600" fill="#00D2FF">01 / CANDIDATE INVISIBLE</text>
+  <text x="20" y="56" font-family="Inter, sans-serif" font-size="14px" font-weight="600" fill="#E9E5DC">Installed Tool Missing</text>
+  <text x="20" y="80" font-family="Inter, sans-serif" font-size="11px" fill="#8E8A82">Symptom: Binary is on disk</text>
+  <text x="20" y="98" font-family="Inter, sans-serif" font-size="11px" fill="#8E8A82">but doesn't show in menu.</text>
+  <text x="20" y="122" font-family="Inter, sans-serif" font-size="11px" fill="#E9E5DC">Root Cause:</text>
+  <text x="20" y="140" font-family="Inter, sans-serif" font-size="11px" fill="#8E8A82">Binary name doesn't match</text>
+  <text x="20" y="158" font-family="Inter, sans-serif" font-size="11px" fill="#8E8A82">'candidates' in tools.conf.</text>
+  
+  <rect x="18" y="180" width="232" height="36" rx="4" fill="#0B0D0F" stroke="#2A2D31" stroke-width="1"/>
+  <text x="26" y="202" font-family="JetBrains Mono, monospace" font-size="9px" fill="#00D2FF">which &lt;cmd&gt; &amp;&amp; edit tools.conf</text>
+</g>
+
+<!-- Box 2: Missing Glass -->
+<g transform="translate(328, 78)">
+  <rect x="0" y="0" width="268" height="234" rx="10" fill="#13161A" stroke="#2A2D31" stroke-width="1"/>
+  <rect x="0" y="0" width="268" height="3" fill="#38BDF8" rx="1.5"/>
+  <text x="20" y="28" font-family="JetBrains Mono, monospace" font-size="10px" font-weight="600" fill="#38BDF8">02 / GLASS MISSING / OPAQUE</text>
+  <text x="20" y="56" font-family="Inter, sans-serif" font-size="14px" font-weight="600" fill="#E9E5DC">Flat Solid Background</text>
+  <text x="20" y="80" font-family="Inter, sans-serif" font-size="11px" fill="#8E8A82">Symptom: Panel renders dark</text>
+  <text x="20" y="98" font-family="Inter, sans-serif" font-size="11px" fill="#8E8A82">and flat without compositor blur.</text>
+  <text x="20" y="122" font-family="Inter, sans-serif" font-size="11px" fill="#E9E5DC">Root Cause:</text>
+  <text x="20" y="140" font-family="Inter, sans-serif" font-size="11px" fill="#8E8A82">Missing layerrule or xray=true</text>
+  <text x="20" y="158" font-family="Inter, sans-serif" font-size="11px" fill="#8E8A82">skipping wallpaper layer.</text>
+  
+  <rect x="18" y="180" width="232" height="36" rx="4" fill="#0B0D0F" stroke="#2A2D31" stroke-width="1"/>
+  <text x="26" y="202" font-family="JetBrains Mono, monospace" font-size="9px" fill="#38BDF8">layerrule = blur, rofi (xray 0)</text>
+</g>
+
+<!-- Box 3: Screenshot Discrepancy -->
+<g transform="translate(616, 78)">
+  <rect x="0" y="0" width="268" height="234" rx="10" fill="#13161A" stroke="#2A2D31" stroke-width="1"/>
+  <rect x="0" y="0" width="268" height="3" fill="#B62B32" rx="1.5"/>
+  <text x="20" y="28" font-family="JetBrains Mono, monospace" font-size="10px" font-weight="600" fill="#B62B32">03 / SCREENSHOT ILLUSION</text>
+  <text x="20" y="56" font-family="Inter, sans-serif" font-size="14px" font-weight="600" fill="#E9E5DC">Grim vs Physical Optics</text>
+  <text x="20" y="80" font-family="Inter, sans-serif" font-size="11px" fill="#8E8A82">Symptom: Screenshot shows</text>
+  <text x="20" y="98" font-family="Inter, sans-serif" font-size="11px" fill="#8E8A82">glass, but physical screen paints flat.</text>
+  <text x="20" y="122" font-family="Inter, sans-serif" font-size="11px" fill="#E9E5DC">Root Cause:</text>
+  <text x="20" y="140" font-family="Inter, sans-serif" font-size="11px" fill="#8E8A82">Grim captures before blur pass.</text>
+  <text x="20" y="158" font-family="Inter, sans-serif" font-size="11px" fill="#8E8A82">Calibrate opacity at 60%.</text>
+  
+  <rect x="18" y="180" width="232" height="36" rx="4" fill="#0B0D0F" stroke="#2A2D31" stroke-width="1"/>
+  <text x="26" y="202" font-family="JetBrains Mono, monospace" font-size="9px" fill="#B62B32">Trust display optics, not grim</text>
+</g>
+
+<!-- Box 4: Palette Drift -->
+<g transform="translate(904, 78)">
+  <rect x="0" y="0" width="256" height="234" rx="10" fill="#13161A" stroke="#2A2D31" stroke-width="1"/>
+  <rect x="0" y="0" width="256" height="3" fill="#E9E5DC" rx="1.5"/>
+  <text x="20" y="28" font-family="JetBrains Mono, monospace" font-size="10px" font-weight="600" fill="#E9E5DC">04 / THEME OUT OF SYNC</text>
+  <text x="20" y="56" font-family="Inter, sans-serif" font-size="14px" font-weight="600" fill="#E9E5DC">Wallpaper Desync</text>
+  <text x="20" y="80" font-family="Inter, sans-serif" font-size="11px" fill="#8E8A82">Symptom: Noctalia changed</text>
+  <text x="20" y="98" font-family="Inter, sans-serif" font-size="11px" fill="#8E8A82">wallpaper, but menu stayed violet.</text>
+  <text x="20" y="122" font-family="Inter, sans-serif" font-size="11px" fill="#E9E5DC">Root Cause:</text>
+  <text x="20" y="140" font-family="Inter, sans-serif" font-size="11px" fill="#8E8A82">User template requires first</text>
+  <text x="20" y="158" font-family="Inter, sans-serif" font-size="11px" fill="#8E8A82">render trigger or reload.</text>
+  
+  <rect x="18" y="180" width="220" height="36" rx="4" fill="#0B0D0F" stroke="#2A2D31" stroke-width="1"/>
+  <text x="24" y="202" font-family="JetBrains Mono, monospace" font-size="9px" fill="#E9E5DC">noctalia msg templates-apply</text>
+</g>
+</svg>

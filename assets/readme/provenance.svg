@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 240" width="1200" height="240">
+<defs>
+  <pattern id="grid" width="24" height="24" patternUnits="userSpaceOnUse"><path d="M24 0H0V24" fill="none" stroke="#FFFFFF" stroke-opacity=".03" stroke-width="1"/></pattern>
+</defs>
+<rect x="2" y="2" width="1196" height="236" rx="14" fill="#0B0D0F" stroke="#2A2D31" stroke-width="1"/>
+<rect x="3" y="3" width="1194" height="234" fill="url(#grid)"/>
+
+<!-- Card 1: Lineage & Inspiration -->
+<g transform="translate(30, 24)">
+  <rect x="0" y="0" width="268" height="192" rx="10" fill="#13161A" stroke="#2A2D31" stroke-width="1"/>
+  <rect x="0" y="0" width="268" height="3" rx="1.5" fill="#00D2FF"/>
+  <text x="20" y="32" font-family="JetBrains Mono, monospace" font-size="10px" font-weight="600" fill="#8E8A82" letter-spacing="1.5">LINEAGE &amp; ANCESTRY</text>
+  <text x="20" y="66" font-family="Inter, sans-serif" font-size="18px" font-weight="700" fill="#E9E5DC">HyprVision Architecture</text>
+  <text x="20" y="96" font-family="Inter, sans-serif" font-size="12px" fill="#8E8A82">Built upon the conventions,</text>
+  <text x="20" y="116" font-family="Inter, sans-serif" font-size="12px" fill="#8E8A82">ergonomics, and menu patterns</text>
+  <text x="20" y="136" font-family="Inter, sans-serif" font-size="12px" fill="#8E8A82">of the HyprVision engine.</text>
+  <text x="20" y="172" font-family="JetBrains Mono, monospace" font-size="10px" fill="#00D2FF">MASTERMAIOLO / HYPRVISION</text>
+</g>
+
+<!-- Card 2: Design Tokens -->
+<g transform="translate(318, 24)">
+  <rect x="0" y="0" width="268" height="192" rx="10" fill="#13161A" stroke="#2A2D31" stroke-width="1"/>
+  <rect x="0" y="0" width="268" height="3" rx="1.5" fill="#38BDF8"/>
+  <text x="20" y="32" font-family="JetBrains Mono, monospace" font-size="10px" font-weight="600" fill="#8E8A82" letter-spacing="1.5">DESIGN SYSTEM</text>
+  <text x="20" y="66" font-family="Inter, sans-serif" font-size="18px" font-weight="700" fill="#E9E5DC">coherent-design</text>
+  <text x="20" y="96" font-family="Inter, sans-serif" font-size="12px" fill="#8E8A82">Strict 4px base spacing grid.</text>
+  <text x="20" y="116" font-family="Inter, sans-serif" font-size="12px" fill="#8E8A82">Concentric radii (24/16/8px).</text>
+  <text x="20" y="136" font-family="Inter, sans-serif" font-size="12px" fill="#8E8A82">OKLCH WCAG ≥ 4.5:1 verified.</text>
+  <text x="20" y="172" font-family="JetBrains Mono, monospace" font-size="10px" fill="#38BDF8">TOKENS IN DESIGN.MD</text>
+</g>
+
+<!-- Card 3: Author & Lab -->
+<g transform="translate(606, 24)">
+  <rect x="0" y="0" width="268" height="192" rx="10" fill="#13161A" stroke="#2A2D31" stroke-width="1"/>
+  <rect x="0" y="0" width="268" height="3" rx="1.5" fill="#B62B32"/>
+  <text x="20" y="32" font-family="JetBrains Mono, monospace" font-size="10px" font-weight="600" fill="#8E8A82" letter-spacing="1.5">ORGANISATION &amp; AUTHOR</text>
+  <text x="20" y="66" font-family="Inter, sans-serif" font-size="18px" font-weight="700" fill="#E9E5DC">Master Maiolo</text>
+  <text x="20" y="96" font-family="Inter, sans-serif" font-size="12px" fill="#8E8A82">MAIOLO / SYSTEMS LAB</text>
+  <text x="20" y="116" font-family="Inter, sans-serif" font-size="12px" fill="#8E8A82">Wayland &amp; Linux Desktops.</text>
+  <text x="20" y="136" font-family="Inter, sans-serif" font-size="12px" fill="#8E8A82">Native toolchain engineering.</text>
+  <text x="20" y="172" font-family="JetBrains Mono, monospace" font-size="10px" fill="#B62B32">HAI / 01 ARCHITECTURE</text>
+</g>
+
+<!-- Card 4: Licence & Verification -->
+<g transform="translate(894, 24)">
+  <rect x="0" y="0" width="276" height="192" rx="10" fill="#13161A" stroke="#2A2D31" stroke-width="1"/>
+  <rect x="0" y="0" width="276" height="3" rx="1.5" fill="#E9E5DC"/>
+  <text x="20" y="32" font-family="JetBrains Mono, monospace" font-size="10px" font-weight="600" fill="#8E8A82" letter-spacing="1.5">OPEN SOURCE LICENCE</text>
+  <text x="20" y="66" font-family="Inter, sans-serif" font-size="18px" font-weight="700" fill="#E9E5DC">MIT Licence</text>
+  <text x="20" y="96" font-family="Inter, sans-serif" font-size="12px" fill="#8E8A82">Free to use, inspect &amp; modify.</text>
+  <text x="20" y="116" font-family="Inter, sans-serif" font-size="12px" fill="#8E8A82">Verified with rofi -dump-theme.</text>
+  <text x="20" y="136" font-family="Inter, sans-serif" font-size="12px" fill="#8E8A82">Standardised 5-language suite.</text>
+  <text x="20" y="172" font-family="JetBrains Mono, monospace" font-size="10px" fill="#E9E5DC">2026 MASTER MAIOLO</text>
+</g>
+</svg>
